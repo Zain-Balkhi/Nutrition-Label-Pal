@@ -1,0 +1,21 @@
+{
+  "recipe_name": "Simple Chicken Salad",
+  "ingredients": [
+    {
+      "name": "chicken breast",
+      "amount": "200g"
+    },
+    {
+      "name": "olive oil",
+      "amount": "2 tbsp"
+    },
+    {
+      "name": "lettuce",
+      "amount": "100g"
+    },
+    {
+      "name": "tomato",
+      "amount": "1 medium"
+    }
+  ]
+}
