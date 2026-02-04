@@ -46,6 +46,34 @@ def get_food_details(fdc_id):
     })
 
 
+@app.route('/api/save', methods=['POST'])
+def save_text():
+    """Save text to a file in the backend"""
+    data = request.get_json()
+    text = data.get('text', '')
+    
+    if not text:
+        return jsonify({'error': 'No text provided'}), 400
+    
+    try:
+        # Create a filename with timestamp
+        from datetime import datetime
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'saved_text_{timestamp}.txt'
+        filepath = os.path.join(os.path.dirname(__file__), filename)
+        
+        # Save the text to file
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(text)
+        
+        return jsonify({
+            'message': f'Text saved successfully as {filename}',
+            'filename': filename
+        })
+    except Exception as e:
+        return jsonify({'error': f'Failed to save file: {str(e)}'}), 500
+
+
 @app.route('/api/recipe', methods=['POST'])
 def process_recipe():
     """Process a recipe and get nutritional information"""
