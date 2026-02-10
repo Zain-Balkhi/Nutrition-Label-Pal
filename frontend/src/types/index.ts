@@ -1,0 +1,41 @@
+export interface ParsedIngredient {
+  name: string;
+  quantity: number;
+  unit: string;
+  preparation: string | null;
+  original_text: string;
+}
+
+export interface USDAMatch {
+  fdc_id: number;
+  description: string;
+  data_type: string;
+}
+
+export interface IngredientWithMatch {
+  parsed: ParsedIngredient;
+  status: string;
+  matches: USDAMatch[];
+  selected_fdc_id: number | null;
+}
+
+export interface ParseRecipeResponse {
+  recipe_name: string;
+  servings: number;
+  serving_size: string;
+  ingredients: IngredientWithMatch[];
+}
+
+export interface NutrientValue {
+  name: string;
+  amount: number;
+  unit: string;
+  daily_value_percent: number | null;
+}
+
+export interface NutritionResult {
+  recipe_name: string;
+  servings: number;
+  serving_size: string;
+  nutrients: NutrientValue[];
+}

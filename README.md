@@ -1,84 +1,84 @@
 # Nutrition Label Pal
 
-A monorepo application for fetching nutritional information from the USDA FoodData Central API.
+A web application that helps small food businesses generate FDA-compliant nutrition labels from recipes. Input a raw recipe, get parsed ingredients matched against the USDA FoodData Central database, and receive per-serving nutrition data with FDA-standard rounding.
 
 ## Project Structure
 
 ```
 Nutrition-Label-Pal/
-├── backend/          # Flask API server
-│   ├── app.py        # Main Flask application
-│   ├── usda.py       # USDA API integration
+├── backend/              # FastAPI server
+│   ├── app/
+│   │   ├── main.py       # FastAPI app, CORS, router mounting
+│   │   ├── config.py     # Environment variables, FDA constants
+│   │   ├── models/       # Pydantic request/response schemas
+│   │   ├── routers/      # API endpoints (health, recipes)
+│   │   ├── services/     # Business logic (USDA, LLM, calculator)
+│   │   └── utils/        # Unit conversion, FDA rounding rules
 │   ├── requirements.txt
-│   └── recipe.json   # Sample recipe
-├── frontend/         # React application
-│   ├── public/
+│   ├── Procfile
+│   └── .env.example
+├── frontend/             # React + TypeScript + Vite
 │   ├── src/
+│   │   ├── App.tsx       # Main app with 3-step flow
+│   │   ├── components/   # RecipeInput, IngredientReview, NutritionDisplay
+│   │   ├── services/     # API client
+│   │   └── types/        # TypeScript interfaces
+│   ├── vite.config.ts
 │   └── package.json
+├── docs/                 # Documentation
+│   ├── LOCAL_SETUP.md
+│   ├── API_KEYS.md
+│   ├── DATABASE_SCHEMA.md
+│   └── ACCOUNTS.md
 └── README.md
 ```
 
-## Setup Instructions
+## Quick Start
 
-### Backend Setup
+See [docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md) for full setup instructions.
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
+```bash
+# Backend (Terminal 1)
+cd backend
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env   # then add your API keys
+uvicorn app.main:app --reload --port 8000
 
-2. Create a virtual environment (recommended):
-   ```bash
-   python -m venv venv
-   venv\Scripts\activate  # Windows
-   ```
+# Frontend (Terminal 2)
+cd frontend
+npm install
+npm run dev
+```
 
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+Open http://localhost:5173 in your browser.
 
-4. Set your USDA API key as an environment variable:
-   ```bash
-   $env:USDA_API_KEY="your_api_key_here"  # Windows PowerShell
-   ```
-   Get a free API key at: https://fdc.nal.usda.gov/api-key-signup.html
+## API Keys Required
 
-5. Run the backend server:
-   ```bash
-   python app.py
-   ```
-   Backend will run on http://localhost:5000
+- **USDA FoodData Central** — free, sign up at https://fdc.nal.usda.gov/api-key-signup.html
+- **OpenAI** — for recipe parsing with GPT-4o-mini, see https://platform.openai.com
 
-### Frontend Setup
+See [docs/API_KEYS.md](docs/API_KEYS.md) for detailed instructions.
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+## How It Works
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm start
-   ```
-   Frontend will run on http://localhost:3000
+1. **Input** — Paste recipe ingredients as free-form text
+2. **Parse** — GPT-4o-mini extracts structured ingredients (name, quantity, unit)
+3. **Match** — Each ingredient is matched to USDA FoodData Central entries
+4. **Review** — Verify or change USDA matches for each ingredient
+5. **Calculate** — Per-serving nutrition data with FDA 21 CFR 101.9 rounding
 
 ## API Endpoints
 
-- `GET /api/health` - Health check
-- `POST /api/search` - Search for food items
-- `GET /api/food/<fdc_id>` - Get food details
-- `POST /api/recipe` - Process recipe and get nutrition data
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/health` | Health check |
+| POST | `/api/parse-recipe` | Parse raw recipe text and return USDA-matched ingredients |
+| POST | `/api/calculate-nutrition` | Calculate per-serving nutrition from confirmed ingredients |
 
-## Development
+## Tech Stack
 
-Both frontend and backend run independently:
-- Backend: Flask server with CORS enabled
-- Frontend: React app with proxy to backend
-
-The frontend is stateless and communicates with the backend via REST API.
+- **Backend:** FastAPI + Uvicorn
+- **Frontend:** React 18 + TypeScript + Vite
+- **LLM:** OpenAI GPT-4o-mini
+- **Nutrition Data:** USDA FoodData Central API
