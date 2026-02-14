@@ -33,9 +33,16 @@ export interface NutrientValue {
   daily_value_percent: number | null;
 }
 
+export interface SkippedIngredient {
+  name: string;
+  original_text: string;
+  reason: string;
+}
+
 export interface NutritionResult {
   recipe_name: string;
   servings: number;
   serving_size: string;
   nutrients: NutrientValue[];
+  skipped_ingredients: SkippedIngredient[];
 }

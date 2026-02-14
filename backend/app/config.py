@@ -5,6 +5,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     USDA_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
+    DATABASE_URL: str = "sqlite:///./nutrition_pal.db"
 
     USDA_BASE_URL: str = "https://api.nal.usda.gov/fdc/v1"
 

@@ -49,6 +49,12 @@ class NutrientValue(BaseModel):
     daily_value_percent: int | None = None
 
 
+class SkippedIngredient(BaseModel):
+    name: str
+    original_text: str
+    reason: str
+
+
 class CalculateNutritionRequest(BaseModel):
     ingredients: list[IngredientWithMatch]
     servings: int
@@ -61,3 +67,4 @@ class NutritionResult(BaseModel):
     servings: int
     serving_size: str
     nutrients: list[NutrientValue]
+    skipped_ingredients: list[SkippedIngredient] = []

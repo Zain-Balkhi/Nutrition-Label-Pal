@@ -1,8 +1,15 @@
+import logging
+
+import httpx
+
+logger = logging.getLogger(__name__)
+
 from app.config import get_settings
 from app.models.schemas import (
     IngredientWithMatch,
     NutrientValue,
     NutritionResult,
+    SkippedIngredient,
 )
 from app.services.usda_service import USDAService
 from app.utils.unit_converter import convert_to_grams
@@ -89,13 +96,34 @@ async def calculate_nutrition(
 
     # Accumulate total nutrients across all ingredients
     totals: dict[str, float] = {key: 0.0 for key in settings.NUTRIENT_IDS}
+    skipped: list[SkippedIngredient] = []
 
     for ingredient in ingredients:
         fdc_id = ingredient.selected_fdc_id
         if fdc_id is None:
+            skipped.append(SkippedIngredient(
+                name=ingredient.parsed.name,
+                original_text=ingredient.parsed.original_text,
+                reason="No USDA match found",
+            ))
             continue
 
-        food_data = await usda_service.get_food_details(fdc_id)
+        try:
+            food_data = await usda_service.get_food_details(fdc_id)
+        except httpx.HTTPStatusError as e:
+            logger.warning(
+                "USDA API returned %s for fdc_id=%d (%s), skipping",
+                e.response.status_code,
+                fdc_id,
+                ingredient.parsed.name,
+            )
+            skipped.append(SkippedIngredient(
+                name=ingredient.parsed.name,
+                original_text=ingredient.parsed.original_text,
+                reason=f"USDA lookup failed (HTTP {e.response.status_code})",
+            ))
+            continue
+
         nutrients_per_100g = _extract_nutrients_per_100g(food_data)
 
         # Get portions for unit conversion
@@ -139,4 +167,5 @@ async def calculate_nutrition(
         servings=servings,
         serving_size=serving_size,
         nutrients=nutrient_values,
+        skipped_ingredients=skipped,
     )
