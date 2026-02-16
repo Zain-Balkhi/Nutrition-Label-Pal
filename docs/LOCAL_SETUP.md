@@ -17,8 +17,14 @@
    ```bash
    python -m venv venv
    source venv/bin/activate        # macOS/Linux
-   # venv\Scripts\activate          # Windows
+   # venv\Scripts\activate          # Windows (or use python directly — see note below)
    ```
+
+   > **Windows note:** If PowerShell blocks `activate` due to execution policy, call the venv Python directly:
+   > ```powershell
+   > .\venv\Scripts\python.exe -m pip install -r requirements.txt
+   > .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
+   > ```
 
 3. Install dependencies:
    ```bash
@@ -34,6 +40,7 @@
    ```
    USDA_API_KEY=your_usda_api_key_here
    OPENAI_API_KEY=your_openai_api_key_here
+   DATABASE_URL=sqlite:///./nutrition_pal.db
    ```
 
 6. Run the backend server:
@@ -43,6 +50,7 @@
    - Backend runs at http://localhost:8000
    - Swagger docs available at http://localhost:8000/docs
    - ReDoc available at http://localhost:8000/redoc
+   - The SQLite database (`nutrition_pal.db`) is auto-created on first startup
 
 ## Frontend Setup
 
@@ -81,6 +89,23 @@ npm run dev
 ```
 
 Then open http://localhost:5173 in your browser.
+
+## Running Tests
+
+```bash
+cd backend
+python -m pytest tests/ -v
+```
+
+All tests use mocks — no API keys or network access required to run the test suite.
+
+## Inspecting the Database
+
+```bash
+cd backend
+python show_db.py        # show all saved recipes & nutrition labels
+python show_db.py 2      # show only recipe #2
+```
 
 ## Building for Production
 
