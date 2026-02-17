@@ -1,210 +1,729 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #f5f5f5;
-  color: #333;
-}
-
-.app {
-  min-height: 100vh;
-}
-
-.header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 2rem;
-  text-align: center;
-}
-
-.header h1 {
-  font-size: 1.8rem;
-  margin-bottom: 0.5rem;
-}
-
-.header p {
-  opacity: 0.9;
-  font-size: 1rem;
-}
-
-.container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
-/* Error */
-.error {
-  background: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-}
-
-/* Recipe Input */
-.recipe-input {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.recipe-input label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.recipe-input textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 0.95rem;
-  resize: vertical;
-  margin-bottom: 1rem;
-}
-
-.recipe-input textarea:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
-}
-
-.input-row {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.field {
-  flex: 1;
-}
-
-.field label {
-  font-size: 0.9rem;
-}
-
-.field input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 0.95rem;
-}
-
-.field input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
-}
-
-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-button:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-button.secondary {
-  background: #6c757d;
-}
-
-/* Ingredient Review */
-.ingredient-review {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.ingredient-review h2 {
-  margin-bottom: 0.25rem;
-}
-
-.ingredient-review p {
-  color: #666;
-  margin-bottom: 1rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1rem;
-}
-
-th, td {
-  text-align: left;
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid #eee;
-}
-
-th {
-  font-weight: 600;
-  background: #f9f9f9;
-}
-
-select {
-  width: 100%;
-  padding: 0.4rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
-
-.no-match {
-  color: #c33;
-  font-style: italic;
-}
-
-.button-row {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-}
-
-/* Nutrition Display */
-.nutrition-display {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.nutrition-display h2 {
-  margin-bottom: 1rem;
-}
-
-.nutrition-json {
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 1rem;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  overflow-x: auto;
-  white-space: pre-wrap;
-  margin-bottom: 1rem;
-  max-height: 500px;
-  overflow-y: auto;
-}
+/* ===========================
+   CSS Variables / Theme
+   =========================== */
+   :root {
+    --bg-cream: #fef6f0;
+    --accent-orange: #f5a623;
+    --accent-green: #a8c5a0;
+    --accent-green-dark: #7fb077;
+    --table-orange: #f5d4a0;
+    --table-header-orange: #e8b868;
+    --text-dark: #2d2d2d;
+    --text-gray: #666;
+    --gray-light: #d5d5d5;
+    --gray-medium: #b0b0b0;
+    --white: #ffffff;
+    --border-radius: 12px;
+    --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* ===========================
+     Reset & Base
+     =========================== */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-cream);
+    color: var(--text-dark);
+  }
+  
+  .app {
+    min-height: 100vh;
+  }
+  
+  /* ===========================
+     Header
+     =========================== */
+  .header {
+    background: var(--bg-cream);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .header-logo {
+    height: 48px;
+    width: auto;
+  }
+  
+  .header-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    letter-spacing: -0.5px;
+  }
+  
+  .header-nav {
+    display: flex;
+    gap: 2.5rem;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding-bottom: 4px;
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.2s;
+  }
+  
+  .nav-link:hover {
+    border-bottom-color: var(--accent-orange);
+  }
+  
+  .nav-link.active {
+    border-bottom-color: #2d8e3e;
+  }
+  
+  /* ===========================
+     Container
+     =========================== */
+  .container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  /* ===========================
+     Page Title
+     =========================== */
+  .page-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 1.25rem;
+  }
+  
+  /* ===========================
+     Step Indicator
+     =========================== */
+  .step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .step-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .step-pill {
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: var(--gray-light);
+    color: var(--text-dark);
+    transition: background 0.2s;
+  }
+  
+  .step-pill.active {
+    background: var(--accent-green);
+    color: var(--text-dark);
+  }
+  
+  .step-pill.completed {
+    background: var(--accent-green);
+    opacity: 0.7;
+    color: var(--text-dark);
+  }
+  
+  .step-arrow {
+    font-size: 1.4rem;
+    color: var(--gray-medium);
+    margin: 0 0.25rem;
+  }
+  
+  /* ===========================
+     Error Banner
+     =========================== */
+  .error {
+    background: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  
+  /* ===========================
+     Recipe Input (Step 1)
+     =========================== */
+  .recipe-input {
+    background: transparent;
+    padding: 0;
+  }
+  
+  .recipe-textarea {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 3px dashed var(--accent-orange);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    margin-bottom: 1.25rem;
+    min-height: 180px;
+    background: var(--white);
+    color: var(--text-dark);
+  }
+  
+  .recipe-textarea::placeholder {
+    color: var(--gray-medium);
+  }
+  
+  .recipe-textarea:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+  }
+  
+  .input-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+  }
+  
+  .field {
+    flex: 0 1 280px;
+  }
+  
+  .field input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 3px dashed var(--accent-orange);
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text-dark);
+    text-align: center;
+  }
+  
+  .field input::placeholder {
+    color: var(--gray-medium);
+  }
+  
+  .field input:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+  }
+  
+  .button-center {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .btn-create {
+    background: var(--accent-green);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.85rem 3rem;
+    border-radius: 10px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  
+  .btn-create:hover:not(:disabled) {
+    background: var(--accent-green-dark);
+    transform: translateY(-1px);
+  }
+  
+  .btn-create:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* ===========================
+     Ingredient Review (Step 2)
+     =========================== */
+  .ingredient-review {
+    background: transparent;
+    padding: 0;
+  }
+  
+  .review-table-wrapper {
+    background: var(--table-orange);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  
+  .review-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .review-table thead th {
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    color: var(--text-dark);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+  }
+  
+  .review-table tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.95rem;
+    vertical-align: middle;
+  }
+  
+  .review-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .ingredient-name {
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  
+  .usda-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    background: var(--gray-light);
+    color: var(--text-dark);
+    cursor: pointer;
+    max-width: 200px;
+  }
+  
+  .usda-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-orange);
+  }
+  
+  .no-match {
+    color: #c33;
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+  
+  .status-cell {
+    text-align: center;
+    font-size: 1.4rem;
+  }
+  
+  .status-ok {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .status-err {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .button-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .btn-secondary {
+    background: var(--gray-light);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn-secondary:hover {
+    background: var(--gray-medium);
+  }
+  
+  .btn-primary {
+    background: var(--accent-green);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background: var(--accent-green-dark);
+    transform: translateY(-1px);
+  }
+  
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* ===========================
+     Nutrition Display (Step 3)
+     =========================== */
+  .nutrition-display {
+    background: transparent;
+    padding: 0;
+  }
+  
+  .results-layout {
+    display: flex;
+    gap: 2.5rem;
+    align-items: flex-start;
+    margin-top: 1rem;
+  }
+  
+  .label-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* ---- FDA Nutrition Facts Label ---- */
+  .nutrition-label {
+    border: 2px solid #000;
+    padding: 6px 8px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    width: 380px;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #000;
+  }
+  
+  .nf-title {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 2px;
+    margin-bottom: 2px;
+  }
+  
+  .nf-servings-info {
+    font-size: 0.85rem;
+    padding-bottom: 4px;
+  }
+  
+  .nf-serving-size-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+  }
+  
+  .nf-bold {
+    font-weight: 700;
+  }
+  
+  .nf-thick-bar {
+    height: 8px;
+    background: #000;
+    margin: 2px 0;
+  }
+  
+  .nf-medium-bar {
+    height: 4px;
+    background: #000;
+    margin: 2px 0;
+  }
+  
+  .nf-thin-bar {
+    height: 1px;
+    background: #000;
+    margin: 2px 0;
+  }
+  
+  /* Calories table */
+  .nf-cal-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .nf-cal-table th {
+    font-weight: 400;
+    font-size: 0.75rem;
+    text-align: right;
+    padding: 0 8px 2px;
+    background: transparent;
+    border-bottom: none;
+  }
+  
+  .nf-col-head {
+    text-align: right;
+  }
+  
+  .nf-cal-row td {
+    padding: 0;
+    border-bottom: none;
+  }
+  
+  .nf-cal-label {
+    font-weight: 900;
+    font-size: 1.1rem;
+  }
+  
+  .nf-cal-value {
+    font-weight: 900;
+    font-size: 1.5rem;
+    text-align: right;
+    padding-right: 8px !important;
+  }
+  
+  /* Nutrients table */
+  .nf-nutrients-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .nf-nutrients-table th {
+    font-weight: 400;
+    font-size: 0.7rem;
+    text-align: right;
+    padding: 0 4px 2px;
+    background: transparent;
+    border-bottom: none;
+  }
+  
+  .nf-dv-head {
+    font-weight: 700;
+    text-align: right;
+  }
+  
+  .nf-nutrients-table td {
+    padding: 2px 4px;
+    border-bottom: 1px solid #000;
+    font-size: 0.82rem;
+    text-align: left;
+  }
+  
+  .nf-nutrients-table td:nth-child(2),
+  .nf-nutrients-table td:nth-child(4) {
+    text-align: right;
+    white-space: nowrap;
+  }
+  
+  .nf-dv {
+    text-align: right !important;
+    font-weight: 700;
+  }
+  
+  .nf-bold-row td:first-child {
+    font-weight: 700;
+  }
+  
+  .nf-vitamins-table td {
+    border-bottom: 1px solid #000;
+  }
+  
+  .nf-footnote {
+    font-size: 0.7rem;
+    line-height: 1.3;
+    margin-top: 4px;
+    color: #333;
+  }
+  
+  /* Results actions */
+  .results-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 1rem;
+    flex-shrink: 0;
+  }
+  
+  .btn-start-new {
+    background: var(--accent-orange);
+    color: var(--text-dark);
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  
+  .btn-start-new:hover {
+    background: #e09518;
+    transform: translateY(-1px);
+  }
+  
+  .btn-save-label {
+    background: var(--accent-green);
+    color: var(--text-dark);
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  
+  .btn-save-label:hover {
+    background: var(--accent-green-dark);
+    transform: translateY(-1px);
+  }
+  
+  .view-saved-link {
+    color: #2d6da3;
+    font-size: 1rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .view-saved-link:hover {
+    color: #1a4d7a;
+  }
+  
+  /* Skipped ingredients */
+  .skipped-ingredients {
+    margin-top: 1.5rem;
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: var(--border-radius);
+    padding: 1rem 1.25rem;
+  }
+  
+  .skipped-ingredients h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .skipped-ingredients ul {
+    margin-left: 1.25rem;
+    margin-top: 0.5rem;
+  }
+  
+  .skipped-ingredients li {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Print */
+  .print-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+  
+  .btn-print {
+    background: var(--gray-light);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.75rem 2.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn-print:hover {
+    background: var(--gray-medium);
+  }
+  
+  /* ===========================
+     Print Styles
+     =========================== */
+  @media print {
+    .header,
+    .step-indicator,
+    .results-actions,
+    .button-row,
+    .button-center,
+    .skipped-ingredients,
+    .print-row,
+    .page-title {
+      display: none !important;
+    }
+  
+    .results-layout {
+      justify-content: center;
+    }
+  
+    .nutrition-label {
+      margin: 0 auto;
+    }
+  
+    body {
+      background: #fff;
+    }
+  }
+  
+  /* ===========================
+     Responsive
+     =========================== */
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  
+    .header-nav {
+      gap: 1.5rem;
+    }
+  
+    .results-layout {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .nutrition-label {
+      width: 100%;
+      max-width: 380px;
+    }
+  
+    .input-row {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .field {
+      flex: none;
+      width: 100%;
+      max-width: 300px;
+    }
+  
+    .button-row {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .page-title {
+      font-size: 1.4rem;
+    }
+  }
