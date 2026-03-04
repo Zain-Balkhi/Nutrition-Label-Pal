@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block label_content %}
+{# ── Title ─────────────────────────────────────────────── #}
+<div class="nf-title">Nutrition Facts</div>
+
+{# ── Servings ──────────────────────────────────────────── #}
+<div class="nf-servings-info">
+  <div>{{ servings }} servings per container</div>
+  <div class="nf-serving-size-row">
+    <span>Serving size</span>
+    <span>{{ serving_size }}</span>
+  </div>
+</div>
+
+{# ── Calories ──────────────────────────────────────────── #}
+<div class="nf-thick-bar"></div>
+<div class="nf-calories-section">
+  <div class="nf-calories-header">Amount per serving</div>
+  <div class="nf-calories-row">
+    <span class="nf-calories-label">Calories</span>
+    <span class="nf-calories-value">{{ calories_amount }}</span>
+  </div>
+</div>
+
+{# ── Main nutrients ───────────────────────────────────── #}
+<div class="nf-medium-bar"></div>
+<table class="nf-table">
+  <tbody>
+    {# %DV header row #}
+    <tr class="nf-no-border">
+      <td colspan="2"></td>
+      <td class="nf-dv" style="font-size:6pt;">% Daily Value*</td>
+    </tr>
+
+    {# Total Fat #}
+    <tr>
+      <td class="nf-name"><span class="nf-bold">Total Fat</span></td>
+      <td class="nf-amount">{{ total_fat.display or total_fat.amount_str }}</td>
+      <td class="nf-dv">{{ total_fat.dv_str }}</td>
+    </tr>
+    {# Saturated Fat #}
+    <tr>
+      <td class="nf-name nf-indent">Saturated Fat</td>
+      <td class="nf-amount">{{ saturated_fat.display or saturated_fat.amount_str }}</td>
+      <td class="nf-dv">{{ saturated_fat.dv_str }}</td>
+    </tr>
+    {# Trans Fat #}
+    <tr>
+      <td class="nf-name nf-indent"><i>Trans</i> Fat</td>
+      <td class="nf-amount">{{ trans_fat.display or trans_fat.amount_str }}</td>
+      <td class="nf-dv"></td>
+    </tr>
+
+    {# Cholesterol #}
+    <tr>
+      <td class="nf-name"><span class="nf-bold">Cholesterol</span></td>
+      <td class="nf-amount">{{ cholesterol.display or cholesterol.amount_str }}</td>
+      <td class="nf-dv">{{ cholesterol.dv_str }}</td>
+    </tr>
+
+    {# Sodium #}
+    <tr>
+      <td class="nf-name"><span class="nf-bold">Sodium</span></td>
+      <td class="nf-amount">{{ sodium.display or sodium.amount_str }}</td>
+      <td class="nf-dv">{{ sodium.dv_str }}</td>
+    </tr>
+
+    {# Total Carbohydrate #}
+    <tr>
+      <td class="nf-name"><span class="nf-bold">Total Carbohydrate</span></td>
+      <td class="nf-amount">{{ total_carb.display or total_carb.amount_str }}</td>
+      <td class="nf-dv">{{ total_carb.dv_str }}</td>
+    </tr>
+    {# Dietary Fiber #}
+    <tr>
+      <td class="nf-name nf-indent">Dietary Fiber</td>
+      <td class="nf-amount">{{ dietary_fiber.display or dietary_fiber.amount_str }}</td>
+      <td class="nf-dv">{{ dietary_fiber.dv_str }}</td>
+    </tr>
+    {# Total Sugars #}
+    <tr>
+      <td class="nf-name nf-indent">Total Sugars</td>
+      <td class="nf-amount">{{ total_sugars.display or total_sugars.amount_str }}</td>
+      <td class="nf-dv"></td>
+    </tr>
+
+    {# Protein #}
+    <tr>
+      <td class="nf-name"><span class="nf-bold">Protein</span></td>
+      <td class="nf-amount">{{ protein.display or protein.amount_str }}</td>
+      <td class="nf-dv"></td>
+    </tr>
+  </tbody>
+</table>
+
+{# ── Vitamins & Minerals ──────────────────────────────── #}
+<div class="nf-thick-bar"></div>
+<table class="nf-table nf-vitamins-table">
+  <tbody>
+    <tr>
+      <td class="nf-name">Vitamin D</td>
+      <td class="nf-amount">{{ vitamin_d.display or vitamin_d.amount_str }}</td>
+      <td class="nf-dv">{{ vitamin_d.dv_str }}</td>
+    </tr>
+    <tr>
+      <td class="nf-name">Calcium</td>
+      <td class="nf-amount">{{ calcium.display or calcium.amount_str }}</td>
+      <td class="nf-dv">{{ calcium.dv_str }}</td>
+    </tr>
+    <tr>
+      <td class="nf-name">Iron</td>
+      <td class="nf-amount">{{ iron.display or iron.amount_str }}</td>
+      <td class="nf-dv">{{ iron.dv_str }}</td>
+    </tr>
+    <tr>
+      <td class="nf-name">Potassium</td>
+      <td class="nf-amount">{{ potassium.display or potassium.amount_str }}</td>
+      <td class="nf-dv">{{ potassium.dv_str }}</td>
+    </tr>
+  </tbody>
+</table>
+
+{# ── Footnote ──────────────────────────────────────────── #}
+<div class="nf-thin-bar"></div>
+<p class="nf-footnote">
+  * The % Daily Value (DV) tells you how much a nutrient in a
+  serving of food contributes to a daily diet. 2,000 calories
+  a day is used for general nutrition advice.
+</p>
+{% endblock %}

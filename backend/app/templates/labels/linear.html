@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+  .nf-linear-content {
+    font-size: 7pt;
+    line-height: 1.4;
+  }
+
+  .nf-linear-title {
+    font-size: 9pt;
+    font-weight: 900;
+    margin-bottom: 1pt;
+  }
+
+  .nf-linear-servings {
+    font-size: 7pt;
+    margin-bottom: 2pt;
+  }
+
+  .nf-linear-nutrients {
+    font-size: 7pt;
+    line-height: 1.5;
+  }
+
+  .nf-linear-nutrients .nf-lbold {
+    font-weight: 700;
+  }
+
+  .nf-linear-footnote {
+    font-size: 5pt;
+    line-height: 1.2;
+    margin-top: 2pt;
+  }
+{% endblock %}
+
+{% block label_content %}
+<div class="nf-linear-content">
+  <div class="nf-linear-title">Nutrition Facts</div>
+  <div class="nf-linear-servings">
+    <span class="nf-bold">Serv. size</span> {{ serving_size }},
+    {{ servings }} servings per container
+  </div>
+  <div class="nf-thin-bar"></div>
+  <div class="nf-linear-nutrients">
+    {#- Comma-separated nutrient list with abbreviated names -#}
+    <span class="nf-lbold">Calories</span> {{ calories_amount }},
+    <span class="nf-lbold">Total Fat</span> {{ total_fat.display or total_fat.amount_str }}{% if total_fat.dv_str %} ({{ total_fat.dv_str }} DV){% endif %},
+    Sat. Fat {{ saturated_fat.display or saturated_fat.amount_str }}{% if saturated_fat.dv_str %} ({{ saturated_fat.dv_str }} DV){% endif %},
+    <i>Trans</i> Fat {{ trans_fat.display or trans_fat.amount_str }},
+    <span class="nf-lbold">Chol.</span> {{ cholesterol.display or cholesterol.amount_str }}{% if cholesterol.dv_str %} ({{ cholesterol.dv_str }} DV){% endif %},
+    <span class="nf-lbold">Sodium</span> {{ sodium.display or sodium.amount_str }}{% if sodium.dv_str %} ({{ sodium.dv_str }} DV){% endif %},
+    <span class="nf-lbold">Tot. Carb.</span> {{ total_carb.display or total_carb.amount_str }}{% if total_carb.dv_str %} ({{ total_carb.dv_str }} DV){% endif %},
+    Dietary Fiber {{ dietary_fiber.display or dietary_fiber.amount_str }}{% if dietary_fiber.dv_str %} ({{ dietary_fiber.dv_str }} DV){% endif %},
+    Total Sugars {{ total_sugars.display or total_sugars.amount_str }},
+    <span class="nf-lbold">Protein</span> {{ protein.display or protein.amount_str }},
+    Vitamin D {{ vitamin_d.display or vitamin_d.amount_str }}{% if vitamin_d.dv_str %} ({{ vitamin_d.dv_str }} DV){% endif %},
+    Calcium {{ calcium.display or calcium.amount_str }}{% if calcium.dv_str %} ({{ calcium.dv_str }} DV){% endif %},
+    Iron {{ iron.display or iron.amount_str }}{% if iron.dv_str %} ({{ iron.dv_str }} DV){% endif %},
+    Potassium {{ potassium.display or potassium.amount_str }}{% if potassium.dv_str %} ({{ potassium.dv_str }} DV){% endif %}
+  </div>
+  <div class="nf-thin-bar"></div>
+  <p class="nf-linear-footnote">
+    * % Daily Value (DV) based on a 2,000 calorie diet.
+  </p>
+</div>
+{% endblock %}

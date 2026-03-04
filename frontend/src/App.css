@@ -1,126 +1,1209 @@
-.App {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+/* ===========================
+   CSS Variables / Theme
+   =========================== */
+   :root {
+    --bg-cream: #fef6f0;
+    --accent-orange: #f5a623;
+    --accent-green: #a8c5a0;
+    --accent-green-dark: #7fb077;
+    --table-orange: #f5d4a0;
+    --table-header-orange: #e8b868;
+    --text-dark: #2d2d2d;
+    --text-gray: #666;
+    --gray-light: #d5d5d5;
+    --gray-medium: #b0b0b0;
+    --white: #ffffff;
+    --border-radius: 12px;
+    --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* ===========================
+     Reset & Base
+     =========================== */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-cream);
+    color: var(--text-dark);
+  }
+  
+  .app {
+    min-height: 100vh;
+  }
+  
+  /* ===========================
+     Header
+     =========================== */
+  .header {
+    background: var(--bg-cream);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .header-logo {
+    height: 70px;
+    width: auto;
+  }
+  
+  .header-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    letter-spacing: -0.5px;
+  }
+  
+  .header-nav {
+    display: flex;
+    gap: 2.5rem;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding-bottom: 4px;
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.2s;
+  }
+  
+  .nav-link:hover {
+    border-bottom-color: var(--accent-orange);
+  }
+  
+  .nav-link.active {
+    border-bottom-color: var(--text-dark);
+  }
 
-.App-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
-  color: white;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  /* Clickable logo/title button */
+  .header-home-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+  }
 
-.App-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-}
+  /* Button-style nav links (Login, Logout) — must match <a> nav-link exactly */
+  .nav-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0 0 4px 0;
+    line-height: inherit;
+    vertical-align: baseline;
+  }
 
-.App-header p {
-  font-size: 1.2rem;
-  opacity: 0.9;
-}
+  /* ===========================
+     Container
+     =========================== */
+  .container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  /* ===========================
+     Page Title
+     =========================== */
+  .page-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 1.25rem;
+  }
+  
+  /* ===========================
+     Step Indicator
+     =========================== */
+  .step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .step-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .step-pill {
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: var(--gray-light);
+    color: var(--text-dark);
+    transition: background 0.2s;
+  }
+  
+  .step-pill.active {
+    background: var(--accent-green);
+    color: var(--text-dark);
+  }
+  
+  .step-pill.completed {
+    background: var(--accent-green);
+    opacity: 0.7;
+    color: var(--text-dark);
+  }
+  
+  .step-arrow {
+    font-size: 1.4rem;
+    color: var(--gray-medium);
+    margin: 0 0.25rem;
+  }
+  
+  /* ===========================
+     Error Banner
+     =========================== */
+  .error {
+    background: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  
+  /* ===========================
+     Recipe Input (Step 1)
+     =========================== */
+  .recipe-input {
+    background: transparent;
+    padding: 0;
+  }
+  
+  .recipe-textarea {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 3px dashed var(--accent-orange);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    margin-bottom: 1.25rem;
+    min-height: 180px;
+    background: var(--white);
+    color: var(--text-dark);
+  }
+  
+  .recipe-textarea::placeholder {
+    color: var(--gray-medium);
+  }
+  
+  .recipe-textarea:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+  }
+  
+  .input-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+  }
+  
+  .field {
+    flex: 0 1 280px;
+  }
+  
+  .field input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 3px dashed var(--accent-orange);
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text-dark);
+    text-align: center;
+  }
+  
+  .field input::placeholder {
+    color: var(--gray-medium);
+  }
+  
+  .field input:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+  }
+  
+  .button-center {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .btn-create {
+    background: var(--accent-green);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.85rem 3rem;
+    border-radius: 10px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  
+  .btn-create:hover:not(:disabled) {
+    background: var(--accent-green-dark);
+    transform: translateY(-1px);
+  }
+  
+  .btn-create:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* ===========================
+     Ingredient Review (Step 2)
+     =========================== */
+  .ingredient-review {
+    background: transparent;
+    padding: 0;
+  }
+  
+  .review-table-wrapper {
+    background: var(--table-orange);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  
+  .review-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .review-table thead th {
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    color: var(--text-dark);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+  }
+  
+  .review-table tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.95rem;
+    vertical-align: middle;
+  }
+  
+  .review-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .ingredient-name {
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  
+  .usda-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    background: var(--gray-light);
+    color: var(--text-dark);
+    cursor: pointer;
+    max-width: 200px;
+  }
+  
+  .usda-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-orange);
+  }
+  
+  .no-match {
+    color: #c33;
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+  
+  .status-cell {
+    text-align: center;
+    font-size: 1.4rem;
+  }
+  
+  .status-ok {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .status-err {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.status {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  display: inline-block;
-}
+  .compliance-notice {
+    margin-bottom: 1rem;
+    padding: 0.6rem 1rem;
+    background: #fff3e0;
+    border-left: 4px solid #fb8c00;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
 
-.status-ok {
-  color: #4ade80;
-  font-weight: bold;
-  text-transform: uppercase;
-}
+  .excluded-warning {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
 
-.App-main {
-  flex: 1;
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .excluded-warning ul {
+    margin-top: 0.4rem;
+    margin-left: 1.25rem;
+  }
 
-.container {
-  max-width: 800px;
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+  .excluded-warning li {
+    margin-bottom: 0.2rem;
+  }
 
-.container h2 {
-  color: #667eea;
-  margin-bottom: 1rem;
-}
+  .button-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .btn-secondary {
+    background: var(--gray-light);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn-secondary:hover {
+    background: var(--gray-medium);
+  }
+  
+  .btn-primary {
+    background: var(--accent-green);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background: var(--accent-green-dark);
+    transform: translateY(-1px);
+  }
+  
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* ===========================
+     Nutrition Display (Step 3)
+     =========================== */
+  .nutrition-display {
+    background: transparent;
+    padding: 0;
+  }
+  
+  .results-layout {
+    display: flex;
+    gap: 2.5rem;
+    align-items: flex-start;
+    margin-top: 1rem;
+  }
+  
+  .label-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* ---- FDA Nutrition Facts Label ---- */
+  .nutrition-label {
+    border: 2px solid #000;
+    padding: 6px 8px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    width: 380px;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #000;
+  }
+  
+  .nf-title {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 2px;
+    margin-bottom: 2px;
+  }
+  
+  .nf-servings-info {
+    font-size: 0.85rem;
+    padding-bottom: 4px;
+  }
+  
+  .nf-serving-size-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+  }
+  
+  .nf-bold {
+    font-weight: 700;
+  }
+  
+  .nf-thick-bar {
+    height: 8px;
+    background: #000;
+    margin: 2px 0;
+  }
+  
+  .nf-medium-bar {
+    height: 4px;
+    background: #000;
+    margin: 2px 0;
+  }
+  
+  .nf-thin-bar {
+    height: 1px;
+    background: #000;
+    margin: 2px 0;
+  }
+  
+  /* Calories table */
+  .nf-cal-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .nf-cal-table th {
+    font-weight: 400;
+    font-size: 0.75rem;
+    text-align: right;
+    padding: 0 8px 2px;
+    background: transparent;
+    border-bottom: none;
+  }
+  
+  .nf-col-head {
+    text-align: right;
+  }
+  
+  .nf-cal-row td {
+    padding: 0;
+    border-bottom: none;
+  }
+  
+  .nf-cal-label {
+    font-weight: 900;
+    font-size: 1.1rem;
+  }
+  
+  .nf-cal-value {
+    font-weight: 900;
+    font-size: 1.5rem;
+    text-align: right;
+    padding-right: 8px !important;
+  }
+  
+  /* Nutrients table */
+  .nf-nutrients-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .nf-nutrients-table th {
+    font-weight: 400;
+    font-size: 0.7rem;
+    text-align: right;
+    padding: 0 4px 2px;
+    background: transparent;
+    border-bottom: none;
+  }
+  
+  .nf-dv-head {
+    font-weight: 700;
+    text-align: right;
+  }
+  
+  .nf-nutrients-table td {
+    padding: 2px 4px;
+    border-bottom: 1px solid #000;
+    font-size: 0.82rem;
+    text-align: left;
+  }
+  
+  .nf-nutrients-table td:nth-child(2),
+  .nf-nutrients-table td:nth-child(4) {
+    text-align: right;
+    white-space: nowrap;
+  }
+  
+  .nf-dv {
+    text-align: right !important;
+    font-weight: 700;
+  }
+  
+  .nf-bold-row td:first-child {
+    font-weight: 700;
+  }
+  
+  .nf-vitamins-table td {
+    border-bottom: 1px solid #000;
+  }
+  
+  .nf-footnote {
+    font-size: 0.7rem;
+    line-height: 1.3;
+    margin-top: 4px;
+    color: #333;
+  }
+  
+  /* Results actions */
+  .results-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 1rem;
+    flex-shrink: 0;
+  }
+  
+  .btn-start-new {
+    background: var(--accent-orange);
+    color: var(--text-dark);
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  
+  .btn-start-new:hover {
+    background: #e09518;
+    transform: translateY(-1px);
+  }
+  
+  .btn-save-label {
+    background: var(--accent-green);
+    color: var(--text-dark);
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  
+  .btn-save-label:hover {
+    background: var(--accent-green-dark);
+    transform: translateY(-1px);
+  }
+  
+  .view-saved-link {
+    color: #2d6da3;
+    font-size: 1rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  .view-saved-link:hover {
+    color: #1a4d7a;
+  }
+  
+  /* Skipped ingredients */
+  .skipped-ingredients {
+    margin-top: 1.5rem;
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: var(--border-radius);
+    padding: 1rem 1.25rem;
+  }
+  
+  .skipped-ingredients h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .skipped-ingredients ul {
+    margin-left: 1.25rem;
+    margin-top: 0.5rem;
+  }
+  
+  .skipped-ingredients li {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Print */
+  .print-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+  
+  .btn-print {
+    background: var(--gray-light);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.75rem 2.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn-print:hover {
+    background: var(--gray-medium);
+  }
 
-.container p {
-  line-height: 1.6;
-  color: #4b5563;
-  margin-bottom: 1.5rem;
-}
+  /* Download PDF button */
+  .btn-download-pdf {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
 
-.input-group {
-  margin-bottom: 1rem;
-}
+  .btn-download-pdf:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
 
-.text-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-family: inherit;
-  resize: vertical;
-  transition: border-color 0.2s;
-}
+  /* ===========================
+     Format Selector
+     =========================== */
+  .label-preview-wrapper {
+    flex: 1;
+  }
 
-.text-input:focus {
-  outline: none;
-  border-color: #667eea;
-}
+  .format-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
 
-.generate-btn {
-  width: 100%;
-  padding: 0.875rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
+  .format-card {
+    flex: 1;
+    min-width: 120px;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
 
-.generate-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
+  .format-card:hover {
+    border-color: #90caf9;
+    background: #f0f7ff;
+  }
 
-.generate-btn:active {
-  transform: translateY(0);
-}
+  .format-card-selected {
+    border-color: #2563eb;
+    background: #eff6ff;
+  }
 
-.message {
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
-  text-align: center;
-}
+  .format-card-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #222;
+  }
 
-.message.success {
-  background-color: #d1fae5;
-  color: #065f46;
-  border: 1px solid #6ee7b7;
-}
+  .format-card-desc {
+    font-size: 0.7rem;
+    color: #888;
+  }
 
-.message.error {
-  background-color: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fca5a5;
-}
+  /* ===========================
+     Label Format Variants
+     =========================== */
+
+  /* Vertical (single column) */
+  .label-format-vertical .nutrition-label {
+    width: 340px;
+  }
+
+  .nf-single-col td:nth-child(2) {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .nf-single-col .nf-amt {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .nf-calories-section {
+    margin-bottom: 0;
+  }
+
+  .nf-calories-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .nf-calories-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .nf-calories-label {
+    font-weight: 900;
+    font-size: 1.1rem;
+  }
+
+  .nf-calories-value {
+    font-weight: 900;
+    font-size: 1.5rem;
+  }
+
+  /* Tabular (horizontal) */
+  .label-format-tabular .nutrition-label {
+    width: 520px;
+  }
+
+  .nf-tabular-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+  }
+
+  .nf-tabular-servings {
+    font-size: 0.75rem;
+    text-align: right;
+    line-height: 1.3;
+  }
+
+  .nf-tabular-cal-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .nf-tabular-cal-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .nf-tabular-vitamins {
+    font-size: 0.8rem;
+    padding: 2px 0;
+  }
+
+  .nf-htable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .nf-htable td, .nf-htable th {
+    font-size: 0.78rem;
+    line-height: 1.2;
+    padding: 2px 4px;
+    vertical-align: top;
+    border-bottom: 1px solid #000;
+  }
+
+  .nf-htable .nf-hcol {
+    border-left: 1px solid #000;
+    padding-left: 6px;
+  }
+
+  .nf-htable .nf-hname {
+    font-weight: 700;
+  }
+
+  .nf-htable .nf-hsub {
+    padding-left: 10px;
+  }
+
+  .nf-htable .nf-hdv {
+    text-align: right;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Linear */
+  .label-format-linear .nutrition-label {
+    width: 420px;
+  }
+
+  .nf-linear-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin-bottom: 2px;
+  }
+
+  .nf-linear-servings {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+  }
+
+  .nf-linear-nutrients {
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+
+  /* Dual column — reuses existing dual-column styles from the old label */
+  .label-format-dual_column .nutrition-label {
+    width: 400px;
+  }
+
+  /* ===========================
+     Modal
+     =========================== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .modal-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: var(--text-dark);
+  }
+
+  .modal-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--text-dark);
+  }
+
+  .modal-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--gray-light);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-input:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  /* ===========================
+     Dashboard
+     =========================== */
+  .dashboard {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .dashboard-loading {
+    text-align: center;
+    color: var(--text-gray);
+    padding: 3rem 0;
+  }
+
+  .dashboard-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-gray);
+  }
+
+  .dashboard-empty p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .recipe-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+
+  .recipe-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .recipe-card-new {
+    border: 3px dashed var(--accent-orange);
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+  }
+
+  .recipe-card-new:hover {
+    background: rgba(245, 166, 35, 0.06);
+  }
+
+  .recipe-card-new .recipe-card-title {
+    color: var(--accent-orange);
+  }
+
+  .recipe-card-new-icon {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--accent-orange);
+    line-height: 1;
+  }
+
+  .recipe-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+  }
+
+  .recipe-card-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    margin-bottom: 0.5rem;
+  }
+
+  .recipe-card-date {
+    font-size: 0.8rem;
+    color: var(--gray-medium);
+  }
+
+  .recipe-card-view {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    background: var(--accent-green);
+    border: none;
+    color: var(--text-dark);
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .recipe-card-view:hover {
+    background: var(--accent-green-dark);
+  }
+
+  /* ===========================
+     Recipe Detail
+     =========================== */
+  .recipe-detail {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .btn-back-link {
+    background: none;
+    border: none;
+    color: #2d6da3;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .btn-back-link:hover {
+    color: #1a4d7a;
+    text-decoration: underline;
+  }
+
+  .detail-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .btn-danger {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: #c0392b;
+  }
+
+  .btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ===========================
+     Print Styles
+     =========================== */
+  @media print {
+    .header,
+    .step-indicator,
+    .results-actions,
+    .button-row,
+    .button-center,
+    .skipped-ingredients,
+    .print-row,
+    .page-title {
+      display: none !important;
+    }
+  
+    .results-layout {
+      justify-content: center;
+    }
+  
+    .nutrition-label {
+      margin: 0 auto;
+    }
+  
+    body {
+      background: #fff;
+    }
+  }
+  
+  /* ===========================
+     Responsive
+     =========================== */
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  
+    .header-nav {
+      gap: 1.5rem;
+    }
+  
+    .results-layout {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .nutrition-label {
+      width: 100%;
+      max-width: 380px;
+    }
+  
+    .input-row {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .field {
+      flex: none;
+      width: 100%;
+      max-width: 300px;
+    }
+  
+    .button-row {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .page-title {
+      font-size: 1.4rem;
+    }
+  }

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+  .nf-tabular-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1pt;
+  }
+
+  .nf-tabular-header .nf-title {
+    margin-bottom: 0;
+  }
+
+  .nf-tabular-servings {
+    font-size: 7pt;
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  .nf-tabular-cal-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4pt;
+    font-size: 8pt;
+    margin-bottom: 0;
+  }
+
+  .nf-tabular-cal-row .nf-calories-label {
+    font-size: 8pt;
+    font-weight: 900;
+  }
+
+  .nf-tabular-cal-row .nf-calories-value {
+    font-size: 8pt;
+    font-weight: 900;
+  }
+
+  .nf-tabular-cal-row .nf-cal-header {
+    font-size: 6pt;
+    font-weight: 700;
+  }
+
+  /* Horizontal nutrient table */
+  .nf-htable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .nf-htable td, .nf-htable th {
+    font-size: 7pt;
+    line-height: 1.1;
+    padding: 1pt 3pt;
+    vertical-align: top;
+  }
+
+  .nf-htable .nf-hcol {
+    border-left: 0.5pt solid #000;
+  }
+
+  .nf-htable .nf-hname {
+    font-weight: 700;
+  }
+
+  .nf-htable .nf-hsub {
+    padding-left: 8pt;
+  }
+
+  .nf-htable .nf-hdv {
+    text-align: right;
+    font-weight: 700;
+  }
+
+  .nf-dv-header-row td {
+    font-size: 6pt;
+    font-weight: 700;
+    text-align: right;
+    border-bottom: 0.5pt solid #000;
+  }
+{% endblock %}
+
+{% block label_content %}
+{# ── Header row: title + servings ──────────────────────── #}
+<div class="nf-tabular-header">
+  <div class="nf-title" style="font-size:10pt;">Nutrition Facts</div>
+  <div class="nf-tabular-servings">
+    {{ servings }} servings per container<br>
+    <span class="nf-bold">Serv. size</span> {{ serving_size }}
+  </div>
+</div>
+
+{# ── Calories ──────────────────────────────────────────── #}
+<div class="nf-thick-bar"></div>
+<div class="nf-tabular-cal-row">
+  <span class="nf-cal-header">Amt per serving</span>
+  <span class="nf-calories-label">Calories</span>
+  <span class="nf-calories-value">{{ calories_amount }}</span>
+</div>
+
+{# ── Horizontal nutrient table ─────────────────────────── #}
+<div class="nf-medium-bar"></div>
+<table class="nf-htable">
+  <tbody>
+    {# %DV header #}
+    <tr class="nf-dv-header-row">
+      <td></td><td></td><td style="text-align:right; font-size:6pt;">% DV*</td>
+      <td class="nf-hcol"></td><td></td><td style="text-align:right; font-size:6pt;">% DV*</td>
+      <td class="nf-hcol"></td><td></td><td style="text-align:right; font-size:6pt;">% DV*</td>
+    </tr>
+
+    {# Row 1: Total Fat | Cholesterol | Tot. Carb. #}
+    <tr>
+      <td class="nf-hname">Total Fat</td>
+      <td>{{ total_fat.display or total_fat.amount_str }}</td>
+      <td class="nf-hdv">{{ total_fat.dv_str }}</td>
+      <td class="nf-hcol nf-hname">Cholesterol</td>
+      <td>{{ cholesterol.display or cholesterol.amount_str }}</td>
+      <td class="nf-hdv">{{ cholesterol.dv_str }}</td>
+      <td class="nf-hcol nf-hname">Tot. Carb.</td>
+      <td>{{ total_carb.display or total_carb.amount_str }}</td>
+      <td class="nf-hdv">{{ total_carb.dv_str }}</td>
+    </tr>
+
+    {# Row 2: Sat. Fat | Sodium | Dietary Fiber #}
+    <tr>
+      <td class="nf-hsub">Sat. Fat</td>
+      <td>{{ saturated_fat.display or saturated_fat.amount_str }}</td>
+      <td class="nf-hdv">{{ saturated_fat.dv_str }}</td>
+      <td class="nf-hcol nf-hname">Sodium</td>
+      <td>{{ sodium.display or sodium.amount_str }}</td>
+      <td class="nf-hdv">{{ sodium.dv_str }}</td>
+      <td class="nf-hcol nf-hsub">Dietary Fiber</td>
+      <td>{{ dietary_fiber.display or dietary_fiber.amount_str }}</td>
+      <td class="nf-hdv">{{ dietary_fiber.dv_str }}</td>
+    </tr>
+
+    {# Row 3: Trans Fat | Protein | Total Sugars #}
+    <tr>
+      <td class="nf-hsub"><i>Trans</i> Fat</td>
+      <td>{{ trans_fat.display or trans_fat.amount_str }}</td>
+      <td class="nf-hdv"></td>
+      <td class="nf-hcol nf-hname">Protein</td>
+      <td>{{ protein.display or protein.amount_str }}</td>
+      <td class="nf-hdv"></td>
+      <td class="nf-hcol nf-hsub">Total Sugars</td>
+      <td>{{ total_sugars.display or total_sugars.amount_str }}</td>
+      <td class="nf-hdv"></td>
+    </tr>
+  </tbody>
+</table>
+
+{# ── Vitamins & Minerals ──────────────────────────────── #}
+<div class="nf-thick-bar"></div>
+<table class="nf-htable">
+  <tbody>
+    <tr>
+      <td>Vitamin D {{ vitamin_d.display or vitamin_d.amount_str }}</td>
+      <td class="nf-hdv">{{ vitamin_d.dv_str }}</td>
+      <td class="nf-hcol">Calcium {{ calcium.display or calcium.amount_str }}</td>
+      <td class="nf-hdv">{{ calcium.dv_str }}</td>
+      <td class="nf-hcol">Iron {{ iron.display or iron.amount_str }}</td>
+      <td class="nf-hdv">{{ iron.dv_str }}</td>
+      <td class="nf-hcol">Potassium {{ potassium.display or potassium.amount_str }}</td>
+      <td class="nf-hdv">{{ potassium.dv_str }}</td>
+    </tr>
+  </tbody>
+</table>
+
+{# ── Footnote ──────────────────────────────────────────── #}
+{% if show_footnote is not defined or show_footnote %}
+<div class="nf-thin-bar"></div>
+<p class="nf-footnote">
+  * The % Daily Value (DV) tells you how much a nutrient in a
+  serving of food contributes to a daily diet. 2,000 calories
+  a day is used for general nutrition advice.
+</p>
+{% endif %}
+{% endblock %}
