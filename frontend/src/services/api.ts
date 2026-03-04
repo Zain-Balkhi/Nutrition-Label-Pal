@@ -9,6 +9,8 @@ import type {
   SaveRecipeRequest,
   TokenResponse,
   UpdateRecipeRequest,
+  UserProfile,
+  UserProfileUpdated,
 } from '../types';
 
 const API_BASE = '/api';
@@ -93,6 +95,40 @@ export const api = {
           throw new Error(err.detail ?? 'Login failed');
         }
         return r.json();
+      }),
+  },
+
+  users: {
+    getMe: (): Promise<UserProfile> =>
+      fetch(`${API_BASE}/users/me`, {
+        headers: headers(),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to load profile');
+        }
+        return r.json();
+      }),
+
+    updateMe: (full_name: string): Promise<UserProfileUpdated> =>
+      fetch(`${API_BASE}/users/me`, {
+        method: 'PUT',
+        headers: headers(),
+        body: JSON.stringify({ full_name }),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to update profile');
+        }
+        return r.json();
+      }),
+
+    deleteMe: (): Promise<void> =>
+      fetch(`${API_BASE}/users/me`, {
+        method: 'DELETE',
+        headers: headers(),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to delete account');
       }),
   },
 

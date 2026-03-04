@@ -8,6 +8,7 @@ import RegisterPage from './components/RegisterPage';
 import Dashboard from './components/Dashboard';
 import RecipeDetail from './components/RecipeDetail';
 import SaveLabelModal from './components/SaveLabelModal';
+import AccountPage from './components/AccountPage';
 import { api } from './services/api';
 import type {
   AuthUser,
@@ -18,7 +19,7 @@ import type {
 } from './types';
 
 type AppStep = 'input' | 'review' | 'results';
-type Page = 'app' | 'login' | 'register' | 'dashboard' | 'recipe-detail';
+type Page = 'app' | 'login' | 'register' | 'dashboard' | 'recipe-detail' | 'account';
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
@@ -138,6 +139,25 @@ export default function App() {
     }
     setViewingRecipeId(null);
     navigateTo('dashboard');
+  }
+
+  function handleAccountClick() {
+    if (!currentUser) {
+      navigateTo('login');
+      return;
+    }
+    navigateTo('account');
+  }
+
+  function handleUserUpdated(user: AuthUser) {
+    setCurrentUser(user);
+  }
+
+  function handleAccountDeleted() {
+    setCurrentUser(null);
+    setPage('app');
+    setStep('input');
+    history.pushState({ page: 'app', step: 'input' }, '');
   }
 
   const handleParse = async (rawText: string, rawServings: string, rawServingSize: string) => {
@@ -340,6 +360,7 @@ export default function App() {
     onLogout: handleLogout,
     onLogoClick: () => { setPage('app'); handleStartOver(); },
     onDashboardClick: handleDashboardClick,
+    onAccountClick: handleAccountClick,
   };
 
   // ── Page rendering ────────────────────────────────────────────────
@@ -396,6 +417,23 @@ export default function App() {
             onBack={() => navigateTo('dashboard')}
             onEdit={handleEditRecipe}
             onDelete={handleRecipeDeleted}
+          />
+        </main>
+      </div>
+    );
+  }
+
+  if (page === 'account' && currentUser) {
+    return (
+      <div className="app">
+        <Header activePage="account" {...headerProps} />
+        <main className="container">
+          <AccountPage
+            currentUser={currentUser}
+            onUserUpdated={handleUserUpdated}
+            onLogout={handleLogout}
+            onAccountDeleted={handleAccountDeleted}
+            onDashboardClick={handleDashboardClick}
           />
         </main>
       </div>

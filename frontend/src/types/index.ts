@@ -56,6 +56,19 @@ export interface AuthUser {
   full_name: string;
 }
 
+export interface UserProfile {
+  id: number;
+  email: string;
+  full_name: string;
+  created_at: string;
+}
+
+export interface UserProfileUpdated {
+  id: number;
+  email: string;
+  full_name: string;
+}
+
 export interface TokenResponse {
   access_token: string;
   token_type: string;

@@ -104,6 +104,30 @@ class UserOut(BaseModel):
     full_name: str
 
 
+class UserProfile(BaseModel):
+    id: int
+    email: str
+    full_name: str
+    created_at: str
+
+
+class UpdateUserRequest(BaseModel):
+    full_name: str
+
+    @field_validator("full_name")
+    @classmethod
+    def full_name_not_empty(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Full name cannot be empty")
+        return v.strip()
+
+
+class UserProfileUpdated(BaseModel):
+    id: int
+    email: str
+    full_name: str
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
