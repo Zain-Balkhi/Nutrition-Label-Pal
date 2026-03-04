@@ -11,7 +11,9 @@ import json
 from datetime import datetime, timezone
 
 from sqlalchemy import (
+    Boolean,
     Column,
+    Index,
     Integer,
     Float,
     String,
@@ -36,6 +38,26 @@ class Base(DeclarativeBase):
 
 
 # ── Models ─────────────────────────────────────────────────────────────────
+class UserRow(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String(255), nullable=False, unique=True)
+    hashed_password = Column(String(255), nullable=False)
+    full_name = Column(String(255), nullable=False)
+    is_active = Column(Boolean, nullable=False, default=True)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc))
+
+    # Future extensibility: add nullable columns here (company, phone, avatar_url, etc.)
+    # Future relationships: recipes (owner_id FK on recipes table — Phase 3)
+
+    __table_args__ = (
+        Index("ix_users_email", "email"),
+    )
+
+
 class RecipeRow(Base):
     __tablename__ = "recipes"
 

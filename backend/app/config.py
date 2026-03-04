@@ -9,6 +9,11 @@ class Settings(BaseSettings):
 
     USDA_BASE_URL: str = "https://api.nal.usda.gov/fdc/v1"
 
+    # JWT auth settings
+    SECRET_KEY: str = "change-me-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_HOURS: int = 24
+
     # USDA nutrient ID mapping
     NUTRIENT_IDS: dict[str, int] = {
         "energy": 1008,

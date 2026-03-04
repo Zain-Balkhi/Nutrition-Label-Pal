@@ -88,7 +88,33 @@
   .nav-link.active {
     border-bottom-color: #2d8e3e;
   }
-  
+
+  /* Button-style nav links (Login, Logout) */
+  .nav-btn,
+  .nav-logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* Authenticated user display in header */
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .header-username {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   /* ===========================
      Container
      =========================== */
