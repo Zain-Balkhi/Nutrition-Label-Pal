@@ -1,7 +1,42 @@
 import os
+import platform
+import subprocess
 from dataclasses import dataclass
 
 from jinja2 import Environment, FileSystemLoader
+
+
+def _ensure_homebrew_lib_path() -> None:
+    """On macOS, ensure Homebrew's lib dir is in DYLD_FALLBACK_LIBRARY_PATH.
+
+    WeasyPrint needs system libraries (gobject, pango, cairo) that Homebrew
+    installs to /opt/homebrew/lib (Apple Silicon) or /usr/local/lib (Intel).
+    Python's dlopen won't find them unless this env var is set.
+    """
+    if platform.system() != "Darwin":
+        return
+
+    current = os.environ.get("DYLD_FALLBACK_LIBRARY_PATH", "")
+    if "/homebrew/lib" in current or "/usr/local/lib" in current:
+        return
+
+    # Ask brew for its prefix
+    try:
+        prefix = subprocess.check_output(
+            ["brew", "--prefix"], text=True, timeout=5
+        ).strip()
+        lib_dir = os.path.join(prefix, "lib")
+    except (FileNotFoundError, subprocess.SubprocessError):
+        # Fallback to common locations
+        lib_dir = "/opt/homebrew/lib" if os.path.isdir("/opt/homebrew/lib") else "/usr/local/lib"
+
+    if os.path.isdir(lib_dir):
+        os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = (
+            f"{lib_dir}:{current}" if current else lib_dir
+        )
+
+
+_ensure_homebrew_lib_path()
 
 
 # Map nutrient display names to template variable names
