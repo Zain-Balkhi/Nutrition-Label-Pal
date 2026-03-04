@@ -27,3 +27,6 @@ frontend/yarn-error.log*
 *.log
 .env.local
 CLAUDE.md
+.claude/
+.github/
+DEVELOPMENT_GUIDE.md

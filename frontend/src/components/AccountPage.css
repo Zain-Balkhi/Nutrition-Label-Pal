@@ -1,0 +1,410 @@
+/* ===========================
+   Account Settings Page
+   =========================== */
+
+.account-page {
+  padding: 2rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.account-page-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+.account-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.account-card {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 1.75rem 1.5rem;
+}
+
+.account-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1.25rem;
+}
+
+/* ── Profile card ── */
+
+.account-field {
+  margin-bottom: 1.1rem;
+}
+
+.account-field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-gray);
+  margin-bottom: 0.3rem;
+}
+
+.account-field-value {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.account-field-readonly {
+  background: #f5f5f5;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--text-gray);
+}
+
+.account-name-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.account-name-display .account-field-value {
+  flex: 1;
+}
+
+.account-edit-btn {
+  background: none;
+  border: 2px solid var(--accent-orange);
+  color: var(--text-dark);
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.account-edit-btn:hover {
+  background: rgba(245, 166, 35, 0.1);
+}
+
+.account-name-edit {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.account-name-input {
+  flex: 1;
+  padding: 0.6rem 0.85rem;
+  border: 3px dashed var(--accent-orange);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--text-dark);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.account-name-input:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+}
+
+.account-save-btn {
+  background: var(--accent-green);
+  color: var(--text-dark);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.account-save-btn:hover:not(:disabled) {
+  background: var(--accent-green-dark);
+}
+
+.account-save-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.account-cancel-btn {
+  background: none;
+  border: 2px solid var(--gray-medium);
+  color: var(--text-dark);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.account-cancel-btn:hover {
+  border-color: var(--text-dark);
+}
+
+.account-name-error {
+  color: #c33;
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+/* Change password placeholder */
+.account-coming-soon {
+  display: inline-block;
+  background: var(--gray-light);
+  color: var(--text-gray);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.account-password-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.account-password-btn {
+  background: none;
+  border: 2px solid var(--gray-medium);
+  color: var(--text-gray);
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Logout button in profile card */
+.account-logout-btn {
+  margin-top: 1rem;
+  background: none;
+  border: 2px solid var(--text-dark);
+  color: var(--text-dark);
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.account-logout-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ── Activity card ── */
+
+.account-stat {
+  margin-bottom: 1rem;
+}
+
+.account-stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.account-stat-label {
+  font-size: 0.85rem;
+  color: var(--text-gray);
+}
+
+.account-dashboard-link {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+}
+
+.account-dashboard-link:hover {
+  color: var(--accent-orange);
+}
+
+.account-member-since {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-top: 0.5rem;
+}
+
+/* ── Danger zone ── */
+
+.account-danger {
+  border: 2px solid #e53e3e;
+}
+
+.account-danger .account-card-title {
+  color: #e53e3e;
+}
+
+.account-danger-text {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.account-delete-btn {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.account-delete-btn:hover:not(:disabled) {
+  background: #c53030;
+}
+
+.account-delete-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Inline confirm step */
+.account-confirm-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.account-confirm-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.account-confirm-yes {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.account-confirm-yes:hover {
+  background: #c53030;
+}
+
+.account-confirm-no {
+  background: none;
+  border: 2px solid var(--gray-medium);
+  color: var(--text-dark);
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-confirm-no:hover {
+  border-color: var(--text-dark);
+}
+
+/* Delete modal */
+.account-delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.account-delete-modal {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 2rem 1.75rem;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.account-delete-modal-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #e53e3e;
+  margin-bottom: 0.75rem;
+}
+
+.account-delete-modal-text {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.account-delete-modal-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 2px solid #e53e3e;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  margin-bottom: 1.25rem;
+  box-sizing: border-box;
+}
+
+.account-delete-modal-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15);
+}
+
+.account-delete-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.account-delete-error {
+  color: #c33;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Loading ── */
+
+.account-loading {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-gray);
+  font-size: 1rem;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
+}

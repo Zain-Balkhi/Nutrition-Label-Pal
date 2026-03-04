@@ -2,19 +2,22 @@ import { useState } from 'react';
 import StepIndicator from './StepIndicator';
 
 interface RecipeInputProps {
-  onParse: (rawText: string, servings: number, servingSize: string) => void;
+  onParse: (rawText: string, servings: string, servingSize: string) => void;
   loading: boolean;
+  initialText?: string;
+  initialServings?: string;
+  initialServingSize?: string;
 }
 
-export default function RecipeInput({ onParse, loading }: RecipeInputProps) {
-  const [rawText, setRawText] = useState('');
-  const [servings, setServings] = useState('');
-  const [servingSize, setServingSize] = useState('');
+export default function RecipeInput({ onParse, loading, initialText, initialServings, initialServingSize }: RecipeInputProps) {
+  const [rawText, setRawText] = useState(initialText ?? '');
+  const [servings, setServings] = useState(initialServings ?? '');
+  const [servingSize, setServingSize] = useState(initialServingSize ?? '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!rawText.trim()) return;
-    onParse(rawText, Number(servings) || 1, servingSize || '1 serving');
+    onParse(rawText, servings, servingSize);
   };
 
   return (

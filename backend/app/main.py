@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import health, recipes, labels
+from app.routers import auth, health, label_export, labels, recipes, user_recipes, users
 from app.database import init_db
 
 app = FastAPI(
@@ -19,8 +19,12 @@ app.add_middleware(
 )
 
 app.include_router(health.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")
 app.include_router(recipes.router, prefix="/api")
 app.include_router(labels.router, prefix="/api")
+app.include_router(label_export.router, prefix="/api")
+app.include_router(user_recipes.router, prefix="/api")
+app.include_router(users.router, prefix="/api")
 
 
 @app.on_event("startup")

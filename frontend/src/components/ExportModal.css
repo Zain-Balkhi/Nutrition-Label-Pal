@@ -1,0 +1,109 @@
+.export-modal {
+  max-width: 400px;
+}
+
+.export-modal h2 {
+  margin-bottom: 0.75rem;
+}
+
+.export-format-info {
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+  color: #555;
+}
+
+.export-dimensions {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.export-dim-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.export-dim-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.export-dim-field input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.export-dim-x {
+  font-size: 1.25rem;
+  color: #888;
+  padding-bottom: 0.4rem;
+}
+
+.export-lock-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.export-error {
+  background: #ffeaea;
+  color: #c00;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.export-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  background: #e5e7eb;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #d1d5db;
+}
+
+.btn-download {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-download:hover {
+  background: #1d4ed8;
+}
+
+.btn-download:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}

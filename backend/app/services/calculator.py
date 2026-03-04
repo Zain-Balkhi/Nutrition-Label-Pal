@@ -59,8 +59,12 @@ def _extract_nutrients_per_100g(food_data: dict) -> dict[str, float]:
     return nutrients
 
 
-def _apply_rounding(key: str, value: float) -> float:
-    """Apply FDA rounding rules based on nutrient type."""
+def _apply_rounding(key: str, value: float) -> tuple[float, str | None]:
+    """Apply FDA rounding rules based on nutrient type.
+
+    Returns (numeric_amount, display_string) where display_string is set for
+    FDA "less than" ranges (e.g. "< 5mg", "< 1g") and None otherwise.
+    """
     if key == "energy":
         rounded = round_calories(value)
     elif key in ("total_fat", "saturated_fat", "trans_fat"):
@@ -74,15 +78,12 @@ def _apply_rounding(key: str, value: float) -> float:
     else:
         rounded = round(value, 1)
 
-    # Handle string returns like "less than 1g" by returning the numeric threshold
     if isinstance(rounded, str):
-        if "less than" in rounded:
-            return 0.0
-        # Strip non-numeric suffixes
-        numeric = "".join(c for c in rounded if c.isdigit() or c == ".")
-        return float(numeric) if numeric else 0.0
+        # Preserve FDA "less than" display language; numeric amount is 0.0
+        display = rounded.replace("less than 5mg", "< 5mg").replace("less than 1g", "< 1g")
+        return 0.0, display
 
-    return float(rounded)
+    return float(rounded), None
 
 
 async def calculate_nutrition(
@@ -146,12 +147,12 @@ async def calculate_nutrition(
     nutrient_values: list[NutrientValue] = []
     for key, (display_name, unit) in NUTRIENT_DISPLAY.items():
         raw_value = per_serving.get(key, 0.0)
-        rounded_value = _apply_rounding(key, raw_value)
+        rounded_value, display_str = _apply_rounding(key, raw_value)
 
         dv_percent = None
         if key in settings.FDA_DAILY_VALUES and key != "energy":
             dv = settings.FDA_DAILY_VALUES[key]
-            dv_percent = round_percent_dv(raw_value / dv * 100)
+            dv_percent = round_percent_dv(rounded_value / dv * 100)
 
         nutrient_values.append(
             NutrientValue(
@@ -159,6 +160,7 @@ async def calculate_nutrition(
                 amount=rounded_value,
                 unit=unit,
                 daily_value_percent=dv_percent,
+                display_value=display_str,
             )
         )
 
