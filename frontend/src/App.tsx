@@ -72,7 +72,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header />
+      <Header activePage="generate" />
       <main className="container">
         {error && <div className="error">{error}</div>}
 

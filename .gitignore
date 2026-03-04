@@ -8,6 +8,7 @@ backend/venv/
 backend/env/
 backend/.env
 backend/recipe_nutrition.json
+backend/nutrition_pal.db
 
 # Frontend - React/Vite
 frontend/node_modules/
