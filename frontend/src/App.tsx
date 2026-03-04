@@ -111,6 +111,7 @@ export default function App() {
           currentUser={currentUser}
           onLoginClick={() => setPage('login')}
           onLogout={handleLogout}
+          onLogoClick={() => { setPage('app'); handleStartOver(); }}
         />
         <main className="container">
           <LoginPage
@@ -130,6 +131,7 @@ export default function App() {
           currentUser={currentUser}
           onLoginClick={() => setPage('login')}
           onLogout={handleLogout}
+          onLogoClick={() => { setPage('app'); handleStartOver(); }}
         />
         <main className="container">
           <RegisterPage

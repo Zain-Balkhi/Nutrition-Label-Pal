@@ -86,33 +86,28 @@
   }
   
   .nav-link.active {
-    border-bottom-color: #2d8e3e;
+    border-bottom-color: var(--text-dark);
   }
 
-  /* Button-style nav links (Login, Logout) */
-  .nav-btn,
-  .nav-logout-btn {
+  /* Clickable logo/title button */
+  .header-home-btn {
     background: none;
     border: none;
     cursor: pointer;
     font-family: inherit;
+    padding: 0;
   }
 
-  /* Authenticated user display in header */
-  .header-user {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .header-username {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-dark);
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  /* Button-style nav links (Login, Logout) — must match <a> nav-link exactly */
+  .nav-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0 0 4px 0;
+    line-height: inherit;
+    vertical-align: baseline;
   }
 
   /* ===========================

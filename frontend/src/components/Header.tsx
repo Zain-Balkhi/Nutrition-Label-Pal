@@ -5,6 +5,7 @@ interface HeaderProps {
   currentUser?: AuthUser | null;
   onLoginClick?: () => void;
   onLogout?: () => void;
+  onLogoClick?: () => void;
 }
 
 export default function Header({
@@ -12,20 +13,22 @@ export default function Header({
   currentUser = null,
   onLoginClick,
   onLogout,
+  onLogoClick,
 }: HeaderProps) {
   return (
     <header className="header">
-      <div className="header-left">
+      <button type="button" className="header-left header-home-btn" onClick={onLogoClick}>
         <img src="/logo.png" alt="Nutrition Label Pal" className="header-logo" />
         <h1 className="header-title">Nutrition Label Pal</h1>
-      </div>
+      </button>
       <nav className="header-nav">
-        <a
-          href="#"
-          className={`nav-link ${activePage === 'generate' ? 'active' : ''}`}
+        <button
+          type="button"
+          className={`nav-link nav-btn ${activePage === 'generate' ? 'active' : ''}`}
+          onClick={onLogoClick}
         >
           Generate
-        </a>
+        </button>
         <a
           href="#"
           className={`nav-link ${activePage === 'dashboard' ? 'active' : ''}`}
@@ -34,16 +37,13 @@ export default function Header({
         </a>
 
         {currentUser ? (
-          <div className="header-user">
-            <span className="header-username">{currentUser.full_name}</span>
-            <button
-              type="button"
-              className="nav-link nav-logout-btn"
-              onClick={onLogout}
-            >
-              Logout
-            </button>
-          </div>
+          <button
+            type="button"
+            className="nav-link nav-btn"
+            onClick={onLogout}
+          >
+            Logout
+          </button>
         ) : (
           <button
             type="button"
