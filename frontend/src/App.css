@@ -86,9 +86,30 @@
   }
   
   .nav-link.active {
-    border-bottom-color: #2d8e3e;
+    border-bottom-color: var(--text-dark);
   }
-  
+
+  /* Clickable logo/title button */
+  .header-home-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+  }
+
+  /* Button-style nav links (Login, Logout) — must match <a> nav-link exactly */
+  .nav-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0 0 4px 0;
+    line-height: inherit;
+    vertical-align: baseline;
+  }
+
   /* ===========================
      Container
      =========================== */

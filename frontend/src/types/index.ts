@@ -46,3 +46,28 @@ export interface NutritionResult {
   nutrients: NutrientValue[];
   skipped_ingredients: SkippedIngredient[];
 }
+
+// ── Auth types ──────────────────────────────────────────────────────────────
+
+export interface AuthUser {
+  id: number;
+  email: string;
+  full_name: string;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  user: AuthUser;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  full_name: string;
+}
