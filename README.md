@@ -51,7 +51,7 @@ See [docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md) for full setup instructions.
 ```bash
 # Backend (Terminal 1)
 cd backend
-python -m venv venv && source venv/bin/activate
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # then add your API keys
 uvicorn app.main:app --reload --port 8000
