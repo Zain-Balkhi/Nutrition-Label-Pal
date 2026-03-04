@@ -4,6 +4,10 @@ import StepIndicator from './StepIndicator';
 interface NutritionDisplayProps {
   result: NutritionResult;
   onBack: () => void;
+  onSave?: () => void;
+  onViewSaved?: () => void;
+  saveDisabled?: boolean;
+  saveLabel?: string;
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -12,6 +16,7 @@ function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
 
 function amt(n: NutrientValue | null): string {
   if (!n) return '0g';
+  if (n.display_value) return n.display_value;
   return `${n.amount}${n.unit}`;
 }
 
@@ -54,7 +59,14 @@ function NutrientRow({ label, n, servings, bold = false, indent = 0, showDv = tr
   );
 }
 
-export default function NutritionDisplay({ result, onBack }: NutritionDisplayProps) {
+export default function NutritionDisplay({
+  result,
+  onBack,
+  onSave,
+  onViewSaved,
+  saveDisabled = false,
+  saveLabel = 'Save Label',
+}: NutritionDisplayProps) {
   const { nutrients, servings } = result;
 
   const calories = getN(nutrients, 'Calories');
@@ -164,10 +176,20 @@ export default function NutritionDisplay({ result, onBack }: NutritionDisplayPro
           <button onClick={onBack} className="btn-start-new">
             Start New Recipe
           </button>
-          <button className="btn-save-label">Save Label</button>
-          <a href="#" className="view-saved-link">
+          <button
+            className="btn-save-label"
+            onClick={onSave}
+            disabled={saveDisabled}
+          >
+            {saveLabel}
+          </button>
+          <button
+            type="button"
+            className="view-saved-link"
+            onClick={onViewSaved}
+          >
             View Saved Labels
-          </a>
+          </button>
         </div>
       </div>
 

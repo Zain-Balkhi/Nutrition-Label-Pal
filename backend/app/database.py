@@ -50,8 +50,8 @@ class UserRow(Base):
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc))
 
-    # Future extensibility: add nullable columns here (company, phone, avatar_url, etc.)
-    # Future relationships: recipes (owner_id FK on recipes table — Phase 3)
+    recipes = relationship("RecipeRow", back_populates="user",
+                            cascade="all, delete-orphan")
 
     __table_args__ = (
         Index("ix_users_email", "email"),
@@ -62,6 +62,7 @@ class RecipeRow(Base):
     __tablename__ = "recipes"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     recipe_name = Column(String(255), nullable=False)
     raw_text = Column(Text, nullable=False, default="")
     servings = Column(Integer, nullable=False, default=1)
@@ -71,8 +72,11 @@ class RecipeRow(Base):
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc))
 
+    user = relationship("UserRow", back_populates="recipes")
     ingredients = relationship("IngredientRow", back_populates="recipe",
                                cascade="all, delete-orphan")
+    nutrition = relationship("RecipeNutritionRow", back_populates="recipe",
+                             cascade="all, delete-orphan")
 
 
 class IngredientRow(Base):
@@ -91,6 +95,20 @@ class IngredientRow(Base):
     sort_order = Column(Integer, nullable=False, default=0)
 
     recipe = relationship("RecipeRow", back_populates="ingredients")
+
+
+class RecipeNutritionRow(Base):
+    __tablename__ = "recipe_nutrition"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    recipe_id = Column(Integer, ForeignKey("recipes.id", ondelete="CASCADE"), nullable=False)
+    nutrient_name = Column(String(100), nullable=False)
+    amount = Column(Float, nullable=False, default=0)
+    unit = Column(String(20), nullable=False, default="")
+    daily_value_percent = Column(Float, nullable=True)
+    display_value = Column(String(50), nullable=True)
+
+    recipe = relationship("RecipeRow", back_populates="nutrition")
 
 
 class USDANutritionCache(Base):
@@ -128,9 +146,26 @@ def get_session() -> Session:
 
 
 def init_db():
-    """Create all tables if they don't exist."""
+    """Create all tables if they don't exist, and migrate existing ones."""
     engine = _get_engine()
     Base.metadata.create_all(engine)
+    _migrate_existing_tables(engine)
+
+
+def _migrate_existing_tables(engine):
+    """Add columns/tables that create_all won't add to pre-existing tables."""
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+
+    # Add user_id column to recipes if missing
+    if "recipes" in inspector.get_table_names():
+        columns = [c["name"] for c in inspector.get_columns("recipes")]
+        if "user_id" not in columns:
+            with engine.begin() as conn:
+                conn.execute(text(
+                    "ALTER TABLE recipes ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE"
+                ))
 
 
 # ── CRUD helpers ───────────────────────────────────────────────────────────
@@ -142,11 +177,13 @@ def save_recipe_label(
     serving_size: str,
     ingredients: list[dict],
     label_data: dict,
+    user_id: int | None = None,
 ) -> int:
     """Persist a nutrition label and its ingredients. Returns the recipe id."""
     session = get_session()
     try:
         row = RecipeRow(
+            user_id=user_id,
             recipe_name=recipe_name,
             raw_text=raw_text,
             servings=servings,

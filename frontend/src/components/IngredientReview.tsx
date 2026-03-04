@@ -6,7 +6,7 @@ interface IngredientReviewProps {
   recipeName: string;
   servings: number;
   servingSize: string;
-  onUpdateIngredient: (index: number, fcId: number) => void;
+  onUpdateIngredient: (index: number, fcId: number | null) => void;
   onCalculate: () => void;
   onBack: () => void;
   loading: boolean;
@@ -23,6 +23,12 @@ export default function IngredientReview({
     <div className="ingredient-review">
       <h2 className="page-title">Ingredient Review</h2>
       <StepIndicator currentStep={2} />
+
+      <p className="compliance-notice">
+        ⚠ Only exclude ingredients that are discarded during cooking (e.g. bay leaves,
+        drained marinade) or never consumed. Skipping consumed ingredients will produce
+        an inaccurate, non-compliant nutrition label.
+      </p>
 
       <div className="review-table-wrapper">
         <table className="review-table">
@@ -49,9 +55,10 @@ export default function IngredientReview({
                       className="usda-select"
                       value={ing.selected_fdc_id ?? ''}
                       onChange={e =>
-                        onUpdateIngredient(i, Number(e.target.value))
+                        onUpdateIngredient(i, e.target.value === '' ? null : Number(e.target.value))
                       }
                     >
+                      <option value="">— Not consumed / Discard —</option>
                       {ing.matches.map(m => (
                         <option key={m.fdc_id} value={m.fdc_id}>
                           {m.description}
@@ -78,6 +85,26 @@ export default function IngredientReview({
           </tbody>
         </table>
       </div>
+
+      {(() => {
+        const excluded = ingredients.filter(ing => ing.selected_fdc_id === null);
+        if (excluded.length === 0) return null;
+        return (
+          <div className="excluded-warning">
+            <strong>Note:</strong> The following{' '}
+            {excluded.length === 1 ? 'ingredient' : 'ingredients'} will not be included
+            in the nutrition calculation:
+            <ul>
+              {excluded.map((ing, idx) => (
+                <li key={idx}>
+                  <em>{ing.parsed.name || ing.parsed.original_text}</em>
+                  {ing.matches.length === 0 ? ' — no USDA match found' : ' — marked as not consumed'}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })()}
 
       <div className="button-row">
         <button type="button" onClick={onBack} className="btn-secondary">
