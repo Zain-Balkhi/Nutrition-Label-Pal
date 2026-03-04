@@ -41,7 +41,7 @@ export default function RecipeInput({ onParse, loading, initialText, initialServ
             type="text"
             value={servings}
             onChange={e => setServings(e.target.value)}
-            placeholder="Servings (e.g 4 Cups)"
+            placeholder="Number of servings (e.g. 24)"
           />
         </div>
         <div className="field">
@@ -50,7 +50,7 @@ export default function RecipeInput({ onParse, loading, initialText, initialServ
             type="text"
             value={servingSize}
             onChange={e => setServingSize(e.target.value)}
-            placeholder="Portion Size (e.g for 1)"
+            placeholder="Serving size (e.g. 1 cookie)"
           />
         </div>
       </div>

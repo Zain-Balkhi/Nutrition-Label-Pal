@@ -162,7 +162,7 @@ export default function App() {
   }
 
   const handleParse = async (rawText: string, rawServings: string, rawServingSize: string) => {
-    const srv = Number(rawServings) || 1;
+    const srv = parseInt(rawServings, 10) || 1;
     const srvSize = rawServingSize || '1 serving';
 
     if (
