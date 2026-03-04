@@ -3,8 +3,12 @@ import type {
   LoginRequest,
   NutritionResult,
   ParseRecipeResponse,
+  RecipeDetail,
+  RecipeSummary,
   RegisterRequest,
+  SaveRecipeRequest,
   TokenResponse,
+  UpdateRecipeRequest,
 } from '../types';
 
 const API_BASE = '/api';
@@ -89,6 +93,64 @@ export const api = {
           throw new Error(err.detail ?? 'Login failed');
         }
         return r.json();
+      }),
+  },
+
+  recipes: {
+    save: (data: SaveRecipeRequest): Promise<RecipeDetail> =>
+      fetch(`${API_BASE}/recipes`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify(data),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to save recipe');
+        }
+        return r.json();
+      }),
+
+    list: (): Promise<RecipeSummary[]> =>
+      fetch(`${API_BASE}/recipes`, {
+        headers: headers(),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to load recipes');
+        }
+        return r.json();
+      }),
+
+    get: (id: number): Promise<RecipeDetail> =>
+      fetch(`${API_BASE}/recipes/${id}`, {
+        headers: headers(),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to load recipe');
+        }
+        return r.json();
+      }),
+
+    update: (id: number, data: UpdateRecipeRequest): Promise<RecipeDetail> =>
+      fetch(`${API_BASE}/recipes/${id}`, {
+        method: 'PUT',
+        headers: headers(),
+        body: JSON.stringify(data),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to update recipe');
+        }
+        return r.json();
+      }),
+
+    delete: (id: number): Promise<void> =>
+      fetch(`${API_BASE}/recipes/${id}`, {
+        method: 'DELETE',
+        headers: headers(),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to delete recipe');
       }),
   },
 };

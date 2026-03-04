@@ -6,6 +6,7 @@ interface HeaderProps {
   onLoginClick?: () => void;
   onLogout?: () => void;
   onLogoClick?: () => void;
+  onDashboardClick?: () => void;
 }
 
 export default function Header({
@@ -14,6 +15,7 @@ export default function Header({
   onLoginClick,
   onLogout,
   onLogoClick,
+  onDashboardClick,
 }: HeaderProps) {
   return (
     <header className="header">
@@ -29,12 +31,13 @@ export default function Header({
         >
           Generate
         </button>
-        <a
-          href="#"
-          className={`nav-link ${activePage === 'dashboard' ? 'active' : ''}`}
+        <button
+          type="button"
+          className={`nav-link nav-btn ${activePage === 'dashboard' ? 'active' : ''}`}
+          onClick={onDashboardClick}
         >
           Dashboard
-        </a>
+        </button>
 
         {currentUser ? (
           <button

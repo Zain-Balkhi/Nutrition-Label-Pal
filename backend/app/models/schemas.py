@@ -108,3 +108,85 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserOut
+
+
+# ── Recipe CRUD schemas ────────────────────────────────────────────────────
+
+class SaveIngredientInput(BaseModel):
+    name: str
+    quantity: float
+    unit: str
+    preparation: str | None = None
+    original_text: str
+    fdc_id: int | None = None
+    matched_description: str | None = None
+    gram_weight: float | None = None
+
+
+class SaveNutrientInput(BaseModel):
+    name: str
+    amount: float
+    unit: str
+    daily_value_percent: float | None = None
+    display_value: str | None = None
+
+
+class SaveRecipeRequest(BaseModel):
+    recipe_name: str
+    raw_text: str
+    servings: int
+    serving_size: str
+    ingredients: list[SaveIngredientInput]
+    nutrients: list[SaveNutrientInput]
+
+
+class UpdateRecipeRequest(BaseModel):
+    recipe_name: str | None = None
+    raw_text: str | None = None
+    servings: int | None = None
+    serving_size: str | None = None
+    ingredients: list[SaveIngredientInput] | None = None
+    nutrients: list[SaveNutrientInput] | None = None
+
+
+class RecipeIngredientOut(BaseModel):
+    id: int
+    name: str
+    quantity: float
+    unit: str
+    preparation: str | None = None
+    original_text: str
+    fdc_id: int | None = None
+    matched_description: str | None = None
+    gram_weight: float | None = None
+    sort_order: int
+
+
+class RecipeNutrientOut(BaseModel):
+    id: int
+    nutrient_name: str
+    amount: float
+    unit: str
+    daily_value_percent: float | None = None
+    display_value: str | None = None
+
+
+class RecipeSummary(BaseModel):
+    id: int
+    recipe_name: str
+    servings: int
+    serving_size: str
+    created_at: str
+    updated_at: str
+
+
+class RecipeDetail(BaseModel):
+    id: int
+    recipe_name: str
+    raw_text: str
+    servings: int
+    serving_size: str
+    ingredients: list[RecipeIngredientOut]
+    nutrients: list[RecipeNutrientOut]
+    created_at: str
+    updated_at: str
