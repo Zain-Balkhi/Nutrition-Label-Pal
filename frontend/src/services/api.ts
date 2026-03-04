@@ -1,5 +1,6 @@
 import type {
   IngredientWithMatch,
+  LabelExportRequest,
   LoginRequest,
   NutritionResult,
   ParseRecipeResponse,
@@ -189,4 +190,14 @@ export const api = {
         if (!r.ok) throw new Error('Failed to delete recipe');
       }),
   },
+
+  exportLabel: (request: LabelExportRequest): Promise<Blob> =>
+    fetch(`${API_BASE}/labels/export`, {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify(request),
+    }).then(r => {
+      if (!r.ok) throw new Error(`Export failed: ${r.statusText}`);
+      return r.blob();
+    }),
 };
