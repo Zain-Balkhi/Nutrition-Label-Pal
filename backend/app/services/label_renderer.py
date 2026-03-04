@@ -31,9 +31,12 @@ class TemplateNutrient:
     amount_str: str
     display: str  # FDA "less than" display string, or empty
     dv_str: str   # e.g. "10%" or empty
+    # Per-container values (populated by _build_template_context)
+    container_amount_str: str = ""
+    container_dv_str: str = ""
 
     @classmethod
-    def from_nutrient_dict(cls, n: dict) -> "TemplateNutrient":
+    def from_nutrient_dict(cls, n: dict, servings: int = 1) -> "TemplateNutrient":
         amount = n.get("amount", 0)
         unit = n.get("unit", "")
         display_value = n.get("display_value") or ""
@@ -42,12 +45,20 @@ class TemplateNutrient:
         amount_str = f"{amount}{unit}"
         dv_str = f"{dv}%" if dv is not None else ""
 
+        # Per-container calculations
+        container_amount = round(amount * servings)
+        container_amount_str = f"{container_amount}{unit}"
+        container_dv = round(dv * servings) if dv is not None else None
+        container_dv_str = f"{container_dv}%" if container_dv is not None else ""
+
         return cls(
             amount=amount,
             unit=unit,
             amount_str=amount_str,
             display=display_value,
             dv_str=dv_str,
+            container_amount_str=container_amount_str,
+            container_dv_str=container_dv_str,
         )
 
     @classmethod
@@ -58,6 +69,7 @@ class TemplateNutrient:
 def _build_template_context(nutrition_data: dict, width: str, height: str) -> dict:
     """Transform NutritionResult-style dict into template variables."""
     nutrients_list = nutrition_data.get("nutrients", [])
+    servings = nutrition_data.get("servings", 1)
 
     # Index nutrients by display name
     by_name: dict[str, dict] = {}
@@ -69,19 +81,23 @@ def _build_template_context(nutrition_data: dict, width: str, height: str) -> di
     for display_name, var_name in _NUTRIENT_VAR_MAP.items():
         raw = by_name.get(display_name)
         if raw:
-            template_nutrients[var_name] = TemplateNutrient.from_nutrient_dict(raw)
+            template_nutrients[var_name] = TemplateNutrient.from_nutrient_dict(
+                raw, servings=servings
+            )
         else:
             template_nutrients[var_name] = TemplateNutrient.empty()
 
     # Extract calories amount for the big display
     cal = template_nutrients.get("calories", TemplateNutrient.empty())
     calories_amount = int(cal.amount) if cal.amount == int(cal.amount) else cal.amount
+    container_calories_amount = round(cal.amount * servings)
 
     return {
         "recipe_name": nutrition_data.get("recipe_name", ""),
-        "servings": nutrition_data.get("servings", 1),
+        "servings": servings,
         "serving_size": nutrition_data.get("serving_size", ""),
         "calories_amount": calories_amount,
+        "container_calories_amount": container_calories_amount,
         "width": width,
         "height": height,
         **template_nutrients,

@@ -75,9 +75,9 @@ const FEATURES = [
   },
   {
     icon: '⬇️',
-    title: 'Download as PNG',
+    title: 'Download as PDF',
     description:
-      'Export your label as a high-quality image ready to print, attach to packaging, or upload to your website.',
+      'Export your label as a PDF ready to print, attach to packaging, or share digitally.',
   },
   {
     icon: '💾',
@@ -86,10 +86,10 @@ const FEATURES = [
       'Create a free account to save, edit, and manage all your recipes in one place. Access them anytime.',
   },
   {
-    icon: '🆓',
-    title: 'Completely Free',
+    icon: '📊',
+    title: 'Serving Size Control',
     description:
-      'No subscriptions, no lab fees, no hidden costs. Built as an open, accessible tool for small food businesses.',
+      'Specify custom serving sizes and servings per container. Scale your recipe up or down before generating.',
   },
 ];
 
@@ -132,15 +132,14 @@ export default function HomePage({ onGetStarted, onTryNow }: HomePageProps) {
       {/* ── Hero ── */}
       <section className="home-hero">
         <div className="home-hero-text">
-          <div className="home-hero-badge">CIS4914 Senior Design · University of Florida</div>
           <h1 className="home-hero-heading">
             Professional nutrition labels,{' '}
             <span className="home-hero-accent">in minutes.</span>
           </h1>
           <p className="home-hero-subheading">
-            Built for farmers market vendors, cottage food producers, and meal prep
-            entrepreneurs who need FDA-compliant nutrition labels without expensive
-            lab testing.
+            Built for farmers market vendors, cottage food producers, meal prep
+            entrepreneurs, and anyone else who needs FDA-compliant nutrition labels 
+            without expensive lab testing.
           </p>
           <div className="home-hero-actions">
             <button type="button" className="btn-home-primary" onClick={onGetStarted}>
@@ -247,7 +246,7 @@ export default function HomePage({ onGetStarted, onTryNow }: HomePageProps) {
               Our solution: accept a recipe in plain text, use an LLM to extract and normalize
               ingredients, query the USDA FoodData Central API for verified nutrition data, apply
               FDA-mandated rounding rules (21 CFR 101.9), and generate a ready-to-use label.
-              Free. Accurate. Accessible.
+              Accurate. Accessible.
             </p>
             <div className="home-about-tech">
               <span className="home-tech-badge">React + TypeScript</span>
@@ -262,24 +261,15 @@ export default function HomePage({ onGetStarted, onTryNow }: HomePageProps) {
             <div className="home-team-list">
               <div className="home-team-member">
                 <div className="home-team-avatar">SB</div>
-                <div>
-                  <div className="home-team-name">Syed Balkhi</div>
-                  <div className="home-team-role">Team Lead · Backend Dev</div>
-                </div>
+                <div className="home-team-name">Syed Balkhi</div>
               </div>
               <div className="home-team-member">
                 <div className="home-team-avatar">JP</div>
-                <div>
-                  <div className="home-team-name">Jehan Peralta</div>
-                  <div className="home-team-role">Scrum Master · Frontend Dev</div>
-                </div>
+                <div className="home-team-name">Jehan Peralta</div>
               </div>
               <div className="home-team-member">
                 <div className="home-team-avatar">TR</div>
-                <div>
-                  <div className="home-team-name">Taran Ramu</div>
-                  <div className="home-team-role">Full-Stack Dev</div>
-                </div>
+                <div className="home-team-name">Taran Ramu</div>
               </div>
             </div>
             <div className="home-team-advisor">
@@ -294,7 +284,7 @@ export default function HomePage({ onGetStarted, onTryNow }: HomePageProps) {
         <div className="home-section-inner home-cta-inner">
           <h2 className="home-cta-title">Ready to label your recipes?</h2>
           <p className="home-cta-subtitle">
-            Free forever. No lab required. Generate your first label in under 2 minutes.
+            No lab required. Generate your first label in under 2 minutes.
           </p>
           <div className="home-hero-actions home-cta-actions">
             <button type="button" className="btn-home-primary btn-home-primary--large" onClick={onGetStarted}>

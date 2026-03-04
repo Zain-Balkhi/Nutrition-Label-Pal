@@ -88,11 +88,27 @@ class TestTemplateNutrient:
         assert tn.display == "< 5mg"
         assert tn.amount == 0.0
 
+    def test_from_nutrient_dict_container_values(self):
+        n = {"name": "Total Fat", "amount": 8, "unit": "g",
+             "daily_value_percent": 10, "display_value": None}
+        tn = TemplateNutrient.from_nutrient_dict(n, servings=3)
+        assert tn.container_amount_str == "24g"
+        assert tn.container_dv_str == "30%"
+
+    def test_from_nutrient_dict_container_no_dv(self):
+        n = {"name": "Trans Fat", "amount": 1, "unit": "g",
+             "daily_value_percent": None, "display_value": None}
+        tn = TemplateNutrient.from_nutrient_dict(n, servings=4)
+        assert tn.container_amount_str == "4g"
+        assert tn.container_dv_str == ""
+
     def test_empty(self):
         tn = TemplateNutrient.empty()
         assert tn.amount == 0
         assert tn.amount_str == "0"
         assert tn.dv_str == ""
+        assert tn.container_amount_str == ""
+        assert tn.container_dv_str == ""
 
 
 # ── Template context builder tests ─────────────────────────────────────────
@@ -254,6 +270,205 @@ class TestLabelExportEndpoint:
         assert '"' not in resp.headers["content-disposition"].replace(
             'attachment; filename="', ""
         ).rstrip('"')
+
+
+# ── Tabular template tests ─────────────────────────────────────────────────
+
+class TestTabularTemplate:
+    def test_render_html_tabular_has_horizontal_layout(self):
+        renderer = LabelRenderer()
+        html = renderer.render_html(
+            format="tabular",
+            nutrition_data={
+                "recipe_name": "Test",
+                "servings": 4,
+                "serving_size": "1 cup",
+                "nutrients": SAMPLE_NUTRIENTS,
+            },
+            width_inches=4.5,
+            height_inches=2.0,
+        )
+        assert "Nutrition Facts" in html
+        # Tabular uses abbreviated names
+        assert "Tot. Carb." in html
+        assert "Sat. Fat" in html
+        # Has horizontal table class
+        assert "nf-htable" in html
+        # Contains all nutrient values
+        assert "8g" in html  # Total Fat
+        assert "160mg" in html  # Sodium
+
+    def test_render_html_tabular_has_vitamins_row(self):
+        renderer = LabelRenderer()
+        html = renderer.render_html(
+            format="tabular",
+            nutrition_data={
+                "recipe_name": "Test",
+                "servings": 4,
+                "serving_size": "1 cup",
+                "nutrients": SAMPLE_NUTRIENTS,
+            },
+            width_inches=4.5,
+            height_inches=2.0,
+        )
+        assert "Vitamin D" in html
+        assert "Calcium" in html
+        assert "Iron" in html
+        assert "Potassium" in html
+
+
+# ── Linear template tests ─────────────────────────────────────────────────
+
+class TestLinearTemplate:
+    def test_render_html_linear_has_comma_separated(self):
+        renderer = LabelRenderer()
+        html = renderer.render_html(
+            format="linear",
+            nutrition_data={
+                "recipe_name": "Test",
+                "servings": 4,
+                "serving_size": "1 cup",
+                "nutrients": SAMPLE_NUTRIENTS,
+            },
+            width_inches=3.5,
+            height_inches=1.5,
+        )
+        assert "Nutrition Facts" in html
+        # Uses abbreviated names
+        assert "Chol." in html
+        assert "Tot. Carb." in html
+        assert "Sat. Fat" in html
+        # Has DV percentages inline
+        assert "(10% DV)" in html  # Total Fat
+        # No table structure
+        assert "nf-linear-nutrients" in html
+
+    def test_render_html_linear_omits_dv_when_none(self):
+        renderer = LabelRenderer()
+        html = renderer.render_html(
+            format="linear",
+            nutrition_data={
+                "recipe_name": "Test",
+                "servings": 1,
+                "serving_size": "1 piece",
+                "nutrients": [
+                    {"name": "Calories", "amount": 100, "unit": "kcal",
+                     "daily_value_percent": None, "display_value": None},
+                    {"name": "Total Fat", "amount": 5, "unit": "g",
+                     "daily_value_percent": None, "display_value": None},
+                ],
+            },
+            width_inches=3.5,
+            height_inches=1.5,
+        )
+        # Total Fat with no DV should not have "(DV)" text
+        assert "5g," in html
+        # Should not contain "( DV)" for fat since dv is None
+        assert "(None%" not in html
+
+
+# ── Dual column template tests ────────────────────────────────────────────
+
+class TestDualColumnTemplate:
+    def test_render_html_dual_column_has_per_container(self):
+        renderer = LabelRenderer()
+        html = renderer.render_html(
+            format="dual_column",
+            nutrition_data={
+                "recipe_name": "Test",
+                "servings": 4,
+                "serving_size": "1 cup",
+                "nutrients": SAMPLE_NUTRIENTS,
+            },
+            width_inches=3.25,
+            height_inches=5.5,
+        )
+        assert "Nutrition Facts" in html
+        assert "Per serving" in html
+        assert "Per container" in html
+        # Per-container calories: 230 * 4 = 920
+        assert "920" in html
+        # Has dual table structure
+        assert "nf-dual-table" in html
+
+    def test_render_html_dual_column_container_values(self):
+        renderer = LabelRenderer()
+        html = renderer.render_html(
+            format="dual_column",
+            nutrition_data={
+                "recipe_name": "Test",
+                "servings": 2,
+                "serving_size": "1/2 cup",
+                "nutrients": [
+                    {"name": "Calories", "amount": 100, "unit": "kcal",
+                     "daily_value_percent": None, "display_value": None},
+                    {"name": "Total Fat", "amount": 5, "unit": "g",
+                     "daily_value_percent": 6, "display_value": None},
+                ],
+            },
+            width_inches=3.25,
+            height_inches=5.5,
+        )
+        # Per-container: 100 * 2 = 200 cal
+        assert "200" in html
+        # Per-container fat: 5 * 2 = 10g
+        assert "10g" in html
+        # Per-container DV: 6 * 2 = 12%
+        assert "12%" in html
+
+
+# ── Context builder: container values ──────────────────────────────────────
+
+class TestBuildTemplateContextContainer:
+    def test_container_calories_amount(self):
+        data = {
+            "recipe_name": "Test",
+            "servings": 4,
+            "serving_size": "1 cup",
+            "nutrients": SAMPLE_NUTRIENTS,
+        }
+        ctx = _build_template_context(data, "3in", "5in")
+        assert ctx["container_calories_amount"] == 920  # 230 * 4
+
+    def test_container_nutrient_values(self):
+        data = {
+            "recipe_name": "Test",
+            "servings": 3,
+            "serving_size": "1 cup",
+            "nutrients": [
+                {"name": "Total Fat", "amount": 10, "unit": "g",
+                 "daily_value_percent": 13, "display_value": None},
+            ],
+        }
+        ctx = _build_template_context(data, "3in", "5in")
+        assert ctx["total_fat"].container_amount_str == "30g"
+        assert ctx["total_fat"].container_dv_str == "39%"
+
+
+# ── Endpoint tests for new formats ────────────────────────────────────────
+
+@pytest.mark.asyncio
+class TestLabelExportEndpointFormats:
+    @patch("app.routers.label_export.renderer")
+    async def test_export_tabular_format(self, mock_renderer, transport):
+        mock_renderer.render_pdf.return_value = b"%PDF-1.4"
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            resp = await ac.post("/api/labels/export", json=_make_request(format="tabular"))
+        assert resp.status_code == 200
+
+    @patch("app.routers.label_export.renderer")
+    async def test_export_linear_format(self, mock_renderer, transport):
+        mock_renderer.render_pdf.return_value = b"%PDF-1.4"
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            resp = await ac.post("/api/labels/export", json=_make_request(format="linear"))
+        assert resp.status_code == 200
+
+    @patch("app.routers.label_export.renderer")
+    async def test_export_dual_column_format(self, mock_renderer, transport):
+        mock_renderer.render_pdf.return_value = b"%PDF-1.4"
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            resp = await ac.post("/api/labels/export", json=_make_request(format="dual_column"))
+        assert resp.status_code == 200
 
 
 # ── Full integration test (real WeasyPrint) ───────────────────────────────
