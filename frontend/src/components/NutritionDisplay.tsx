@@ -12,6 +12,7 @@ function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
 
 function amt(n: NutrientValue | null): string {
   if (!n) return '0g';
+  if (n.display_value) return n.display_value;
   return `${n.amount}${n.unit}`;
 }
 

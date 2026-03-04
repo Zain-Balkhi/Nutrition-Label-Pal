@@ -47,6 +47,7 @@ class NutrientValue(BaseModel):
     amount: float
     unit: str
     daily_value_percent: int | None = None
+    display_value: str | None = None
 
 
 class SkippedIngredient(BaseModel):

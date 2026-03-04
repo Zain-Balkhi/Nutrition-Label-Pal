@@ -69,7 +69,7 @@ export default function App() {
     }
   };
 
-  const handleUpdateIngredient = (index: number, fcId: number) => {
+  const handleUpdateIngredient = (index: number, fcId: number | null) => {
     setIngredients(prev =>
       prev.map((ing, i) =>
         i === index ? { ...ing, selected_fdc_id: fcId } : ing,

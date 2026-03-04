@@ -31,6 +31,7 @@ export interface NutrientValue {
   amount: number;
   unit: string;
   daily_value_percent: number | null;
+  display_value: string | null;
 }
 
 export interface SkippedIngredient {
