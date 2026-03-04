@@ -1,11 +1,12 @@
 import type { AuthUser } from '../types';
 
 interface HeaderProps {
-  activePage?: 'generate' | 'dashboard' | 'login' | 'account';
+  activePage?: 'home' | 'generate' | 'dashboard' | 'login' | 'account';
   currentUser?: AuthUser | null;
   onLoginClick?: () => void;
   onLogout?: () => void;
   onLogoClick?: () => void;
+  onGenerateClick?: () => void;
   onDashboardClick?: () => void;
   onAccountClick?: () => void;
 }
@@ -16,6 +17,7 @@ export default function Header({
   onLoginClick,
   onLogout,
   onLogoClick,
+  onGenerateClick,
   onDashboardClick,
   onAccountClick,
 }: HeaderProps) {
@@ -63,7 +65,7 @@ export default function Header({
         <button
           type="button"
           className={`nav-link nav-btn ${activePage === 'generate' ? 'active' : ''}`}
-          onClick={onLogoClick}
+          onClick={onGenerateClick ?? onLogoClick}
         >
           Generate
         </button>

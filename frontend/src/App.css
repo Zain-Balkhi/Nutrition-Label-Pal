@@ -703,7 +703,213 @@
   .btn-print:hover {
     background: var(--gray-medium);
   }
-  
+
+  /* Download PDF button */
+  .btn-download-pdf {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn-download-pdf:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  /* ===========================
+     Format Selector
+     =========================== */
+  .label-preview-wrapper {
+    flex: 1;
+  }
+
+  .format-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .format-card {
+    flex: 1;
+    min-width: 120px;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .format-card:hover {
+    border-color: #90caf9;
+    background: #f0f7ff;
+  }
+
+  .format-card-selected {
+    border-color: #2563eb;
+    background: #eff6ff;
+  }
+
+  .format-card-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #222;
+  }
+
+  .format-card-desc {
+    font-size: 0.7rem;
+    color: #888;
+  }
+
+  /* ===========================
+     Label Format Variants
+     =========================== */
+
+  /* Vertical (single column) */
+  .label-format-vertical .nutrition-label {
+    width: 340px;
+  }
+
+  .nf-single-col td:nth-child(2) {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .nf-single-col .nf-amt {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .nf-calories-section {
+    margin-bottom: 0;
+  }
+
+  .nf-calories-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .nf-calories-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .nf-calories-label {
+    font-weight: 900;
+    font-size: 1.1rem;
+  }
+
+  .nf-calories-value {
+    font-weight: 900;
+    font-size: 1.5rem;
+  }
+
+  /* Tabular (horizontal) */
+  .label-format-tabular .nutrition-label {
+    width: 520px;
+  }
+
+  .nf-tabular-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+  }
+
+  .nf-tabular-servings {
+    font-size: 0.75rem;
+    text-align: right;
+    line-height: 1.3;
+  }
+
+  .nf-tabular-cal-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .nf-tabular-cal-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .nf-tabular-vitamins {
+    font-size: 0.8rem;
+    padding: 2px 0;
+  }
+
+  .nf-htable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .nf-htable td, .nf-htable th {
+    font-size: 0.78rem;
+    line-height: 1.2;
+    padding: 2px 4px;
+    vertical-align: top;
+    border-bottom: 1px solid #000;
+  }
+
+  .nf-htable .nf-hcol {
+    border-left: 1px solid #000;
+    padding-left: 6px;
+  }
+
+  .nf-htable .nf-hname {
+    font-weight: 700;
+  }
+
+  .nf-htable .nf-hsub {
+    padding-left: 10px;
+  }
+
+  .nf-htable .nf-hdv {
+    text-align: right;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Linear */
+  .label-format-linear .nutrition-label {
+    width: 420px;
+  }
+
+  .nf-linear-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin-bottom: 2px;
+  }
+
+  .nf-linear-servings {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+  }
+
+  .nf-linear-nutrients {
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+
+  /* Dual column — reuses existing dual-column styles from the old label */
+  .label-format-dual_column .nutrition-label {
+    width: 400px;
+  }
+
   /* ===========================
      Modal
      =========================== */

@@ -167,3 +167,49 @@ export interface RecipeDetail {
   created_at: string;
   updated_at: string;
 }
+
+// ── Label export types ──────────────────────────────────────────────────
+
+export type LabelFormat = 'vertical' | 'tabular' | 'linear' | 'dual_column';
+
+export interface LabelExportRequest {
+  format: LabelFormat;
+  width_inches: number;
+  height_inches: number;
+  recipe_name: string;
+  servings: number;
+  serving_size: string;
+  nutrients: NutrientValue[];
+}
+
+export const LABEL_FORMAT_INFO: Record<LabelFormat, {
+  name: string;
+  description: string;
+  default_width: number;
+  default_height: number;
+}> = {
+  vertical: {
+    name: 'Standard Vertical',
+    description: 'Default single-column layout',
+    default_width: 2.75,
+    default_height: 5.0,
+  },
+  tabular: {
+    name: 'Tabular',
+    description: 'Horizontal layout for wide packages',
+    default_width: 4.5,
+    default_height: 2.0,
+  },
+  linear: {
+    name: 'Linear',
+    description: 'Compact comma-separated text',
+    default_width: 3.5,
+    default_height: 1.5,
+  },
+  dual_column: {
+    name: 'Dual Column',
+    description: 'Per-serving and per-container',
+    default_width: 3.25,
+    default_height: 5.5,
+  },
+};

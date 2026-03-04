@@ -9,6 +9,7 @@ import Dashboard from './components/Dashboard';
 import RecipeDetail from './components/RecipeDetail';
 import SaveLabelModal from './components/SaveLabelModal';
 import AccountPage from './components/AccountPage';
+import HomePage from './components/HomePage';
 import { api } from './services/api';
 import type {
   AuthUser,
@@ -19,13 +20,13 @@ import type {
 } from './types';
 
 type AppStep = 'input' | 'review' | 'results';
-type Page = 'app' | 'login' | 'register' | 'dashboard' | 'recipe-detail' | 'account';
+type Page = 'home' | 'app' | 'login' | 'register' | 'dashboard' | 'recipe-detail' | 'account';
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 
 export default function App() {
-  const [page, setPage] = useState<Page>('app');
+  const [page, setPage] = useState<Page>('home');
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
     const stored = localStorage.getItem(USER_KEY);
     return stored ? (JSON.parse(stored) as AuthUser) : null;
@@ -60,7 +61,7 @@ export default function App() {
 
   // Stamp initial browser history state on mount
   useEffect(() => {
-    history.replaceState({ page: 'app', step: 'input' }, '');
+    history.replaceState({ page: 'home' }, '');
   }, []);
 
   // Sync browser back/forward button
@@ -358,12 +359,25 @@ export default function App() {
     currentUser,
     onLoginClick: () => navigateTo('login'),
     onLogout: handleLogout,
-    onLogoClick: () => { setPage('app'); handleStartOver(); },
+    onLogoClick: () => navigateTo('home'),
+    onGenerateClick: () => { setPage('app'); handleStartOver(); history.pushState({ page: 'app', step: 'input' }, ''); },
     onDashboardClick: handleDashboardClick,
     onAccountClick: handleAccountClick,
   };
 
   // ── Page rendering ────────────────────────────────────────────────
+
+  if (page === 'home') {
+    return (
+      <div className="app">
+        <Header activePage="home" {...headerProps} />
+        <HomePage
+          onGetStarted={() => navigateTo('register')}
+          onTryNow={() => { setPage('app'); handleStartOver(); history.pushState({ page: 'app', step: 'input' }, ''); }}
+        />
+      </div>
+    );
+  }
 
   if (page === 'login') {
     return (

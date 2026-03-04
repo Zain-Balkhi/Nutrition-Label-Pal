@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import BaseModel, EmailStr, field_validator
 
 
@@ -214,3 +216,22 @@ class RecipeDetail(BaseModel):
     nutrients: list[RecipeNutrientOut]
     created_at: str
     updated_at: str
+
+
+# ── Label export schemas ──────────────────────────────────────────────────
+
+class LabelFormat(str, Enum):
+    vertical = "vertical"
+    tabular = "tabular"
+    linear = "linear"
+    dual_column = "dual_column"
+
+
+class LabelExportRequest(BaseModel):
+    format: LabelFormat
+    width_inches: float = 2.75
+    height_inches: float = 5.0
+    recipe_name: str
+    servings: int
+    serving_size: str
+    nutrients: list[NutrientValue]
