@@ -11,7 +11,6 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
   const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     loadRecipes();
@@ -27,19 +26,6 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
       setError(err instanceof Error ? err.message : 'Failed to load recipes');
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function handleDelete(id: number, name: string) {
-    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
-    setDeletingId(id);
-    try {
-      await api.recipes.delete(id);
-      setRecipes(prev => prev.filter(r => r.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete recipe');
-    } finally {
-      setDeletingId(null);
     }
   }
 
@@ -66,43 +52,37 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
 
       {error && <div className="error">{error}</div>}
 
-      {recipes.length === 0 ? (
-        <div className="dashboard-empty">
-          <p>You don't have any saved recipes yet.</p>
-          <button className="btn-primary" onClick={onNewRecipe}>
-            Create Your First Recipe
-          </button>
+      <div className="recipe-grid">
+        <div className="recipe-card recipe-card-new" onClick={onNewRecipe}>
+          <span className="recipe-card-new-icon">+</span>
+          <h3 className="recipe-card-title">Add New Recipe</h3>
         </div>
-      ) : (
-        <div className="recipe-grid">
-          {recipes.map(recipe => (
-            <div
-              key={recipe.id}
-              className="recipe-card"
-              onClick={() => onViewRecipe(recipe.id)}
-            >
-              <h3 className="recipe-card-title">{recipe.recipe_name}</h3>
-              <div className="recipe-card-meta">
-                <span>{recipe.servings} servings</span>
-                <span>{recipe.serving_size}</span>
-              </div>
-              <div className="recipe-card-date">
-                {formatDate(recipe.created_at)}
-              </div>
-              <button
-                className="recipe-card-delete"
-                onClick={e => {
-                  e.stopPropagation();
-                  handleDelete(recipe.id, recipe.recipe_name);
-                }}
-                disabled={deletingId === recipe.id}
-              >
-                {deletingId === recipe.id ? 'Deleting...' : 'Delete'}
-              </button>
+        {recipes.map(recipe => (
+          <div
+            key={recipe.id}
+            className="recipe-card"
+            onClick={() => onViewRecipe(recipe.id)}
+          >
+            <h3 className="recipe-card-title">{recipe.recipe_name}</h3>
+            <div className="recipe-card-meta">
+              <span>{recipe.servings} servings</span>
+              <span>{recipe.serving_size}</span>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="recipe-card-date">
+              {formatDate(recipe.created_at)}
+            </div>
+            <button
+              className="recipe-card-view"
+              onClick={e => {
+                e.stopPropagation();
+                onViewRecipe(recipe.id);
+              }}
+            >
+              View
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -809,6 +809,31 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
+  .recipe-card-new {
+    border: 3px dashed var(--accent-orange);
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+  }
+
+  .recipe-card-new:hover {
+    background: rgba(245, 166, 35, 0.06);
+  }
+
+  .recipe-card-new .recipe-card-title {
+    color: var(--accent-orange);
+  }
+
+  .recipe-card-new-icon {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--accent-orange);
+    line-height: 1;
+  }
+
   .recipe-card-title {
     font-size: 1.1rem;
     font-weight: 700;
@@ -829,23 +854,24 @@
     color: var(--gray-medium);
   }
 
-  .recipe-card-delete {
+  .recipe-card-view {
     position: absolute;
-    top: 0.75rem;
+    bottom: 0.75rem;
     right: 0.75rem;
-    background: none;
+    background: var(--accent-green);
     border: none;
-    color: #c33;
+    color: var(--text-dark);
     font-size: 0.8rem;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
     font-family: inherit;
     font-weight: 600;
+    transition: background 0.2s;
   }
 
-  .recipe-card-delete:hover {
-    background: #fee;
+  .recipe-card-view:hover {
+    background: var(--accent-green-dark);
   }
 
   /* ===========================
