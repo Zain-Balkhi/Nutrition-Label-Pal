@@ -25,11 +25,35 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [recipeText, setRecipeText] = useState('');
+  const [recipeServings, setRecipeServings] = useState('');
+  const [recipeServingSize, setRecipeServingSize] = useState('');
   const [recipeName, setRecipeName] = useState('');
   const [servings, setServings] = useState(1);
   const [servingSize, setServingSize] = useState('1 serving');
   const [ingredients, setIngredients] = useState<IngredientWithMatch[]>([]);
   const [nutritionResult, setNutritionResult] = useState<NutritionResult | null>(null);
+
+  // Stamp initial browser history state on mount
+  useEffect(() => {
+    history.replaceState({ step: 'input' }, '');
+  }, []);
+
+  // Sync browser back/forward button with step machine
+  useEffect(() => {
+    const onPop = (e: PopStateEvent) => {
+      const s = (e.state as { step?: AppStep } | null)?.step ?? 'input';
+      setStep(s);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  // Guard: redirect if step has missing data
+  useEffect(() => {
+    if (step === 'results' && !nutritionResult) setStep('review');
+    if (step === 'review' && ingredients.length === 0) setStep('input');
+  }, [step, nutritionResult, ingredients.length]);
 
   // Keep localStorage in sync whenever currentUser changes
   useEffect(() => {
@@ -52,15 +76,34 @@ export default function App() {
     setPage('app');
   }
 
-  const handleParse = async (rawText: string, srv: number, srvSize: string) => {
+  const handleParse = async (rawText: string, rawServings: string, rawServingSize: string) => {
+    const srv = Number(rawServings) || 1;
+    const srvSize = rawServingSize || '1 serving';
+
+    // Skip API call if inputs are unchanged and we already have parsed results
+    if (
+      rawText === recipeText &&
+      rawServings === recipeServings &&
+      rawServingSize === recipeServingSize &&
+      ingredients.length > 0
+    ) {
+      history.pushState({ step: 'review' }, '');
+      setStep('review');
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    setRecipeText(rawText);
+    setRecipeServings(rawServings);
+    setRecipeServingSize(rawServingSize);
     try {
       const data = await api.parseRecipe(rawText, srv, srvSize);
       setRecipeName(data.recipe_name);
       setServings(data.servings);
       setServingSize(data.serving_size);
       setIngredients(data.ingredients);
+      history.pushState({ step: 'review' }, '');
       setStep('review');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse recipe');
@@ -88,6 +131,7 @@ export default function App() {
         recipeName,
       );
       setNutritionResult(result);
+      history.pushState({ step: 'results' }, '');
       setStep('results');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to calculate nutrition');
@@ -98,10 +142,16 @@ export default function App() {
 
   const handleStartOver = () => {
     setStep('input');
+    setRecipeText('');
+    setRecipeServings('');
+    setRecipeServingSize('');
     setIngredients([]);
     setNutritionResult(null);
     setError(null);
+    history.pushState({ step: 'input' }, '');
   };
+
+  const handleBackToInput = () => window.history.back();
 
   if (page === 'login') {
     return (
@@ -155,7 +205,13 @@ export default function App() {
         {error && <div className="error">{error}</div>}
 
         {step === 'input' && (
-          <RecipeInput onParse={handleParse} loading={loading} />
+          <RecipeInput
+            onParse={handleParse}
+            loading={loading}
+            initialText={recipeText}
+            initialServings={recipeServings}
+            initialServingSize={recipeServingSize}
+          />
         )}
 
         {step === 'review' && (
@@ -166,7 +222,7 @@ export default function App() {
             servingSize={servingSize}
             onUpdateIngredient={handleUpdateIngredient}
             onCalculate={handleCalculate}
-            onBack={handleStartOver}
+            onBack={handleBackToInput}
             loading={loading}
           />
         )}
