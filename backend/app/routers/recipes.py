@@ -1,9 +1,13 @@
+import json
 import logging
 
 import httpx
 import openai
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
+from app.database import get_session, UserIngredientCache, UserRow
+from app.dependencies import get_optional_user
 from app.models.schemas import (
     RawRecipeInput,
     ParseRecipeResponse,
@@ -23,7 +27,11 @@ router = APIRouter()
 
 
 @router.post("/parse-recipe", response_model=ParseRecipeResponse)
-async def parse_recipe_endpoint(input_data: RawRecipeInput):
+async def parse_recipe_endpoint(
+    input_data: RawRecipeInput,
+    session: Session = Depends(get_session),
+    user: UserRow | None = Depends(get_optional_user)
+):
     settings = get_settings()
     if not settings.OPENAI_API_KEY:
         raise HTTPException(status_code=500, detail="OpenAI API key not configured")
@@ -46,22 +54,44 @@ async def parse_recipe_endpoint(input_data: RawRecipeInput):
     if input_data.serving_size is not None:
         parsed.serving_size = input_data.serving_size
 
-    usda = USDAService()
+    usda = USDAService(db_session=session)
     ingredients_with_matches: list[IngredientWithMatch] = []
 
     try:
         for ingredient in parsed.ingredients:
-            results = await usda.search_food(ingredient.name)
-            matches = [
-                USDAMatch(
-                    fdc_id=item["fdcId"],
-                    description=item.get("description", ""),
-                    data_type=item.get("dataType", ""),
-                )
-                for item in results
-            ]
-            status = "matched" if matches else "no_match"
-            selected_fdc_id = matches[0].fdc_id if matches else None
+            cached = None
+            if user:
+                cached = session.query(UserIngredientCache).filter_by(
+                    user_id=user.id, ingredient_name=ingredient.name.lower()
+                ).first()
+
+            if cached:
+                cached_matches = json.loads(cached.matches_json)
+                matches = [USDAMatch(**m) for m in cached_matches]
+                status = "matched" if matches else "no_match"
+                selected_fdc_id = cached.selected_fdc_id
+            else:
+                results = await usda.search_food(ingredient.name)
+                matches = [
+                    USDAMatch(
+                        fdc_id=item["fdcId"],
+                        description=item.get("description", ""),
+                        data_type=item.get("dataType", ""),
+                    )
+                    for item in results
+                ]
+                status = "matched" if matches else "no_match"
+                selected_fdc_id = matches[0].fdc_id if matches else None
+
+                if user:
+                    new_cache = UserIngredientCache(
+                        user_id=user.id,
+                        ingredient_name=ingredient.name.lower(),
+                        matches_json=json.dumps([m.model_dump() for m in matches]),
+                        selected_fdc_id=selected_fdc_id
+                    )
+                    session.add(new_cache)
+                    session.commit()
 
             ingredients_with_matches.append(
                 IngredientWithMatch(
@@ -71,12 +101,11 @@ async def parse_recipe_endpoint(input_data: RawRecipeInput):
                     selected_fdc_id=selected_fdc_id,
                 )
             )
-    except httpx.HTTPStatusError as e:
-        logger.error("USDA API error: %s", e)
-        raise HTTPException(status_code=502, detail=f"USDA API error: {e.response.status_code} — {e.response.text}")
     except Exception as e:
-        logger.error("Unexpected error during USDA search: %s", e)
-        raise HTTPException(status_code=500, detail="An unexpected error occurred while searching USDA database.")
+        import traceback
+        traceback.print_exc()
+        logger.error("USDA API error: %s", e)
+        raise HTTPException(status_code=502, detail=str(e))
 
     return ParseRecipeResponse(
         recipe_name=parsed.recipe_name,
@@ -87,12 +116,15 @@ async def parse_recipe_endpoint(input_data: RawRecipeInput):
 
 
 @router.post("/calculate-nutrition", response_model=NutritionResult)
-async def calculate_nutrition_endpoint(request: CalculateNutritionRequest):
+async def calculate_nutrition_endpoint(
+    request: CalculateNutritionRequest,
+    session: Session = Depends(get_session)
+):
     settings = get_settings()
     if not settings.USDA_API_KEY:
         raise HTTPException(status_code=500, detail="USDA API key not configured")
 
-    usda = USDAService()
+    usda = USDAService(db_session=session)
     try:
         result = await calculate_nutrition(
             ingredients=request.ingredients,
