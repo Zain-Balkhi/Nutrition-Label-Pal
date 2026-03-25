@@ -131,6 +131,7 @@ def _build_template_context(nutrition_data: dict, width: str, height: str) -> di
         "recipe_name": nutrition_data.get("recipe_name", ""),
         "servings": servings,
         "serving_size": nutrition_data.get("serving_size", ""),
+        "allergens": nutrition_data.get("allergens", []),
         "calories_amount": calories_amount,
         "container_calories_amount": container_calories_amount,
         "width": width,

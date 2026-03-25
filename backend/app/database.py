@@ -68,6 +68,7 @@ class RecipeRow(Base):
     servings = Column(Integer, nullable=False, default=1)
     serving_size = Column(String(100), nullable=False, default="1 serving")
     label_json = Column(Text, nullable=False, default="{}")
+    allergens_json = Column(Text, nullable=False, default="[]")
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc))

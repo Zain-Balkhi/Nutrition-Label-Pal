@@ -4,6 +4,7 @@ interface VerticalLabelProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
+  allergens?: string[];
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -42,7 +43,7 @@ function NutrientRow({ label, n, bold = false, indent = 0, showDv = true }: Nutr
   );
 }
 
-export default function VerticalLabel({ nutrients, servings, serving_size }: VerticalLabelProps) {
+export default function VerticalLabel({ nutrients, servings, serving_size, allergens }: VerticalLabelProps) {
   const calories = getN(nutrients, 'Calories');
   const calPerServing = calories?.amount ?? 0;
 
@@ -105,6 +106,11 @@ export default function VerticalLabel({ nutrients, servings, serving_size }: Ver
         food contributes to a daily diet. 2,000 calories a day is used for general
         nutrition advice.
       </p>
+      {allergens && allergens.length > 0 && (
+        <p className="nf-allergens" style={{ fontSize: '0.85em', fontWeight: 700, marginTop: '4px', borderTop: 'none', paddingTop: '0' }}>
+          Contains: {allergens.join(', ')}
+        </p>
+      )}
     </div>
   );
 }

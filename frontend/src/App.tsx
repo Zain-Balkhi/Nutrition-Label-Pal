@@ -43,6 +43,7 @@ export default function App() {
   const [servings, setServings] = useState(1);
   const [servingSize, setServingSize] = useState('1 serving');
   const [ingredients, setIngredients] = useState<IngredientWithMatch[]>([]);
+  const [allergens, setAllergens] = useState<string[]>([]);
   const [nutritionResult, setNutritionResult] = useState<NutritionResult | null>(null);
 
   // Save modal state
@@ -187,6 +188,7 @@ export default function App() {
       setServings(data.servings);
       setServingSize(data.serving_size);
       setIngredients(data.ingredients);
+      setAllergens(data.allergens || []);
       setStep('review');
       history.pushState({ page: 'app', step: 'review' }, '');
     } catch (err) {
@@ -213,6 +215,7 @@ export default function App() {
         servings,
         servingSize,
         recipeName,
+        allergens,
       );
       setNutritionResult(result);
       setSavedRecipeId(null);
@@ -231,6 +234,7 @@ export default function App() {
     setRecipeServings('');
     setRecipeServingSize('');
     setIngredients([]);
+    setAllergens([]);
     setNutritionResult(null);
     setError(null);
     setSavedRecipeId(null);
@@ -268,6 +272,7 @@ export default function App() {
         daily_value_percent: n.daily_value_percent,
         display_value: n.display_value,
       })) ?? [],
+      allergens: allergens,
     };
   }
 
@@ -324,6 +329,7 @@ export default function App() {
     setRecipeName(recipe.recipe_name);
     setServings(recipe.servings);
     setServingSize(recipe.serving_size);
+    setAllergens(recipe.allergens || []);
     setEditingRecipeId(recipe.id);
 
     // Reconstruct ingredients from saved data

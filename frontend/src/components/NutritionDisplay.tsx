@@ -36,6 +36,7 @@ export default function NutritionDisplay({
           nutrients={result.nutrients}
           servings={result.servings}
           serving_size={result.serving_size}
+          allergens={result.allergens}
         />
 
         <div className="results-actions">
@@ -83,6 +84,16 @@ export default function NutritionDisplay({
         </div>
       )}
 
+      {result.allergens && result.allergens.length > 0 && (
+        <div className="allergens-warning" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '4px', border: '1px solid #ffeeba' }}>
+          <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '1.1rem' }}>⚠️ Allergen Notice</h3>
+          <p style={{ margin: 0 }}>
+            This recipe includes common allergens: <strong>{result.allergens.join(', ')}</strong>.
+            They have been automatically flagged on your nutrition label.
+          </p>
+        </div>
+      )}
+
       {showExport && (
         <ExportModal
           format={format}
@@ -90,6 +101,7 @@ export default function NutritionDisplay({
           servings={result.servings}
           serving_size={result.serving_size}
           nutrients={result.nutrients}
+          allergens={result.allergens}
           onClose={() => setShowExport(false)}
         />
       )}

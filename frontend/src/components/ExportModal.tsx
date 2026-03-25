@@ -10,6 +10,7 @@ interface ExportModalProps {
   servings: number;
   serving_size: string;
   nutrients: NutrientValue[];
+  allergens?: string[];
   onClose: () => void;
 }
 
@@ -19,6 +20,7 @@ export default function ExportModal({
   servings,
   serving_size,
   nutrients,
+  allergens,
   onClose,
 }: ExportModalProps) {
   const defaults = LABEL_FORMAT_INFO[format];
@@ -56,6 +58,7 @@ export default function ExportModal({
         servings,
         serving_size,
         nutrients,
+        allergens,
       };
       const blob = await api.exportLabel(request);
 

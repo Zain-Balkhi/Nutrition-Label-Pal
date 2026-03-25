@@ -112,6 +112,7 @@ async def parse_recipe_endpoint(
         servings=parsed.servings,
         serving_size=parsed.serving_size,
         ingredients=ingredients_with_matches,
+        allergens=parsed.allergens,
     )
 
 
@@ -131,6 +132,7 @@ async def calculate_nutrition_endpoint(
             servings=request.servings,
             serving_size=request.serving_size,
             recipe_name=request.recipe_name,
+            allergens=request.allergens,
             usda_service=usda,
         )
     except httpx.HTTPStatusError as e:

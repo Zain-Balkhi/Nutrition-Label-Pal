@@ -175,4 +175,9 @@
   a day is used for general nutrition advice.
 </p>
 {% endif %}
+{% if allergens %}
+<p class="nf-allergens" style="font-size: 8pt; font-weight: 700; margin-top: 4pt;">
+  Contains: {{ allergens | join(', ') }}
+</p>
+{% endif %}
 {% endblock %}

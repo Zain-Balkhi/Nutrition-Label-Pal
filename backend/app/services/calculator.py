@@ -91,6 +91,7 @@ async def calculate_nutrition(
     servings: int,
     serving_size: str,
     recipe_name: str,
+    allergens: list[str],
     usda_service: USDAService,
 ) -> NutritionResult:
     settings = get_settings()
@@ -170,4 +171,5 @@ async def calculate_nutrition(
         serving_size=serving_size,
         nutrients=nutrient_values,
         skipped_ingredients=skipped,
+        allergens=allergens,
     )

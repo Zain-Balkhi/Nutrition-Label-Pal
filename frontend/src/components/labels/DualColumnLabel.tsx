@@ -4,6 +4,7 @@ interface DualColumnLabelProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
+  allergens?: string[];
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -55,7 +56,7 @@ function NutrientRow({ label, n, servings, bold = false, indent = 0, showDv = tr
   );
 }
 
-export default function DualColumnLabel({ nutrients, servings, serving_size }: DualColumnLabelProps) {
+export default function DualColumnLabel({ nutrients, servings, serving_size, allergens }: DualColumnLabelProps) {
   const calories = getN(nutrients, 'Calories');
   const calPerServing = calories?.amount ?? 0;
   const calPerContainer = Math.round(calPerServing * servings);
@@ -130,6 +131,11 @@ export default function DualColumnLabel({ nutrients, servings, serving_size }: D
         food contributes to a daily diet. 2,000 calories a day is used for general
         nutrition advice.
       </p>
+      {allergens && allergens.length > 0 && (
+        <p className="nf-allergens" style={{ fontSize: '0.85em', fontWeight: 700, marginTop: '4px', borderTop: 'none', paddingTop: '0' }}>
+          Contains: {allergens.join(', ')}
+        </p>
+      )}
     </div>
   );
 }
