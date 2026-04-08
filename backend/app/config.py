@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_HOURS: int = 24
 
+    # CORS — comma-separated origins, e.g. "https://yourdomain.com,http://localhost:5173"
+    CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+
+    # Set to "production" on Railway to enforce SECRET_KEY
+    ENVIRONMENT: str = "development"
+
     # USDA nutrient ID mapping
     NUTRIENT_IDS: dict[str, int] = {
         "energy": 1008,

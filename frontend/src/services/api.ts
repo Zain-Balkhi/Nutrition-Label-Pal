@@ -15,7 +15,7 @@ import type {
   UserProfileUpdated,
 } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 /** Returns the stored JWT token, if any. */
 function getToken(): string | null {
