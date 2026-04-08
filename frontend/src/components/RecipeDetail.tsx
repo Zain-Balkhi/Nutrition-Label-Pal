@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import NutritionDisplay from './NutritionDisplay';
 import TagInput from './TagInput';
@@ -6,8 +7,6 @@ import type { RecipeDetail as RecipeDetailType, NutritionResult, Tag } from '../
 import './Tags.css';
 
 interface RecipeDetailProps {
-  recipeId: number;
-  onBack: () => void;
   onEdit: (recipe: RecipeDetailType) => void;
   onDelete: () => void;
 }
@@ -32,11 +31,12 @@ function recipeToNutritionResult(recipe: RecipeDetailType): NutritionResult {
 }
 
 export default function RecipeDetail({
-  recipeId,
-  onBack,
   onEdit,
   onDelete,
 }: RecipeDetailProps) {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const recipeId = Number(id);
   const [recipe, setRecipe] = useState<RecipeDetailType | null>(null);
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
@@ -131,7 +131,7 @@ export default function RecipeDetail({
     return (
       <div className="recipe-detail">
         <div className="error">{error ?? 'Recipe not found'}</div>
-        <button className="btn-secondary" onClick={onBack}>Back to Recipes</button>
+        <button className="btn-secondary" onClick={() => navigate('/recipes')}>Back to Recipes</button>
       </div>
     );
   }
@@ -140,7 +140,7 @@ export default function RecipeDetail({
 
   return (
     <div className="recipe-detail">
-      <button className="btn-back-link" onClick={onBack}>
+      <button className="btn-back-link" onClick={() => navigate('/recipes')}>
         &larr; Back to Recipes
       </button>
 
@@ -158,7 +158,7 @@ export default function RecipeDetail({
       <NutritionDisplay
         result={nutritionResult}
         onBack={() => onEdit(recipe)}
-        onViewSaved={onBack}
+        onViewSaved={() => navigate('/recipes')}
         ingredientNames={recipe.ingredients.map(i => i.name)}
         onEditLabel={async (updates) => {
           const result = await api.calculateNutrition(

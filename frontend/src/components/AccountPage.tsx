@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import type { AuthUser, UserProfile } from '../types';
 import './AccountPage.css';
@@ -8,7 +9,6 @@ interface AccountPageProps {
   onUserUpdated: (user: AuthUser) => void;
   onLogout: () => void;
   onAccountDeleted: () => void;
-  onDashboardClick: () => void;
 }
 
 export default function AccountPage({
@@ -16,8 +16,8 @@ export default function AccountPage({
   onUserUpdated,
   onLogout,
   onAccountDeleted,
-  onDashboardClick,
 }: AccountPageProps) {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -215,7 +215,7 @@ export default function AccountPage({
               <div className="account-stat-label">
                 {recipeCount === 1 ? 'Saved Recipe' : 'Saved Recipes'}
               </div>
-              <button className="account-dashboard-link" onClick={onDashboardClick}>
+              <button className="account-dashboard-link" onClick={() => navigate('/recipes')}>
                 View Recipes
               </button>
             </div>

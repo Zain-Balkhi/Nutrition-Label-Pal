@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import type { RecipeSummary, Tag } from '../types';
 import TagBadge from './TagBadge';
 import TagManager from './TagManager';
 import './Tags.css';
 
-interface DashboardProps {
-  onViewRecipe: (id: number) => void;
-  onNewRecipe: () => void;
-}
-
-export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps) {
+export default function Dashboard() {
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,13 +154,13 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
       {recipes.length === 0 ? (
         <div className="dashboard-empty">
           <p className="dashboard-empty-text">No labels saved yet.</p>
-          <button className="btn-create-first" onClick={onNewRecipe}>
+          <button className="btn-create-first" onClick={() => navigate('/generate')}>
             Create Your First Label
           </button>
         </div>
       ) : (
       <div className="recipe-grid">
-        <div className="recipe-card recipe-card-new" onClick={onNewRecipe}>
+        <div className="recipe-card recipe-card-new" onClick={() => navigate('/generate')}>
           <span className="recipe-card-new-icon">+</span>
           <h3 className="recipe-card-title">Add New Recipe</h3>
         </div>
@@ -171,7 +168,7 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
           <div
             key={recipe.id}
             className="recipe-card"
-            onClick={() => onViewRecipe(recipe.id)}
+            onClick={() => navigate(`/recipes/${recipe.id}`)}
           >
             <h3 className="recipe-card-title">{recipe.recipe_name}</h3>
             {recipe.tags && recipe.tags.length > 0 && (
@@ -192,7 +189,7 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
               className="recipe-card-view"
               onClick={e => {
                 e.stopPropagation();
-                onViewRecipe(recipe.id);
+                navigate(`/recipes/${recipe.id}`);
               }}
             >
               View
