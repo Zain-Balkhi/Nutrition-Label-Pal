@@ -4,7 +4,10 @@ interface LinearLabelProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
-  allergens?: string[];
+  showAllergens?: boolean;
+  allergenText?: string;
+  showIngredients?: boolean;
+  ingredientListText?: string;
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -40,7 +43,7 @@ function LinearItem({ label, n, bold = false, showDv = true, last = false }: Lin
   );
 }
 
-export default function LinearLabel({ nutrients, servings, serving_size, allergens }: LinearLabelProps) {
+export default function LinearLabel({ nutrients, servings, serving_size, showAllergens, allergenText, showIngredients, ingredientListText }: LinearLabelProps) {
   return (
     <div className="nf-linear">
       <div className="nf-linear-title">Nutrition Facts</div>
@@ -66,10 +69,16 @@ export default function LinearLabel({ nutrients, servings, serving_size, allerge
       </div>
       <div className="nf-thin-bar" />
       <p className="nf-footnote">* % Daily Value (DV) based on a 2,000 calorie diet.</p>
-      {allergens && allergens.length > 0 && (
+      {showAllergens && allergenText && (
         <p className="nf-allergens" style={{ fontSize: '0.85em', fontWeight: 700, marginTop: '2px' }}>
-          Contains: {allergens.join(', ')}
+          {allergenText}
         </p>
+      )}
+      {showIngredients && ingredientListText && (
+        <div className="nf-ingredients" style={{ fontSize: '0.8em', marginTop: '4px', borderTop: '1px solid #000', paddingTop: '2px' }}>
+          <span style={{ fontWeight: 700 }}>INGREDIENTS: </span>
+          {ingredientListText}
+        </div>
       )}
     </div>
   );

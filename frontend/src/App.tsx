@@ -356,6 +356,43 @@ export default function App() {
     history.pushState({ page: 'app', step: 'input' }, '');
   }
 
+  async function handleEditLabel(updates: { servings: number; serving_size: string }) {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await api.calculateNutrition(
+        ingredients,
+        updates.servings,
+        updates.serving_size,
+        recipeName,
+        allergens,
+      );
+      setNutritionResult(result);
+      setServings(updates.servings);
+      setServingSize(updates.serving_size);
+
+      // Persist to DB if editing an existing recipe
+      if (editingRecipeId) {
+        await api.recipes.update(editingRecipeId, {
+          servings: updates.servings,
+          serving_size: updates.serving_size,
+          nutrients: result.nutrients.map(n => ({
+            name: n.name,
+            amount: n.amount,
+            unit: n.unit,
+            daily_value_percent: n.daily_value_percent,
+            display_value: n.display_value,
+          })),
+        });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to recalculate nutrition');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function handleRecipeDeleted() {
     navigateTo('dashboard');
   }
@@ -495,8 +532,12 @@ export default function App() {
             onBack={handleStartOver}
             onSave={handleSaveClick}
             onViewSaved={handleViewSaved}
+            onEditLabel={handleEditLabel}
             saveDisabled={savedRecipeId !== null}
             saveLabel={savedRecipeId !== null ? 'Saved!' : (editingRecipeId ? 'Update Recipe' : 'Save Label')}
+            ingredientNames={ingredients
+              .filter(ing => ing.selected_fdc_id !== null)
+              .map(ing => ing.parsed.name)}
           />
         )}
       </main>

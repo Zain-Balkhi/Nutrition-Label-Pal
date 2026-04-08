@@ -195,7 +195,10 @@ export interface LabelExportRequest {
   servings: number;
   serving_size: string;
   nutrients: NutrientValue[];
-  allergens?: string[];
+  show_allergens?: boolean;
+  allergen_text?: string;
+  show_ingredients?: boolean;
+  ingredient_list_text?: string;
 }
 
 export const LABEL_FORMAT_INFO: Record<LabelFormat, {

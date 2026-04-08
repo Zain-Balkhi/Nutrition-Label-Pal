@@ -4,13 +4,20 @@ import StepIndicator from './StepIndicator';
 import LabelPreview from './labels/LabelPreview';
 import ExportModal from './ExportModal';
 
+interface EditLabelUpdates {
+  servings: number;
+  serving_size: string;
+}
+
 interface NutritionDisplayProps {
   result: NutritionResult;
   onBack: () => void;
   onSave?: () => void;
   onViewSaved?: () => void;
+  onEditLabel?: (updates: EditLabelUpdates) => Promise<void>;
   saveDisabled?: boolean;
   saveLabel?: string;
+  ingredientNames?: string[];
 }
 
 export default function NutritionDisplay({
@@ -18,11 +25,64 @@ export default function NutritionDisplay({
   onBack,
   onSave,
   onViewSaved,
+  onEditLabel,
   saveDisabled = false,
   saveLabel = 'Save Label',
+  ingredientNames = [],
 }: NutritionDisplayProps) {
   const [format, setFormat] = useState<LabelFormat>('vertical');
   const [showExport, setShowExport] = useState(false);
+
+  // Edit mode state
+  const [editing, setEditing] = useState(false);
+  const [editServings, setEditServings] = useState(result.servings);
+  const [editServingSize, setEditServingSize] = useState(result.serving_size);
+  const [editLoading, setEditLoading] = useState(false);
+
+  // Allergen toggle state (default: unchecked)
+  const [showAllergens, setShowAllergens] = useState(false);
+  const [allergenText, setAllergenText] = useState(
+    result.allergens && result.allergens.length > 0
+      ? `Contains: ${result.allergens.join(', ')}`
+      : ''
+  );
+
+  // Ingredient list toggle state (default: unchecked)
+  const [showIngredients, setShowIngredients] = useState(false);
+  const [ingredientListText, setIngredientListText] = useState(
+    ingredientNames.length > 0
+      ? ingredientNames.join(', ') + '.'
+      : ''
+  );
+
+  // Values to display on the label (edited or original)
+  const displayServings = editing ? editServings : result.servings;
+  const displayServingSize = editing ? editServingSize : result.serving_size;
+
+  function handleEditClick() {
+    setEditServings(result.servings);
+    setEditServingSize(result.serving_size);
+    setEditing(true);
+  }
+
+  function handleCancelEdit() {
+    setEditServings(result.servings);
+    setEditServingSize(result.serving_size);
+    setEditing(false);
+  }
+
+  async function handleSaveEdit() {
+    if (!onEditLabel) return;
+    setEditLoading(true);
+    try {
+      await onEditLabel({ servings: editServings, serving_size: editServingSize });
+      setEditing(false);
+    } catch {
+      // Error is handled by the parent
+    } finally {
+      setEditLoading(false);
+    }
+  }
 
   return (
     <div className="nutrition-display">
@@ -34,36 +94,126 @@ export default function NutritionDisplay({
           format={format}
           onFormatChange={setFormat}
           nutrients={result.nutrients}
-          servings={result.servings}
-          serving_size={result.serving_size}
-          allergens={result.allergens}
+          servings={displayServings}
+          serving_size={displayServingSize}
+          showAllergens={showAllergens}
+          allergenText={allergenText}
+          showIngredients={showIngredients}
+          ingredientListText={ingredientListText}
         />
 
         <div className="results-actions">
-          <button onClick={onBack} className="btn-start-new">
-            Start New Recipe
-          </button>
-          <button
-            className="btn-save-label"
-            onClick={onSave}
-            disabled={saveDisabled}
-          >
-            {saveLabel}
-          </button>
-          <button
-            type="button"
-            className="btn-download-pdf"
-            onClick={() => setShowExport(true)}
-          >
-            Download PDF
-          </button>
-          <button
-            type="button"
-            className="view-saved-link"
-            onClick={onViewSaved}
-          >
-            View Saved Labels
-          </button>
+          {editing ? (
+            <>
+              <div className="edit-fields">
+                <label className="edit-field-label">
+                  Servings
+                  <input
+                    type="number"
+                    min={1}
+                    value={editServings}
+                    onChange={e => setEditServings(Math.max(1, Number(e.target.value)))}
+                    className="edit-field-input"
+                  />
+                </label>
+                <label className="edit-field-label">
+                  Serving Size
+                  <input
+                    type="text"
+                    value={editServingSize}
+                    onChange={e => setEditServingSize(e.target.value)}
+                    className="edit-field-input"
+                  />
+                </label>
+              </div>
+              {result.allergens && result.allergens.length > 0 && (
+                <label className="edit-toggle-label">
+                  <input
+                    type="checkbox"
+                    checked={showAllergens}
+                    onChange={e => setShowAllergens(e.target.checked)}
+                  />
+                  Show allergen notice on label
+                </label>
+              )}
+              {showAllergens && (
+                <textarea
+                  className="edit-textarea"
+                  value={allergenText}
+                  onChange={e => setAllergenText(e.target.value)}
+                  rows={2}
+                />
+              )}
+              {ingredientNames.length > 0 && (
+                <label className="edit-toggle-label">
+                  <input
+                    type="checkbox"
+                    checked={showIngredients}
+                    onChange={e => setShowIngredients(e.target.checked)}
+                  />
+                  Show ingredient list on label
+                </label>
+              )}
+              {showIngredients && (
+                <textarea
+                  className="edit-textarea"
+                  value={ingredientListText}
+                  onChange={e => setIngredientListText(e.target.value)}
+                  rows={3}
+                />
+              )}
+              <button
+                className="btn-save-label"
+                onClick={handleSaveEdit}
+                disabled={editLoading}
+              >
+                {editLoading ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={handleCancelEdit}
+                disabled={editLoading}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              {onEditLabel && (
+                <button
+                  type="button"
+                  className="btn-edit-label"
+                  onClick={handleEditClick}
+                >
+                  Edit Label
+                </button>
+              )}
+              <button onClick={onBack} className="btn-start-new">
+                Start New Recipe
+              </button>
+              <button
+                className="btn-save-label"
+                onClick={onSave}
+                disabled={saveDisabled}
+              >
+                {saveLabel}
+              </button>
+              <button
+                type="button"
+                className="btn-download-pdf"
+                onClick={() => setShowExport(true)}
+              >
+                Download PDF
+              </button>
+              <button
+                type="button"
+                className="view-saved-link"
+                onClick={onViewSaved}
+              >
+                View Saved Labels
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -86,7 +236,7 @@ export default function NutritionDisplay({
 
       {result.allergens && result.allergens.length > 0 && (
         <div className="allergens-warning" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '4px', border: '1px solid #ffeeba' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '1.1rem' }}>⚠️ Allergen Notice</h3>
+          <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '1.1rem' }}>Allergen Notice</h3>
           <p style={{ margin: 0 }}>
             This recipe includes common allergens: <strong>{result.allergens.join(', ')}</strong>.
             They have been automatically flagged on your nutrition label.
@@ -101,7 +251,10 @@ export default function NutritionDisplay({
           servings={result.servings}
           serving_size={result.serving_size}
           nutrients={result.nutrients}
-          allergens={result.allergens}
+          show_allergens={showAllergens}
+          allergen_text={allergenText}
+          show_ingredients={showIngredients}
+          ingredient_list_text={ingredientListText}
           onClose={() => setShowExport(false)}
         />
       )}
