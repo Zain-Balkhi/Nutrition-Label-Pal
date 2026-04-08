@@ -4,92 +4,9 @@ The items below are what need to be implemented into Nutrition Label Pal, ordere
 
 ---
 
-## Completed
+## Priority 1: Voice Input for Recipe
 
-### ~~Allergen Flagging~~
-Implemented in commit `9d762e8`. LLM detects 9 FDA allergens during parsing. Allergen notice on labels is now opt-in via a toggle in Step 3 edit mode (default unchecked) with an editable textarea.
-
-### ~~Session Tokens~~
-Already implemented. JWT stored in localStorage (`auth_token` key), automatically injected as Bearer token on all API requests via `api.ts`. Persists across page reloads and tab switches. No refresh token logic yet — JWT lives until expiration or manual logout.
-
----
-
-## Priority 1: Step 3 Edit/Save Mode
-
-Add an Edit/Save button to Step 3 that unlocks all editable fields for the label. The UI should update dynamically as the user makes changes, but changes are only persisted to the database when the Save button is clicked.
-
-**Scope:**
-- Add an Edit button that reveals/unlocks all editable fields in Step 3 (servings, serving size, and future fields like allergens and ingredient list)
-- All label previews update dynamically as values change (no separate "Recalculate" button — live preview)
-- Add a Save button that persists changes to the database
-- A Cancel button to discard unsaved changes and revert to the last saved state
-- Also add to saved recipe detail view in the Recipes dashboard with the same edit/save pattern
-
-**Why first:** Core UX pattern that all other Step 3 editing features (allergen toggle, ingredient list, tags) will build on. Must be in place before adding more editable fields.
-
-## Priority 2: Allergen Flagging Toggle + Ingredient List Toggle
-
-Make the allergen notice and ingredient list on labels optional via checkboxes in the Step 3 edit mode. Both follow the same UI pattern.
-
-**Scope (allergen toggle):**
-- Add a checkbox in Step 3 edit mode to show/hide the allergen notice on the label
-- **Default unchecked** — user must opt in to show allergens on the label
-- When checked, reveal an editable textarea prepopulated with the detected allergens
-- Users can freely edit the allergen text (add, remove, reword)
-- Pass the toggle state and text through to label templates and React label components
-
-**Scope (ingredient list toggle):**
-- Add a checkbox in Step 3 edit mode to show/hide the ingredient list on the label
-- When checked, reveal an editable textarea prepopulated with ingredients
-- Follow FDA formatting per 21 CFR 101.4: ingredients listed in descending order of predominance by weight, comma-separated, common names used
-- Render the ingredient list in all 4 Jinja2 templates and their React counterparts
-
-**Why here:** High impact FDA compliance features. The ingredient data pipeline already exists (parsed, matched, stored in DB) — only the rendering layer and editing UI are missing.
-
-## Priority 3: Ingredient List on Nutrition Label
-
-The rendering and formatting details for the ingredient list feature described in Priority 2.
-
-**Scope:**
-- Add an ingredients list field to the label rendering pipeline (backend templates + frontend components)
-- Render in all 4 Jinja2 templates (`vertical.html`, `linear.html`, `tabular.html`, `dual_column.html`) and their React counterparts
-- FDA formatting (21 CFR 101.4): descending order of predominance by weight, comma-separated, common/usual names
-- Research any additional FDA requirements for ingredient list formatting and apply them
-
-## Priority 4: Tag Creation
-
-Give users the ability to create and manage tags for recipes. Tags help organize recipes in the Recipes dashboard (e.g., "Desserts", "Low Sodium", "Client: Acme Bakery").
-
-**Design decisions:**
-- Tags are text with a colored background
-- Predefined color palette with an additional color picker for custom colors
-- No maximum number of tags per recipe
-
-**Scope:**
-- New `tags` and `recipe_tags` tables in database (many-to-many relationship)
-- Tag CRUD endpoints (create, list, delete, rename)
-- Tag assignment/removal on recipes
-- Tag UI in Step 3 edit mode (assign tags when saving a recipe) and in the Recipes dashboard (filter/manage tags)
-- Intuitive UX: type-ahead/autocomplete for existing tags, inline creation of new tags
-- Color picker component with predefined palette + custom color option
-
-**Why here:** Organizational feature that becomes valuable as users accumulate recipes. Self-contained — no dependencies on other backlog items. Moderate complexity across all layers (DB, API, UI). Can be developed in parallel with Priorities 1-3 in a separate worktree.
-
-## Priority 5: UI Polish Pass
-
-A round of visual and UX improvements across the app.
-
-**Scope:**
-- **Rename Dashboard tab to "Recipes"**
-- **Loading states:** Add spinners or skeleton loaders between API requests (recipe parsing, nutrition calculation, recipe saving). Currently the UI has no feedback during these async operations.
-- **Animations:** Add subtle transitions between the 3-step flow (input, review, results) and when elements appear/disappear
-- **Accounts page polish:** Clean up the accounts/profile page layout, improve form styling, add feedback for profile updates, remove the edit password item.
-
-**Why here:** Quality-of-life improvements that make the app feel polished. No new features or data model changes — purely frontend. Should come after Step 3 editing features are in place to avoid rework.
-
-## Priority 6: Voice Input for Recipe
-
-Add an optional voice input button to the recipe text area that transcribes spoken ingredients into text.
+Add an optional voice input button to the recipe text area that transcribes spoken ingredients into text. Build with production in mind (graceful degradation, proper error handling).
 
 **Scope:**
 - Integrate the Web Speech API (`webkitSpeechRecognition` / `SpeechRecognition`) in `RecipeInput.tsx`
@@ -97,11 +14,9 @@ Add an optional voice input button to the recipe text area that transcribes spok
 - Append transcribed text to the textarea content
 - Handle microphone permissions and browser support gracefully (Chrome/Edge have full support; Safari/Firefox are limited)
 
-**Why here:** Nice-to-have input method. Useful for hands-free recipe entry but not blocking any core functionality. Limited browser support means it can't be the primary input method.
+## Priority 2: Ingredient Input via OCR
 
-## Priority 7: Ingredient Input via OCR
-
-Allow users to upload an image or PDF of a recipe and extract ingredient text via OCR.
+Allow users to upload an image or PDF of a recipe and extract ingredient text via OCR. Build with production in mind (proper error handling, no hardcoded config).
 
 **Scope:**
 - Add file upload input (accepts PNG, JPG, PDF) to `RecipeInput.tsx`
@@ -110,4 +25,18 @@ Allow users to upload an image or PDF of a recipe and extract ingredient text vi
 - Extract text and populate the recipe textarea
 - Handle poor-quality scans gracefully (show extracted text for user review/editing)
 
-**Why last:** Highest complexity and most research needed. Requires evaluating OCR libraries, handling image quality edge cases, and potentially adding backend processing. Valuable but not urgent.
+## Priority 3: Production Launch Preparation
+
+Audit and modify the codebase for a production deployment. Done last so the audit covers the final feature-complete codebase. Needs planning.
+
+**Scope (needs planning):**
+- **Database:** Migrate from SQLite to PostgreSQL (Supabase). Update DATABASE_URL, test all queries, handle async sessions
+- **Environment/Config:** Ensure SECRET_KEY is set from env (not default), audit all config values, set up .env.production
+- **CORS:** Restrict allowed origins to production domain (currently allows localhost only)
+- **Auth:** Evaluate token expiry strategy, consider refresh tokens for production
+- **Error handling:** Add proper error logging (not just print/traceback), structured logging for production
+- **Security:** Audit for exposed API keys, ensure .env is gitignored, add rate limiting on auth endpoints
+- **Static assets:** Configure frontend build for production (proper base URL, asset hashing)
+- **Deployment:** Choose hosting (e.g., Railway, Fly.io, Vercel+Supabase), set up CI/CD, health check endpoint already exists
+- **Performance:** Connection pooling for PostgreSQL, evaluate caching strategy for USDA API calls
+- **Monitoring:** Error tracking (Sentry or similar), uptime monitoring

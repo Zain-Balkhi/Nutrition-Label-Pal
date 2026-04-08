@@ -299,7 +299,73 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
-  
+
+  /* ===========================
+     Input Actions Toolbar
+     =========================== */
+  .input-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .input-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: 2px solid var(--gray-light);
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-gray);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .input-action-btn:hover {
+    border-color: var(--accent-orange);
+    color: var(--text-dark);
+  }
+
+  .input-action-btn:focus-visible {
+    outline: 2px solid var(--accent-orange);
+    outline-offset: 2px;
+  }
+
+  .mic-btn--listening {
+    border-color: var(--accent-orange);
+    color: var(--accent-orange);
+    background: rgba(245, 166, 35, 0.08);
+    animation: mic-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes mic-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(245, 166, 35, 0);
+    }
+  }
+
+  .voice-error {
+    background: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
   /* ===========================
      Ingredient Review (Step 2)
      =========================== */
@@ -1557,6 +1623,10 @@
       max-width: 380px;
     }
 
+    .input-actions {
+      justify-content: center;
+    }
+
     .input-row {
       flex-direction: column;
       align-items: center;
@@ -1605,6 +1675,18 @@
 
     .page-title {
       font-size: 1.25rem;
+    }
+
+    .input-action-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
   }
 
