@@ -1,4 +1,7 @@
 {
   "name": "nutrition-label-pal",
-  "pages_build_output_dir": "frontend/dist"
+  "compatibility_date": "2026-04-08",
+  "assets": {
+    "directory": "./frontend/dist"
+  }
 }
