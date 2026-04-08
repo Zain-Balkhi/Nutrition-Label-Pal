@@ -131,7 +131,7 @@ export default function RecipeDetail({
     return (
       <div className="recipe-detail">
         <div className="error">{error ?? 'Recipe not found'}</div>
-        <button className="btn-secondary" onClick={onBack}>Back to Dashboard</button>
+        <button className="btn-secondary" onClick={onBack}>Back to Recipes</button>
       </div>
     );
   }
@@ -141,7 +141,7 @@ export default function RecipeDetail({
   return (
     <div className="recipe-detail">
       <button className="btn-back-link" onClick={onBack}>
-        &larr; Back to Dashboard
+        &larr; Back to Recipes
       </button>
 
       <div className="recipe-detail-tags">
@@ -158,9 +158,32 @@ export default function RecipeDetail({
       <NutritionDisplay
         result={nutritionResult}
         onBack={() => onEdit(recipe)}
-        saveDisabled
-        saveLabel="Saved"
         onViewSaved={onBack}
+        ingredientNames={recipe.ingredients.map(i => i.name)}
+        onEditLabel={async (updates) => {
+          const result = await api.calculateNutrition(
+            recipe.ingredients.filter(i => i.fdc_id).map(i => ({
+              parsed: { name: i.name, quantity: i.quantity, unit: i.unit, preparation: i.preparation, original_text: i.original_text },
+              status: 'matched',
+              matches: i.fdc_id && i.matched_description ? [{ fdc_id: i.fdc_id, description: i.matched_description, data_type: '' }] : [],
+              selected_fdc_id: i.fdc_id,
+            })),
+            updates.servings,
+            updates.serving_size,
+            recipe.recipe_name,
+            recipe.allergens || [],
+          );
+          await api.recipes.update(recipe.id, {
+            servings: updates.servings,
+            serving_size: updates.serving_size,
+            nutrients: result.nutrients.map(n => ({
+              name: n.name, amount: n.amount, unit: n.unit,
+              daily_value_percent: n.daily_value_percent,
+              display_value: n.display_value,
+            })),
+          });
+          setRecipe(prev => prev ? { ...prev, servings: updates.servings, serving_size: updates.serving_size } : prev);
+        }}
       />
 
       <div className="detail-actions">

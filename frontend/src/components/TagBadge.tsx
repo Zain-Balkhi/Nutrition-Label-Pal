@@ -39,7 +39,7 @@ export default function TagBadge({ tag, onRemove, size = 'md' }: TagBadgeProps) 
           aria-label={`Remove tag ${tag.name}`}
           style={{ color: textColor }}
         >
-          x
+          &times;
         </button>
       )}
     </span>

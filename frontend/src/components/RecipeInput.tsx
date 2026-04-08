@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import StepIndicator from './StepIndicator';
+import HowToModal from './HowToModal';
 
 interface RecipeInputProps {
   onParse: (rawText: string, servings: string, servingSize: string) => void;
@@ -13,6 +14,7 @@ export default function RecipeInput({ onParse, loading, initialText, initialServ
   const [rawText, setRawText] = useState(initialText ?? '');
   const [servings, setServings] = useState(initialServings ?? '');
   const [servingSize, setServingSize] = useState(initialServingSize ?? '');
+  const [showHowTo, setShowHowTo] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +26,9 @@ export default function RecipeInput({ onParse, loading, initialText, initialServ
     <form className="recipe-input" onSubmit={handleSubmit}>
       <h2 className="page-title">Give a recipe, get a nutrition label!</h2>
       <StepIndicator currentStep={1} />
+      <button type="button" className="howto-trigger" onClick={() => setShowHowTo(true)}>
+        How does this work?
+      </button>
 
       <textarea
         id="recipe-text"
@@ -60,6 +65,7 @@ export default function RecipeInput({ onParse, loading, initialText, initialServ
           {loading ? <><span className="spinner spinner-sm" />Parsing...</> : 'Create'}
         </button>
       </div>
+      {showHowTo && <HowToModal onClose={() => setShowHowTo(false)} />}
     </form>
   );
 }

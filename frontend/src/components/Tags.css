@@ -4,10 +4,10 @@
 .tag-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   border-radius: 999px;
-  padding: 3px 10px;
-  font-size: 0.8rem;
+  padding: 5px 14px;
+  font-size: 0.9rem;
   font-weight: 600;
   line-height: 1.4;
   white-space: nowrap;
@@ -15,21 +15,24 @@
 }
 
 .tag-badge-sm {
-  padding: 1px 8px;
-  font-size: 0.7rem;
+  padding: 3px 10px;
+  font-size: 0.78rem;
 }
 
 .tag-badge-remove {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   line-height: 1;
   padding: 0;
   margin-left: 2px;
   opacity: 0.7;
   transition: opacity 0.15s;
   color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tag-badge-remove:hover {
@@ -46,8 +49,8 @@
 .tag-input-selected {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .tag-input-field {
@@ -376,14 +379,14 @@
    Recipe Detail Tags Section
    =========================== */
 .recipe-detail-tags {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .recipe-detail-tags-title {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-dark);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 /* ===========================
