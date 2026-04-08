@@ -1,0 +1,453 @@
+/* ===========================
+   Tag Badge
+   =========================== */
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.tag-badge-sm {
+  padding: 1px 8px;
+  font-size: 0.7rem;
+}
+
+.tag-badge-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0;
+  margin-left: 2px;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+  color: inherit;
+}
+
+.tag-badge-remove:hover {
+  opacity: 1;
+}
+
+/* ===========================
+   Tag Input (Autocomplete)
+   =========================== */
+.tag-input {
+  position: relative;
+}
+
+.tag-input-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tag-input-field {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--gray-light);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--text-dark);
+}
+
+.tag-input-field:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+}
+
+.tag-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+
+.tag-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  transition: background 0.1s;
+}
+
+.tag-dropdown-item:hover {
+  background: var(--bg-cream);
+}
+
+.tag-dropdown-item-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tag-dropdown-create {
+  border-top: 1px solid var(--gray-light);
+  color: var(--accent-orange);
+  font-weight: 600;
+}
+
+/* ===========================
+   Color Picker
+   =========================== */
+.color-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.15s;
+  position: relative;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch-selected {
+  border-color: var(--text-dark);
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--text-dark);
+}
+
+.color-picker-custom {
+  width: 28px;
+  height: 28px;
+  border: 2px dashed var(--gray-medium);
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  overflow: hidden;
+}
+
+.color-picker-custom input[type="color"] {
+  width: 40px;
+  height: 40px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin: -6px;
+}
+
+/* ===========================
+   Tag Manager
+   =========================== */
+.tag-manager {
+  margin-top: 1.5rem;
+}
+
+.tag-manager-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.tag-manager-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.tag-manager-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tag-manager-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.tag-manager-item-preview {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tag-manager-item-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.tag-manager-item-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 2px solid var(--accent-orange);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.tag-manager-item-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.15);
+}
+
+.tag-manager-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.tag-manager-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.tag-manager-btn:hover {
+  background: var(--gray-light);
+}
+
+.tag-manager-btn-edit {
+  color: var(--text-gray);
+}
+
+.tag-manager-btn-delete {
+  color: #e74c3c;
+}
+
+.tag-manager-btn-save {
+  color: var(--accent-green-dark);
+}
+
+.tag-manager-btn-cancel {
+  color: var(--text-gray);
+}
+
+.tag-manager-empty {
+  text-align: center;
+  color: var(--text-gray);
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+.tag-manager-create {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-light);
+}
+
+.tag-manager-create-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 2px solid var(--gray-light);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.tag-manager-create-input:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.15);
+}
+
+.tag-manager-create-btn {
+  background: var(--accent-green);
+  color: var(--text-dark);
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.tag-manager-create-btn:hover {
+  background: var(--accent-green-dark);
+}
+
+/* ===========================
+   Tag Filter Bar (Dashboard)
+   =========================== */
+.tag-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.25rem;
+  align-items: center;
+}
+
+.tag-filter-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-gray);
+  margin-right: 4px;
+}
+
+.tag-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, opacity 0.15s;
+  opacity: 0.6;
+}
+
+.tag-filter-chip:hover {
+  opacity: 0.85;
+}
+
+.tag-filter-chip-active {
+  opacity: 1;
+  border-color: var(--text-dark);
+}
+
+.tag-filter-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text-gray);
+  font-family: inherit;
+  padding: 3px 8px;
+  text-decoration: underline;
+}
+
+.tag-filter-clear:hover {
+  color: var(--text-dark);
+}
+
+/* ===========================
+   Recipe Card Tags
+   =========================== */
+.recipe-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+/* ===========================
+   Recipe Detail Tags Section
+   =========================== */
+.recipe-detail-tags {
+  margin-bottom: 1.25rem;
+}
+
+.recipe-detail-tags-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+/* ===========================
+   Manage Tags Button
+   =========================== */
+.btn-manage-tags {
+  background: var(--white);
+  color: var(--text-dark);
+  border: 2px solid var(--gray-light);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.btn-manage-tags:hover {
+  border-color: var(--accent-orange);
+  background: var(--bg-cream);
+}
+
+/* ===========================
+   Tag Manager Modal
+   =========================== */
+.tag-manager-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.tag-manager-modal {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.tag-manager-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.tag-manager-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-gray);
+  padding: 0;
+  line-height: 1;
+}
+
+.tag-manager-modal-close:hover {
+  color: var(--text-dark);
+}
