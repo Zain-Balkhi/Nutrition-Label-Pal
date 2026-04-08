@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { AuthUser } from '../types';
 
 interface HeaderProps {
@@ -21,6 +22,7 @@ export default function Header({
   onDashboardClick,
   onAccountClick,
 }: HeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
   // Far-right button logic:
   // Not logged in → "Login"
   // Logged in, on account page → "Logout"
@@ -31,7 +33,7 @@ export default function Header({
         <button
           type="button"
           className={`nav-link nav-btn ${activePage === 'login' ? 'active' : ''}`}
-          onClick={onLoginClick}
+          onClick={() => { setMenuOpen(false); onLoginClick?.(); }}
         >
           Login
         </button>
@@ -39,7 +41,7 @@ export default function Header({
     }
     if (activePage === 'account') {
       return (
-        <button type="button" className="nav-link nav-btn" onClick={onLogout}>
+        <button type="button" className="nav-link nav-btn" onClick={() => { setMenuOpen(false); onLogout?.(); }}>
           Logout
         </button>
       );
@@ -48,7 +50,7 @@ export default function Header({
       <button
         type="button"
         className={`nav-link nav-btn`}
-        onClick={onAccountClick}
+        onClick={() => { setMenuOpen(false); onAccountClick?.(); }}
       >
         Account
       </button>
@@ -61,18 +63,28 @@ export default function Header({
         <img src="/logo.png" alt="Nutrition Label Pal" className="header-logo" />
         <h1 className="header-title">Nutrition Label Pal</h1>
       </button>
-      <nav className="header-nav">
+      <button
+        type="button"
+        className="hamburger-btn"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle navigation"
+      >
+        <span className="hamburger-line" />
+        <span className="hamburger-line" />
+        <span className="hamburger-line" />
+      </button>
+      <nav className={`header-nav ${menuOpen ? 'nav-open' : ''}`}>
         <button
           type="button"
           className={`nav-link nav-btn ${activePage === 'generate' ? 'active' : ''}`}
-          onClick={onGenerateClick ?? onLogoClick}
+          onClick={() => { setMenuOpen(false); (onGenerateClick ?? onLogoClick)?.(); }}
         >
           Generate
         </button>
         <button
           type="button"
           className={`nav-link nav-btn ${activePage === 'dashboard' ? 'active' : ''}`}
-          onClick={onDashboardClick}
+          onClick={() => { setMenuOpen(false); onDashboardClick?.(); }}
         >
           Recipes
         </button>

@@ -454,3 +454,62 @@
 .tag-manager-modal-close:hover {
   color: var(--text-dark);
 }
+
+/* ===========================
+   Responsive — Tags
+   =========================== */
+@media (max-width: 768px) {
+  .tag-filter-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .tag-filter-chip {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .tag-filter-clear {
+    padding: 8px 12px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .tag-filter-label {
+    flex-shrink: 0;
+  }
+
+  .tag-manager-modal-overlay {
+    padding: 1rem;
+  }
+
+  .tag-manager-modal {
+    max-width: 100%;
+    max-height: 85vh;
+  }
+
+  .tag-manager-btn {
+    padding: 10px 12px;
+    min-height: 44px;
+    font-size: 0.88rem;
+  }
+
+  .tag-manager-create-btn {
+    padding: 10px 16px;
+    min-height: 44px;
+  }
+
+  .btn-manage-tags {
+    padding: 10px 16px;
+    min-height: 44px;
+  }
+}

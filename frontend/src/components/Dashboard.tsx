@@ -128,9 +128,9 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
 
       {error && <div className="error">{error}</div>}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <div className="dashboard-filter-row">
         {tags.length > 0 && (
-          <div className="tag-filter-bar" style={{ marginBottom: 0 }}>
+          <div className="tag-filter-bar">
             <span className="tag-filter-label">Filter:</span>
             {tags.map(tag => (
               <span

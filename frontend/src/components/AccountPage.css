@@ -407,4 +407,33 @@
   .account-grid {
     grid-template-columns: 1fr;
   }
+
+  .account-edit-btn {
+    padding: 0.6rem 1rem;
+    min-height: 44px;
+  }
+
+  .account-password-btn {
+    min-height: 44px;
+    padding: 0.6rem 1rem;
+  }
+
+  .account-delete-btn {
+    min-height: 44px;
+  }
+
+  .account-confirm-yes,
+  .account-confirm-no {
+    min-height: 44px;
+    padding: 0.6rem 1rem;
+  }
+
+  .account-delete-modal-actions {
+    flex-direction: column;
+  }
+
+  .account-delete-modal-actions button {
+    width: 100%;
+    min-height: 44px;
+  }
 }
