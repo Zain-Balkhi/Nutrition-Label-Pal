@@ -2,8 +2,10 @@ import logging
 
 import httpx
 import openai
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
+from app.database import get_session
 from app.models.schemas import (
     RawRecipeInput,
     ParseRecipeResponse,
@@ -23,7 +25,10 @@ router = APIRouter()
 
 
 @router.post("/parse-recipe", response_model=ParseRecipeResponse)
-async def parse_recipe_endpoint(input_data: RawRecipeInput):
+async def parse_recipe_endpoint(
+    input_data: RawRecipeInput,
+    session: Session = Depends(get_session),
+):
     settings = get_settings()
     if not settings.OPENAI_API_KEY:
         raise HTTPException(status_code=500, detail="OpenAI API key not configured")
@@ -46,7 +51,7 @@ async def parse_recipe_endpoint(input_data: RawRecipeInput):
     if input_data.serving_size is not None:
         parsed.serving_size = input_data.serving_size
 
-    usda = USDAService()
+    usda = USDAService(db_session=session)
     ingredients_with_matches: list[IngredientWithMatch] = []
 
     try:
@@ -71,34 +76,38 @@ async def parse_recipe_endpoint(input_data: RawRecipeInput):
                     selected_fdc_id=selected_fdc_id,
                 )
             )
-    except httpx.HTTPStatusError as e:
-        logger.error("USDA API error: %s", e)
-        raise HTTPException(status_code=502, detail=f"USDA API error: {e.response.status_code} — {e.response.text}")
     except Exception as e:
-        logger.error("Unexpected error during USDA search: %s", e)
-        raise HTTPException(status_code=500, detail="An unexpected error occurred while searching USDA database.")
+        import traceback
+        traceback.print_exc()
+        logger.error("USDA API error: %s", e)
+        raise HTTPException(status_code=502, detail=str(e))
 
     return ParseRecipeResponse(
         recipe_name=parsed.recipe_name,
         servings=parsed.servings,
         serving_size=parsed.serving_size,
         ingredients=ingredients_with_matches,
+        allergens=parsed.allergens,
     )
 
 
 @router.post("/calculate-nutrition", response_model=NutritionResult)
-async def calculate_nutrition_endpoint(request: CalculateNutritionRequest):
+async def calculate_nutrition_endpoint(
+    request: CalculateNutritionRequest,
+    session: Session = Depends(get_session)
+):
     settings = get_settings()
     if not settings.USDA_API_KEY:
         raise HTTPException(status_code=500, detail="USDA API key not configured")
 
-    usda = USDAService()
+    usda = USDAService(db_session=session)
     try:
         result = await calculate_nutrition(
             ingredients=request.ingredients,
             servings=request.servings,
             serving_size=request.serving_size,
             recipe_name=request.recipe_name,
+            allergens=request.allergens,
             usda_service=usda,
         )
     except httpx.HTTPStatusError as e:

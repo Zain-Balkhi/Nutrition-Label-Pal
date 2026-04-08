@@ -15,6 +15,7 @@ function recipeToNutritionResult(recipe: RecipeDetailType): NutritionResult {
     recipe_name: recipe.recipe_name,
     servings: recipe.servings,
     serving_size: recipe.serving_size,
+    allergens: recipe.allergens || [],
     nutrients: recipe.nutrients.map(n => ({
       name: n.nutrient_name,
       amount: n.amount,

@@ -11,6 +11,7 @@ interface LabelPreviewProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
+  allergens?: string[];
 }
 
 const FORMATS: LabelFormat[] = ['vertical', 'tabular', 'linear', 'dual_column'];
@@ -39,8 +40,9 @@ export default function LabelPreview({
   nutrients,
   servings,
   serving_size,
+  allergens,
 }: LabelPreviewProps) {
-  const labelProps = { nutrients, servings, serving_size };
+  const labelProps = { nutrients, servings, serving_size, allergens };
 
   return (
     <div className="label-preview-wrapper">

@@ -38,7 +38,16 @@ def _recipe_to_summary(recipe) -> RecipeSummary:
 
 
 def _recipe_to_detail(recipe) -> RecipeDetail:
+    import json
     ingredients = sorted(recipe.ingredients, key=lambda i: i.sort_order)
+    
+    allergens = []
+    if hasattr(recipe, "allergens_json") and recipe.allergens_json:
+        try:
+            allergens = json.loads(recipe.allergens_json)
+        except json.JSONDecodeError:
+            pass
+
     return RecipeDetail(
         id=recipe.id,
         recipe_name=recipe.recipe_name,
@@ -71,6 +80,7 @@ def _recipe_to_detail(recipe) -> RecipeDetail:
             )
             for nut in recipe.nutrition
         ],
+        allergens=allergens,
         created_at=recipe.created_at.isoformat() if recipe.created_at else "",
         updated_at=recipe.updated_at.isoformat() if recipe.updated_at else "",
     )
@@ -90,6 +100,7 @@ def create_recipe(
         "ingredients": [ing.model_dump() for ing in body.ingredients],
         "nutrients": [nut.model_dump() for nut in body.nutrients],
         "nutrients_raw": [nut.model_dump() for nut in body.nutrients],
+        "allergens": body.allergens,
     }
     try:
         recipe = save_recipe(session, user.id, data)
@@ -134,12 +145,13 @@ def update_user_recipe(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     update_data = {}
-    for field in ("recipe_name", "raw_text", "servings", "serving_size"):
-        val = getattr(body, field)
+    for field in ("recipe_name", "raw_text", "servings", "serving_size", "allergens"):
+        val = getattr(body, field, None)
         if val is not None:
             update_data[field] = val
     if body.ingredients is not None:
         update_data["ingredients"] = [ing.model_dump() for ing in body.ingredients]
+
     if body.nutrients is not None:
         update_data["nutrients"] = [nut.model_dump() for nut in body.nutrients]
 

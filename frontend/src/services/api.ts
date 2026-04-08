@@ -56,6 +56,7 @@ export const api = {
     servings: number,
     servingSize: string,
     recipeName: string,
+    allergens: string[],
   ): Promise<NutritionResult> =>
     fetch(`${API_BASE}/calculate-nutrition`, {
       method: 'POST',
@@ -65,6 +66,7 @@ export const api = {
         servings,
         serving_size: servingSize,
         recipe_name: recipeName,
+        allergens,
       }),
     }).then(r => {
       if (!r.ok) throw new Error(`Calculation failed: ${r.statusText}`);

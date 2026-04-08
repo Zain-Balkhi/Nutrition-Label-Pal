@@ -4,6 +4,7 @@ interface TabularLabelProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
+  allergens?: string[];
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -21,7 +22,7 @@ function dv(n: NutrientValue | null): string {
   return `${n.daily_value_percent}%`;
 }
 
-export default function TabularLabel({ nutrients, servings, serving_size }: TabularLabelProps) {
+export default function TabularLabel({ nutrients, servings, serving_size, allergens }: TabularLabelProps) {
   const calories = getN(nutrients, 'Calories');
   const calPerServing = calories?.amount ?? 0;
 
@@ -116,6 +117,11 @@ export default function TabularLabel({ nutrients, servings, serving_size }: Tabu
         food contributes to a daily diet. 2,000 calories a day is used for general
         nutrition advice.
       </p>
+      {allergens && allergens.length > 0 && (
+        <p className="nf-allergens" style={{ fontSize: '0.85em', fontWeight: 700, marginTop: '4px', borderTop: 'none', paddingTop: '0' }}>
+          Contains: {allergens.join(', ')}
+        </p>
+      )}
     </div>
   );
 }

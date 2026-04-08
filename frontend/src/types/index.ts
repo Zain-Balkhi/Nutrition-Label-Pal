@@ -24,6 +24,7 @@ export interface ParseRecipeResponse {
   servings: number;
   serving_size: string;
   ingredients: IngredientWithMatch[];
+  allergens: string[];
 }
 
 export interface NutrientValue {
@@ -46,6 +47,7 @@ export interface NutritionResult {
   serving_size: string;
   nutrients: NutrientValue[];
   skipped_ingredients: SkippedIngredient[];
+  allergens: string[];
 }
 
 // ── Auth types ──────────────────────────────────────────────────────────────
@@ -114,6 +116,7 @@ export interface SaveRecipeRequest {
   serving_size: string;
   ingredients: SaveIngredientInput[];
   nutrients: SaveNutrientInput[];
+  allergens?: string[];
 }
 
 export interface UpdateRecipeRequest {
@@ -123,6 +126,7 @@ export interface UpdateRecipeRequest {
   serving_size?: string;
   ingredients?: SaveIngredientInput[];
   nutrients?: SaveNutrientInput[];
+  allergens?: string[];
 }
 
 export interface RecipeIngredientOut {
@@ -164,6 +168,7 @@ export interface RecipeDetail {
   serving_size: string;
   ingredients: RecipeIngredientOut[];
   nutrients: RecipeNutrientOut[];
+  allergens: string[];
   created_at: string;
   updated_at: string;
 }
@@ -180,6 +185,7 @@ export interface LabelExportRequest {
   servings: number;
   serving_size: string;
   nutrients: NutrientValue[];
+  allergens?: string[];
 }
 
 export const LABEL_FORMAT_INFO: Record<LabelFormat, {
