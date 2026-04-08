@@ -30,6 +30,7 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg-cream);
     color: var(--text-dark);
+    overflow-x: hidden;
   }
   
   .app {
@@ -108,6 +109,26 @@
     padding: 0 0 4px 0;
     line-height: inherit;
     vertical-align: baseline;
+  }
+
+  /* Hamburger button — hidden on desktop */
+  .hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .hamburger-line {
+    display: block;
+    width: 24px;
+    height: 3px;
+    background: var(--text-dark);
+    border-radius: 2px;
+    transition: transform 0.2s, opacity 0.2s;
   }
 
   /* ===========================
@@ -278,7 +299,73 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
-  
+
+  /* ===========================
+     Input Actions Toolbar
+     =========================== */
+  .input-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .input-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: 2px solid var(--gray-light);
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-gray);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .input-action-btn:hover {
+    border-color: var(--accent-orange);
+    color: var(--text-dark);
+  }
+
+  .input-action-btn:focus-visible {
+    outline: 2px solid var(--accent-orange);
+    outline-offset: 2px;
+  }
+
+  .mic-btn--listening {
+    border-color: var(--accent-orange);
+    color: var(--accent-orange);
+    background: rgba(245, 166, 35, 0.08);
+    animation: mic-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes mic-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(245, 166, 35, 0);
+    }
+  }
+
+  .voice-error {
+    background: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
   /* ===========================
      Ingredient Review (Step 2)
      =========================== */
@@ -681,6 +768,25 @@
     font-size: 0.9rem;
   }
   
+  .allergens-warning {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    border-radius: var(--border-radius);
+  }
+
+  .allergens-warning-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .allergens-warning-text {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
   /* Print */
   .print-row {
     display: flex;
@@ -721,6 +827,97 @@
   .btn-download-pdf:hover {
     background: #1d4ed8;
     transform: translateY(-1px);
+  }
+
+  /* Edit Label button */
+  .btn-edit-label {
+    background: var(--accent-orange);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn-edit-label:hover {
+    background: #e09518;
+    transform: translateY(-1px);
+  }
+
+  /* Edit mode fields */
+  .edit-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .edit-field-label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    gap: 0.25rem;
+  }
+
+  .edit-field-input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 3px dashed var(--accent-orange);
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text-dark);
+    text-align: center;
+  }
+
+  .edit-field-input:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+  }
+
+  /* Edit mode toggle and textarea */
+  .edit-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+  }
+
+  .edit-toggle-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-orange);
+    cursor: pointer;
+  }
+
+  .edit-textarea {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 3px dashed var(--accent-orange);
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text-dark);
+    resize: vertical;
+    min-height: 50px;
+  }
+
+  .edit-textarea:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
   }
 
   /* ===========================
@@ -970,11 +1167,131 @@
   }
 
   /* ===========================
+     How To Modal
+     =========================== */
+  .howto-trigger {
+    display: block;
+    margin: 0 auto 1.5rem;
+    background: none;
+    border: none;
+    color: var(--accent-orange);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .howto-trigger:hover {
+    color: #e0951e;
+  }
+
+  .howto-modal {
+    max-width: 520px;
+  }
+
+  .howto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .howto-close {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: var(--text-gray);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+  }
+
+  .howto-close:hover {
+    color: var(--text-dark);
+  }
+
+  .howto-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .howto-step {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .howto-step-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: var(--accent-orange);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .howto-step p {
+    margin: 4px 0 0;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+  }
+
+  .howto-example {
+    background: #f8f8f5;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .howto-example-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .howto-example-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+    white-space: pre-wrap;
+    margin: 0;
+  }
+
+  .howto-example-note {
+    margin: 0.75rem 0 0;
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    font-style: italic;
+  }
+
+  .howto-got-it {
+    width: 100%;
+  }
+
+  /* ===========================
      Dashboard
      =========================== */
   .dashboard {
     max-width: 900px;
     margin: 0 auto;
+  }
+
+  .dashboard-filter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
 
   .dashboard-loading {
@@ -985,13 +1302,29 @@
 
   .dashboard-empty {
     text-align: center;
-    padding: 3rem 1rem;
-    color: var(--text-gray);
+    padding: 4rem 1rem;
   }
 
-  .dashboard-empty p {
+  .dashboard-empty-text {
+    font-size: 1.15rem;
+    color: var(--text-gray);
     margin-bottom: 1.5rem;
+  }
+
+  .btn-create-first {
+    background: var(--accent-orange);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 2rem;
     font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-create-first:hover {
+    background: #e0951e;
   }
 
   .recipe-grid {
@@ -1167,43 +1500,281 @@
      Responsive
      =========================== */
   @media (max-width: 768px) {
+    /* --- Header hamburger nav --- */
     .header {
-      flex-direction: column;
-      gap: 1rem;
-      text-align: center;
+      flex-wrap: wrap;
+      gap: 0;
+      padding: 0.75rem 1rem;
     }
-  
+
+    .hamburger-btn {
+      display: flex;
+    }
+
     .header-nav {
-      gap: 1.5rem;
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      gap: 0;
+      padding-top: 0.75rem;
+      border-top: 1px solid #eee;
+      margin-top: 0.75rem;
     }
-  
+
+    .header-nav.nav-open {
+      display: flex;
+    }
+
+    .header-nav .nav-link {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f0f0f0;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-nav .nav-link:last-child {
+      border-bottom: none;
+    }
+
+    .header-logo {
+      height: 48px;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+    }
+
+    /* --- Ingredient review table: compact on mobile --- */
+    .review-table-wrapper {
+      padding: 0.75rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .review-table thead th {
+      padding: 0.5rem 0.4rem;
+      font-size: 0.85rem;
+    }
+
+    .review-table tbody td {
+      padding: 0.5rem 0.4rem;
+      font-size: 0.82rem;
+    }
+
+    .usda-select {
+      max-width: 140px;
+      font-size: 0.75rem;
+      padding: 0.4rem 0.5rem;
+    }
+
+    /* --- Label format variants: scale to fit --- */
+    .label-format-tabular .nutrition-label,
+    .label-format-linear .nutrition-label,
+    .label-format-dual_column .nutrition-label,
+    .label-format-vertical .nutrition-label {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    /* --- Format selector: 2x2 grid --- */
+    .format-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .format-card {
+      min-width: 0;
+    }
+
+    /* --- Modals: mobile safety margins --- */
+    .modal-overlay {
+      padding: 1rem;
+    }
+
+    .modal-card {
+      max-width: 100%;
+      padding: 1.5rem;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .howto-modal {
+      max-width: 100%;
+    }
+
+    /* --- Touch targets: 44px minimum --- */
+    .recipe-card-view {
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      min-height: 44px;
+    }
+
+    .howto-close {
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .view-saved-link {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-back-link {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    /* --- Layout stacking --- */
     .results-layout {
       flex-direction: column;
       align-items: center;
     }
-  
+
     .nutrition-label {
       width: 100%;
       max-width: 380px;
     }
-  
+
+    .input-actions {
+      justify-content: center;
+    }
+
     .input-row {
       flex-direction: column;
       align-items: center;
     }
-  
+
     .field {
       flex: none;
       width: 100%;
       max-width: 300px;
     }
-  
+
     .button-row {
       flex-direction: column;
       align-items: center;
     }
-  
+
+    .detail-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
     .page-title {
       font-size: 1.4rem;
     }
+  }
+
+  @media (max-width: 480px) {
+    .label-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .step-indicator {
+      gap: 0.25rem;
+    }
+
+    .step-pill {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.82rem;
+    }
+
+    .step-arrow {
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .page-title {
+      font-size: 1.25rem;
+    }
+
+    .input-action-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  }
+
+  @media (max-width: 375px) {
+    .step-pill {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+    }
+
+    .step-arrow {
+      font-size: 0.9rem;
+    }
+
+    .header-title {
+      font-size: 1.1rem;
+    }
+  }
+
+  /* ===========================
+     Spinner
+     =========================== */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--gray-light);
+    border-top-color: var(--accent-orange);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  .spinner-sm {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 4rem 1rem;
+    color: var(--text-gray);
+    font-size: 1rem;
+  }
+
+  /* ===========================
+     Step Transitions
+     =========================== */
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .recipe-input,
+  .ingredient-review,
+  .nutrition-display {
+    animation: fadeSlideIn 0.3s ease-out;
   }

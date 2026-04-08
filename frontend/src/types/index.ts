@@ -24,6 +24,7 @@ export interface ParseRecipeResponse {
   servings: number;
   serving_size: string;
   ingredients: IngredientWithMatch[];
+  allergens: string[];
 }
 
 export interface NutrientValue {
@@ -46,6 +47,7 @@ export interface NutritionResult {
   serving_size: string;
   nutrients: NutrientValue[];
   skipped_ingredients: SkippedIngredient[];
+  allergens: string[];
 }
 
 // ── Auth types ──────────────────────────────────────────────────────────────
@@ -86,6 +88,14 @@ export interface RegisterRequest {
   full_name: string;
 }
 
+// ── Tag types ────────────────────────────────────────────────────────────
+
+export interface Tag {
+  id: number;
+  name: string;
+  color: string;
+}
+
 // ── Recipe CRUD types ─────────────────────────────────────────────────────
 
 export interface SaveIngredientInput {
@@ -114,6 +124,7 @@ export interface SaveRecipeRequest {
   serving_size: string;
   ingredients: SaveIngredientInput[];
   nutrients: SaveNutrientInput[];
+  allergens?: string[];
 }
 
 export interface UpdateRecipeRequest {
@@ -123,6 +134,7 @@ export interface UpdateRecipeRequest {
   serving_size?: string;
   ingredients?: SaveIngredientInput[];
   nutrients?: SaveNutrientInput[];
+  allergens?: string[];
 }
 
 export interface RecipeIngredientOut {
@@ -154,6 +166,7 @@ export interface RecipeSummary {
   serving_size: string;
   created_at: string;
   updated_at: string;
+  tags?: Tag[];
 }
 
 export interface RecipeDetail {
@@ -164,8 +177,10 @@ export interface RecipeDetail {
   serving_size: string;
   ingredients: RecipeIngredientOut[];
   nutrients: RecipeNutrientOut[];
+  allergens: string[];
   created_at: string;
   updated_at: string;
+  tags?: Tag[];
 }
 
 // ── Label export types ──────────────────────────────────────────────────
@@ -180,6 +195,10 @@ export interface LabelExportRequest {
   servings: number;
   serving_size: string;
   nutrients: NutrientValue[];
+  show_allergens?: boolean;
+  allergen_text?: string;
+  show_ingredients?: boolean;
+  ingredient_list_text?: string;
 }
 
 export const LABEL_FORMAT_INFO: Record<LabelFormat, {

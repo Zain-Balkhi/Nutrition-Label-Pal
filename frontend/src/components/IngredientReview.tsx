@@ -116,7 +116,7 @@ export default function IngredientReview({
           disabled={loading}
           className="btn-primary"
         >
-          {loading ? 'Calculating...' : 'Calculate Nutrition'}
+          {loading ? <><span className="spinner spinner-sm" />Calculating...</> : 'Calculate Nutrition'}
         </button>
       </div>
     </div>

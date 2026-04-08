@@ -21,6 +21,7 @@ Return a JSON object with these fields:
   - unit: string (e.g. "cups", "tbsp", "oz", "g", "each")
   - preparation: string or null (e.g. "diced", "minced", null)
   - original_text: string (the original line from the recipe)
+- allergens: array of strings containing any common dietary allergens present in the ingredients. Choose from "Milk", "Eggs", "Fish", "Crustacean shellfish", "Tree nuts", "Peanuts", "Wheat", "Soybeans", "Sesame". Leave empty if none are found.
 
 Rules:
 - Convert written numbers to digits (e.g. "two" -> 2)

@@ -190,6 +190,7 @@ class TestCalculateNutrition:
             servings=2,
             serving_size="1 bowl",
             recipe_name="Chicken Test",
+            allergens=[],
             usda_service=usda,
         )
 
@@ -214,6 +215,7 @@ class TestCalculateNutrition:
             servings=1,
             serving_size="1 serving",
             recipe_name="Chicken + Oil",
+            allergens=[],
             usda_service=usda,
         )
 
@@ -245,6 +247,7 @@ class TestCalculateNutrition:
             servings=1,
             serving_size="1 serving",
             recipe_name="Empty Test",
+            allergens=[],
             usda_service=usda,
         )
 
@@ -273,6 +276,7 @@ class TestCalculateNutrition:
             servings=1,
             serving_size="1 serving",
             recipe_name="404 Test",
+            allergens=[],
             usda_service=mock,
         )
 
@@ -292,10 +296,11 @@ class TestCalculateNutrition:
             servings=1,
             serving_size="1 serving",
             recipe_name="Nutrient Count Test",
+            allergens=[],
             usda_service=usda,
         )
 
-        assert len(result.nutrients) == 14
+        assert len(result.nutrients) == 15
         names = {n.name for n in result.nutrients}
         assert "Calories" in names
         assert "Total Fat" in names
@@ -311,6 +316,7 @@ class TestCalculateNutrition:
             servings=1,
             serving_size="1 serving",
             recipe_name="DV Test",
+            allergens=[],
             usda_service=usda,
         )
 
@@ -333,6 +339,7 @@ class TestCalculateNutrition:
             servings=1,
             serving_size="100g",
             recipe_name="DV Rounding Test",
+            allergens=[],
             usda_service=usda,
         )
 
@@ -352,6 +359,7 @@ class TestCalculateNutrition:
             servings=1,
             serving_size="100g",
             recipe_name="Cholesterol Display Test",
+            allergens=[],
             usda_service=usda,
         )
 
@@ -371,6 +379,7 @@ class TestCalculateNutrition:
             servings=1,
             serving_size="1 serving",
             recipe_name="DV Consistency Test",
+            allergens=[],
             usda_service=usda,
         )
 
