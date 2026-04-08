@@ -777,6 +777,43 @@
     box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
   }
 
+  /* Edit mode toggle and textarea */
+  .edit-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+  }
+
+  .edit-toggle-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-orange);
+    cursor: pointer;
+  }
+
+  .edit-textarea {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 3px dashed var(--accent-orange);
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--text-dark);
+    resize: vertical;
+    min-height: 50px;
+  }
+
+  .edit-textarea:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+  }
+
   /* ===========================
      Format Selector
      =========================== */

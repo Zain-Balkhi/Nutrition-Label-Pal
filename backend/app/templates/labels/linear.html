@@ -62,10 +62,15 @@
   <p class="nf-linear-footnote">
     * % Daily Value (DV) based on a 2,000 calorie diet.
   </p>
-  {% if allergens %}
+  {% if show_allergens and allergen_text %}
   <p class="nf-allergens" style="font-size: 7pt; font-weight: 700; margin-top: 2pt;">
-    Contains: {{ allergens | join(', ') }}
+    {{ allergen_text }}
   </p>
+  {% endif %}
+  {% if show_ingredients and ingredient_list_text %}
+  <div class="nf-ingredients" style="font-size: 6pt; margin-top: 2pt; border-top: 0.5pt solid #000; padding-top: 2pt;">
+    <span style="font-weight: 700;">INGREDIENTS: </span>{{ ingredient_list_text }}
+  </div>
   {% endif %}
 </div>
 {% endblock %}

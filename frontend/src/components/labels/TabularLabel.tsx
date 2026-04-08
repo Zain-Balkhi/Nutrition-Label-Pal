@@ -4,7 +4,10 @@ interface TabularLabelProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
-  allergens?: string[];
+  showAllergens?: boolean;
+  allergenText?: string;
+  showIngredients?: boolean;
+  ingredientListText?: string;
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -22,7 +25,7 @@ function dv(n: NutrientValue | null): string {
   return `${n.daily_value_percent}%`;
 }
 
-export default function TabularLabel({ nutrients, servings, serving_size, allergens }: TabularLabelProps) {
+export default function TabularLabel({ nutrients, servings, serving_size, showAllergens, allergenText, showIngredients, ingredientListText }: TabularLabelProps) {
   const calories = getN(nutrients, 'Calories');
   const calPerServing = calories?.amount ?? 0;
 
@@ -117,10 +120,16 @@ export default function TabularLabel({ nutrients, servings, serving_size, allerg
         food contributes to a daily diet. 2,000 calories a day is used for general
         nutrition advice.
       </p>
-      {allergens && allergens.length > 0 && (
+      {showAllergens && allergenText && (
         <p className="nf-allergens" style={{ fontSize: '0.85em', fontWeight: 700, marginTop: '4px', borderTop: 'none', paddingTop: '0' }}>
-          Contains: {allergens.join(', ')}
+          {allergenText}
         </p>
+      )}
+      {showIngredients && ingredientListText && (
+        <div className="nf-ingredients" style={{ fontSize: '0.8em', marginTop: '6px', borderTop: '1px solid #000', paddingTop: '4px' }}>
+          <span style={{ fontWeight: 700 }}>INGREDIENTS: </span>
+          {ingredientListText}
+        </div>
       )}
     </div>
   );

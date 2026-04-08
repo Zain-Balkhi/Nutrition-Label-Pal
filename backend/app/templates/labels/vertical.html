@@ -128,9 +128,14 @@
   serving of food contributes to a daily diet. 2,000 calories
   a day is used for general nutrition advice.
 </p>
-{% if allergens %}
+{% if show_allergens and allergen_text %}
 <p class="nf-allergens" style="font-size: 8pt; font-weight: 700; margin-top: 4pt;">
-  Contains: {{ allergens | join(', ') }}
+  {{ allergen_text }}
 </p>
+{% endif %}
+{% if show_ingredients and ingredient_list_text %}
+<div class="nf-ingredients" style="font-size: 7pt; margin-top: 4pt; border-top: 0.5pt solid #000; padding-top: 3pt;">
+  <span style="font-weight: 700;">INGREDIENTS: </span>{{ ingredient_list_text }}
+</div>
 {% endif %}
 {% endblock %}

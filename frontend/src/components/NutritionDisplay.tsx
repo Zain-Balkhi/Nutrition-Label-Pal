@@ -37,6 +37,14 @@ export default function NutritionDisplay({
   const [editServingSize, setEditServingSize] = useState(result.serving_size);
   const [editLoading, setEditLoading] = useState(false);
 
+  // Allergen toggle state (default: unchecked)
+  const [showAllergens, setShowAllergens] = useState(false);
+  const [allergenText, setAllergenText] = useState(
+    result.allergens && result.allergens.length > 0
+      ? `Contains: ${result.allergens.join(', ')}`
+      : ''
+  );
+
   // Values to display on the label (edited or original)
   const displayServings = editing ? editServings : result.servings;
   const displayServingSize = editing ? editServingSize : result.serving_size;
@@ -78,7 +86,8 @@ export default function NutritionDisplay({
           nutrients={result.nutrients}
           servings={displayServings}
           serving_size={displayServingSize}
-          allergens={result.allergens}
+          showAllergens={showAllergens}
+          allergenText={allergenText}
         />
 
         <div className="results-actions">
@@ -105,6 +114,24 @@ export default function NutritionDisplay({
                   />
                 </label>
               </div>
+              {result.allergens && result.allergens.length > 0 && (
+                <label className="edit-toggle-label">
+                  <input
+                    type="checkbox"
+                    checked={showAllergens}
+                    onChange={e => setShowAllergens(e.target.checked)}
+                  />
+                  Show allergen notice on label
+                </label>
+              )}
+              {showAllergens && (
+                <textarea
+                  className="edit-textarea"
+                  value={allergenText}
+                  onChange={e => setAllergenText(e.target.value)}
+                  rows={2}
+                />
+              )}
               <button
                 className="btn-save-label"
                 onClick={handleSaveEdit}
@@ -122,13 +149,15 @@ export default function NutritionDisplay({
             </>
           ) : (
             <>
-              <button
-                type="button"
-                className="btn-edit-label"
-                onClick={handleEditClick}
-              >
-                Edit Label
-              </button>
+              {onEditLabel && (
+                <button
+                  type="button"
+                  className="btn-edit-label"
+                  onClick={handleEditClick}
+                >
+                  Edit Label
+                </button>
+              )}
               <button onClick={onBack} className="btn-start-new">
                 Start New Recipe
               </button>
@@ -192,7 +221,8 @@ export default function NutritionDisplay({
           servings={result.servings}
           serving_size={result.serving_size}
           nutrients={result.nutrients}
-          allergens={result.allergens}
+          show_allergens={showAllergens}
+          allergen_text={allergenText}
           onClose={() => setShowExport(false)}
         />
       )}

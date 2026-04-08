@@ -243,3 +243,7 @@ class LabelExportRequest(BaseModel):
     serving_size: str
     nutrients: list[NutrientValue]
     allergens: list[str] = []
+    show_allergens: bool = False
+    allergen_text: str = ""
+    show_ingredients: bool = False
+    ingredient_list_text: str = ""
