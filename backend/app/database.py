@@ -168,11 +168,25 @@ def _get_engine():
     return _engine
 
 
-def get_session() -> Session:
+def _session_factory():
     global _SessionLocal
     if _SessionLocal is None:
         _SessionLocal = sessionmaker(bind=_get_engine())
-    return _SessionLocal()
+    return _SessionLocal
+
+
+def create_session() -> Session:
+    """Create a raw session for standalone use (caller must close it)."""
+    return _session_factory()()
+
+
+def get_session():
+    """FastAPI dependency that yields a session and closes it after the request."""
+    session = create_session()
+    try:
+        yield session
+    finally:
+        session.close()
 
 
 def init_db():
@@ -189,13 +203,18 @@ def _migrate_existing_tables(engine):
     inspector = inspect(engine)
     table_names = inspector.get_table_names()
 
-    # Add user_id column to recipes if missing
+    # Add missing columns to recipes table
     if "recipes" in table_names:
         columns = [c["name"] for c in inspector.get_columns("recipes")]
         if "user_id" not in columns:
             with engine.begin() as conn:
                 conn.execute(text(
                     "ALTER TABLE recipes ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE"
+                ))
+        if "allergens_json" not in columns:
+            with engine.begin() as conn:
+                conn.execute(text(
+                    "ALTER TABLE recipes ADD COLUMN allergens_json TEXT NOT NULL DEFAULT '[]'"
                 ))
 
     # Drop the old per-user ingredient cache (replaced by global USDANutritionCache)
@@ -216,7 +235,7 @@ def save_recipe_label(
     user_id: int | None = None,
 ) -> int:
     """Persist a nutrition label and its ingredients. Returns the recipe id."""
-    session = get_session()
+    session = create_session()
     try:
         row = RecipeRow(
             user_id=user_id,
@@ -254,7 +273,7 @@ def save_recipe_label(
 
 def get_recipe_label(recipe_id: int) -> dict | None:
     """Retrieve a saved label by id."""
-    session = get_session()
+    session = create_session()
     try:
         row = session.query(RecipeRow).filter_by(id=recipe_id).first()
         if row is None:
@@ -273,7 +292,7 @@ def get_recipe_label(recipe_id: int) -> dict | None:
 
 def list_recipe_labels() -> list[dict]:
     """List all saved labels (summary only)."""
-    session = get_session()
+    session = create_session()
     try:
         rows = session.query(RecipeRow).order_by(RecipeRow.created_at.desc()).all()
         return [
@@ -292,7 +311,7 @@ def list_recipe_labels() -> list[dict]:
 
 def delete_recipe_label(recipe_id: int) -> bool:
     """Delete a recipe and its ingredients. Returns True if found."""
-    session = get_session()
+    session = create_session()
     try:
         row = session.query(RecipeRow).filter_by(id=recipe_id).first()
         if row is None:

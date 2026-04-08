@@ -1076,13 +1076,29 @@
 
   .dashboard-empty {
     text-align: center;
-    padding: 3rem 1rem;
-    color: var(--text-gray);
+    padding: 4rem 1rem;
   }
 
-  .dashboard-empty p {
+  .dashboard-empty-text {
+    font-size: 1.15rem;
+    color: var(--text-gray);
     margin-bottom: 1.5rem;
+  }
+
+  .btn-create-first {
+    background: var(--accent-orange);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 2rem;
     font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-create-first:hover {
+    background: #e0951e;
   }
 
   .recipe-grid {

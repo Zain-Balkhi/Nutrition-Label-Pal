@@ -182,15 +182,12 @@ export default function NutritionDisplay({
               {onEditLabel && (
                 <button
                   type="button"
-                  className="btn-edit-label"
+                  className="btn-start-new"
                   onClick={handleEditClick}
                 >
                   Edit Label
                 </button>
               )}
-              <button onClick={onBack} className="btn-start-new">
-                Start New Recipe
-              </button>
               <button
                 className="btn-save-label"
                 onClick={onSave}
@@ -211,6 +208,13 @@ export default function NutritionDisplay({
                 onClick={onViewSaved}
               >
                 View Saved Labels
+              </button>
+              <button
+                type="button"
+                className="view-saved-link"
+                onClick={onBack}
+              >
+                Start New Recipe
               </button>
             </>
           )}
@@ -238,8 +242,8 @@ export default function NutritionDisplay({
         <div className="allergens-warning" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '4px', border: '1px solid #ffeeba' }}>
           <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '1.1rem' }}>Allergen Notice</h3>
           <p style={{ margin: 0 }}>
-            This recipe includes common allergens: <strong>{result.allergens.join(', ')}</strong>.
-            They have been automatically flagged on your nutrition label.
+            This recipe contains common allergens: <strong>{result.allergens.join(', ')}</strong>.
+            Use the Edit Label button to optionally include an allergen notice on your label.
           </p>
         </div>
       )}

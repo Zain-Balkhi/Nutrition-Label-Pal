@@ -151,6 +151,14 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
         </button>
       </div>
 
+      {recipes.length === 0 ? (
+        <div className="dashboard-empty">
+          <p className="dashboard-empty-text">No labels saved yet.</p>
+          <button className="btn-create-first" onClick={onNewRecipe}>
+            Create Your First Label
+          </button>
+        </div>
+      ) : (
       <div className="recipe-grid">
         <div className="recipe-card recipe-card-new" onClick={onNewRecipe}>
           <span className="recipe-card-new-icon">+</span>
@@ -189,6 +197,7 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
           </div>
         ))}
       </div>
+      )}
 
       {showTagManager && (
         <TagManager
