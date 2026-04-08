@@ -86,9 +86,7 @@ export default function RecipeInput({ onParse, loading, initialText, initialServ
       </InputActions>
 
       {voiceError && (
-        <div className="voice-error" role="alert">
-          {voiceError}
-        </div>
+        <div className="voice-error" role="alert">{voiceError}</div>
       )}
 
       <div className="input-row">
