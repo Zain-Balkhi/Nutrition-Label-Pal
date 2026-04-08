@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import RecipeInput from './components/RecipeInput';
 import IngredientReview from './components/IngredientReview';
@@ -20,13 +21,21 @@ import type {
 } from './types';
 
 type AppStep = 'input' | 'review' | 'results';
-type Page = 'home' | 'app' | 'login' | 'register' | 'dashboard' | 'recipe-detail' | 'account';
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 
+function ProtectedRoute({ currentUser, children }: { currentUser: AuthUser | null; children: React.ReactNode }) {
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
+
 export default function App() {
-  const [page, setPage] = useState<Page>('home');
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
     const stored = localStorage.getItem(USER_KEY);
     return stored ? (JSON.parse(stored) as AuthUser) : null;
@@ -54,40 +63,15 @@ export default function App() {
   // Pending recipe for post-register auto-save
   const [pendingRecipe, setPendingRecipe] = useState<SaveRecipeRequest | null>(null);
 
-  // Recipe detail view
-  const [viewingRecipeId, setViewingRecipeId] = useState<number | null>(null);
-
   // Edit mode — tracks which recipe is being edited
   const [editingRecipeId, setEditingRecipeId] = useState<number | null>(null);
 
-  // Stamp initial browser history state on mount
-  useEffect(() => {
-    history.replaceState({ page: 'home' }, '');
-  }, []);
-
-  // Sync browser back/forward button
-  useEffect(() => {
-    const onPop = (e: PopStateEvent) => {
-      const state = e.state as { page?: Page; step?: AppStep; recipeId?: number } | null;
-      if (state?.page) {
-        setPage(state.page);
-        if (state.page === 'app' && state.step) setStep(state.step);
-        if (state.page === 'recipe-detail' && state.recipeId) setViewingRecipeId(state.recipeId);
-      } else {
-        setPage('app');
-        setStep('input');
-      }
-    };
-    window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
-  }, []);
-
   // Guard: redirect if step has missing data
   useEffect(() => {
-    if (page !== 'app') return;
+    if (location.pathname !== '/generate') return;
     if (step === 'results' && !nutritionResult) setStep('review');
     if (step === 'review' && ingredients.length === 0) setStep('input');
-  }, [step, nutritionResult, ingredients.length, page]);
+  }, [step, nutritionResult, ingredients.length, location.pathname]);
 
   // Keep localStorage in sync whenever currentUser changes
   useEffect(() => {
@@ -99,11 +83,6 @@ export default function App() {
     }
   }, [currentUser]);
 
-  function navigateTo(newPage: Page, extra: Record<string, unknown> = {}) {
-    setPage(newPage);
-    history.pushState({ page: newPage, ...extra }, '');
-  }
-
   const handleAuthSuccess = useCallback(async (user: AuthUser, token: string) => {
     localStorage.setItem(TOKEN_KEY, token);
     setCurrentUser(user);
@@ -113,42 +92,21 @@ export default function App() {
       try {
         const saved = await api.recipes.save(pendingRecipe);
         setPendingRecipe(null);
-        setViewingRecipeId(saved.id);
-        setPage('recipe-detail');
-        history.replaceState({ page: 'recipe-detail', recipeId: saved.id }, '');
+        navigate(`/recipes/${saved.id}`, { replace: true });
         return;
       } catch {
-        // If save fails, still go to dashboard
+        // If save fails, still go to generate
         setPendingRecipe(null);
       }
     }
 
-    setPage('app');
-    history.replaceState({ page: 'app', step }, '');
-  }, [pendingRecipe, step]);
+    navigate('/generate', { replace: true });
+  }, [pendingRecipe, navigate]);
 
   function handleLogout() {
     setCurrentUser(null);
-    setPage('app');
     setStep('input');
-    history.pushState({ page: 'app', step: 'input' }, '');
-  }
-
-  function handleDashboardClick() {
-    if (!currentUser) {
-      navigateTo('login');
-      return;
-    }
-    setViewingRecipeId(null);
-    navigateTo('dashboard');
-  }
-
-  function handleAccountClick() {
-    if (!currentUser) {
-      navigateTo('login');
-      return;
-    }
-    navigateTo('account');
+    navigate('/generate');
   }
 
   function handleUserUpdated(user: AuthUser) {
@@ -157,9 +115,8 @@ export default function App() {
 
   function handleAccountDeleted() {
     setCurrentUser(null);
-    setPage('app');
     setStep('input');
-    history.pushState({ page: 'app', step: 'input' }, '');
+    navigate('/generate');
   }
 
   const handleParse = async (rawText: string, rawServings: string, rawServingSize: string) => {
@@ -173,7 +130,6 @@ export default function App() {
       ingredients.length > 0
     ) {
       setStep('review');
-      history.pushState({ page: 'app', step: 'review' }, '');
       return;
     }
 
@@ -190,7 +146,6 @@ export default function App() {
       setIngredients(data.ingredients);
       setAllergens(data.allergens || []);
       setStep('review');
-      history.pushState({ page: 'app', step: 'review' }, '');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse recipe');
     } finally {
@@ -220,7 +175,6 @@ export default function App() {
       setNutritionResult(result);
       setSavedRecipeId(null);
       setStep('results');
-      history.pushState({ page: 'app', step: 'results' }, '');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to calculate nutrition');
     } finally {
@@ -239,10 +193,9 @@ export default function App() {
     setError(null);
     setSavedRecipeId(null);
     setEditingRecipeId(null);
-    history.pushState({ page: 'app', step: 'input' }, '');
   };
 
-  const handleBackToInput = () => window.history.back();
+  const handleBackToInput = () => setStep('input');
 
   function buildSaveRequest(title: string): SaveRecipeRequest {
     return {
@@ -281,7 +234,7 @@ export default function App() {
       // Stash pending recipe and redirect to login
       const req = buildSaveRequest(recipeName);
       setPendingRecipe(req);
-      navigateTo('login');
+      navigate('/login');
       return;
     }
     setShowSaveModal(true);
@@ -309,16 +262,7 @@ export default function App() {
   }
 
   function handleViewSaved() {
-    if (!currentUser) {
-      navigateTo('login');
-      return;
-    }
-    navigateTo('dashboard');
-  }
-
-  function handleViewRecipe(id: number) {
-    setViewingRecipeId(id);
-    navigateTo('recipe-detail', { recipeId: id });
+    navigate('/recipes');
   }
 
   function handleEditRecipe(recipe: RecipeDetailType) {
@@ -351,155 +295,155 @@ export default function App() {
     );
 
     setNutritionResult(null);
-    setPage('app');
     setStep('input');
-    history.pushState({ page: 'app', step: 'input' }, '');
+    navigate('/generate');
+  }
+
+  async function handleEditLabel(updates: { servings: number; serving_size: string }) {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await api.calculateNutrition(
+        ingredients,
+        updates.servings,
+        updates.serving_size,
+        recipeName,
+        allergens,
+      );
+      setNutritionResult(result);
+      setServings(updates.servings);
+      setServingSize(updates.serving_size);
+
+      // Persist to DB if editing an existing recipe
+      if (editingRecipeId) {
+        await api.recipes.update(editingRecipeId, {
+          servings: updates.servings,
+          serving_size: updates.serving_size,
+          nutrients: result.nutrients.map(n => ({
+            name: n.name,
+            amount: n.amount,
+            unit: n.unit,
+            daily_value_percent: n.daily_value_percent,
+            display_value: n.display_value,
+          })),
+        });
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to recalculate nutrition');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   }
 
   function handleRecipeDeleted() {
-    navigateTo('dashboard');
-  }
-
-  // ── Shared header props ───────────────────────────────────────────
-  const headerProps = {
-    currentUser,
-    onLoginClick: () => navigateTo('login'),
-    onLogout: handleLogout,
-    onLogoClick: () => navigateTo('home'),
-    onGenerateClick: () => { setPage('app'); handleStartOver(); history.pushState({ page: 'app', step: 'input' }, ''); },
-    onDashboardClick: handleDashboardClick,
-    onAccountClick: handleAccountClick,
-  };
-
-  // ── Page rendering ────────────────────────────────────────────────
-
-  if (page === 'home') {
-    return (
-      <div className="app">
-        <Header activePage="home" {...headerProps} />
-        <HomePage
-          onGetStarted={() => navigateTo('register')}
-          onTryNow={() => { setPage('app'); handleStartOver(); history.pushState({ page: 'app', step: 'input' }, ''); }}
-        />
-      </div>
-    );
-  }
-
-  if (page === 'login') {
-    return (
-      <div className="app">
-        <Header activePage="login" {...headerProps} />
-        <main className="container">
-          <LoginPage
-            onSuccess={handleAuthSuccess}
-            onNavigateRegister={() => navigateTo('register')}
-          />
-        </main>
-      </div>
-    );
-  }
-
-  if (page === 'register') {
-    return (
-      <div className="app">
-        <Header activePage="login" {...headerProps} />
-        <main className="container">
-          <RegisterPage
-            onSuccess={handleAuthSuccess}
-            onNavigateLogin={() => navigateTo('login')}
-          />
-        </main>
-      </div>
-    );
-  }
-
-  if (page === 'dashboard') {
-    return (
-      <div className="app">
-        <Header activePage="dashboard" {...headerProps} />
-        <main className="container">
-          <Dashboard
-            onViewRecipe={handleViewRecipe}
-            onNewRecipe={() => { setPage('app'); handleStartOver(); }}
-          />
-        </main>
-      </div>
-    );
-  }
-
-  if (page === 'recipe-detail' && viewingRecipeId !== null) {
-    return (
-      <div className="app">
-        <Header activePage="dashboard" {...headerProps} />
-        <main className="container">
-          <RecipeDetail
-            recipeId={viewingRecipeId}
-            onBack={() => navigateTo('dashboard')}
-            onEdit={handleEditRecipe}
-            onDelete={handleRecipeDeleted}
-          />
-        </main>
-      </div>
-    );
-  }
-
-  if (page === 'account' && currentUser) {
-    return (
-      <div className="app">
-        <Header activePage="account" {...headerProps} />
-        <main className="container">
-          <AccountPage
-            currentUser={currentUser}
-            onUserUpdated={handleUserUpdated}
-            onLogout={handleLogout}
-            onAccountDeleted={handleAccountDeleted}
-            onDashboardClick={handleDashboardClick}
-          />
-        </main>
-      </div>
-    );
+    navigate('/recipes');
   }
 
   return (
     <div className="app">
-      <Header activePage="generate" {...headerProps} />
-      <main className="container">
-        {error && <div className="error">{error}</div>}
+      <Header currentUser={currentUser} onLogout={handleLogout} />
 
-        {step === 'input' && (
-          <RecipeInput
-            onParse={handleParse}
-            loading={loading}
-            initialText={recipeText}
-            initialServings={recipeServings}
-            initialServingSize={recipeServingSize}
-          />
-        )}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
 
-        {step === 'review' && (
-          <IngredientReview
-            ingredients={ingredients}
-            recipeName={recipeName}
-            servings={servings}
-            servingSize={servingSize}
-            onUpdateIngredient={handleUpdateIngredient}
-            onCalculate={handleCalculate}
-            onBack={handleBackToInput}
-            loading={loading}
-          />
-        )}
+        <Route path="/generate" element={
+          <main className="container">
+            {error && <div className="error">{error}</div>}
 
-        {step === 'results' && nutritionResult && (
-          <NutritionDisplay
-            result={nutritionResult}
-            onBack={handleStartOver}
-            onSave={handleSaveClick}
-            onViewSaved={handleViewSaved}
-            saveDisabled={savedRecipeId !== null}
-            saveLabel={savedRecipeId !== null ? 'Saved!' : (editingRecipeId ? 'Update Recipe' : 'Save Label')}
-          />
-        )}
-      </main>
+            {step === 'input' && (
+              <RecipeInput
+                onParse={handleParse}
+                loading={loading}
+                initialText={recipeText}
+                initialServings={recipeServings}
+                initialServingSize={recipeServingSize}
+              />
+            )}
+
+            {step === 'review' && (
+              <IngredientReview
+                ingredients={ingredients}
+                recipeName={recipeName}
+                servings={servings}
+                servingSize={servingSize}
+                onUpdateIngredient={handleUpdateIngredient}
+                onCalculate={handleCalculate}
+                onBack={handleBackToInput}
+                loading={loading}
+              />
+            )}
+
+            {step === 'results' && nutritionResult && (
+              <NutritionDisplay
+                result={nutritionResult}
+                onBack={handleStartOver}
+                onSave={handleSaveClick}
+                onViewSaved={handleViewSaved}
+                onEditLabel={handleEditLabel}
+                saveDisabled={savedRecipeId !== null}
+                saveLabel={savedRecipeId !== null ? 'Saved!' : (editingRecipeId ? 'Update Recipe' : 'Save Label')}
+                ingredientNames={ingredients
+                  .filter(ing => ing.selected_fdc_id !== null)
+                  .map(ing => ing.parsed.name)}
+              />
+            )}
+          </main>
+        } />
+
+        <Route path="/login" element={
+          <main className="container">
+            <LoginPage
+              onSuccess={handleAuthSuccess}
+              onNavigateRegister={() => navigate('/register')}
+            />
+          </main>
+        } />
+
+        <Route path="/register" element={
+          <main className="container">
+            <RegisterPage
+              onSuccess={handleAuthSuccess}
+              onNavigateLogin={() => navigate('/login')}
+            />
+          </main>
+        } />
+
+        <Route path="/recipes" element={
+          <ProtectedRoute currentUser={currentUser}>
+            <main className="container">
+              <Dashboard />
+            </main>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/recipes/:id" element={
+          <ProtectedRoute currentUser={currentUser}>
+            <main className="container">
+              <RecipeDetail
+                onEdit={handleEditRecipe}
+                onDelete={handleRecipeDeleted}
+              />
+            </main>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/account" element={
+          <ProtectedRoute currentUser={currentUser}>
+            <main className="container">
+              <AccountPage
+                currentUser={currentUser!}
+                onUserUpdated={handleUserUpdated}
+                onLogout={handleLogout}
+                onAccountDeleted={handleAccountDeleted}
+              />
+            </main>
+          </ProtectedRoute>
+        } />
+
+        {/* Catch-all: redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
 
       {showSaveModal && (
         <SaveLabelModal

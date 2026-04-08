@@ -180,6 +180,14 @@
       <td>{{ total_sugars.container_amount_str }}</td>
       <td class="nf-dv"></td>
     </tr>
+    {# Added Sugars #}
+    <tr>
+      <td class="nf-name" style="padding-left: 24pt;">Added Sugars</td>
+      <td>{{ added_sugars.display or added_sugars.amount_str }}</td>
+      <td class="nf-dv"></td>
+      <td>{{ added_sugars.container_amount_str }}</td>
+      <td class="nf-dv"></td>
+    </tr>
     {# Protein #}
     <tr>
       <td class="nf-name"><span class="nf-bold">Protein</span></td>
@@ -233,9 +241,14 @@
   serving of food contributes to a daily diet. 2,000 calories
   a day is used for general nutrition advice.
 </p>
-{% if allergens %}
+{% if show_allergens and allergen_text %}
 <p class="nf-allergens" style="font-size: 8pt; font-weight: 700; margin-top: 4pt;">
-  Contains: {{ allergens | join(', ') }}
+  {{ allergen_text }}
 </p>
+{% endif %}
+{% if show_ingredients and ingredient_list_text %}
+<div class="nf-ingredients" style="font-size: 7pt; margin-top: 4pt; border-top: 0.5pt solid #000; padding-top: 3pt;">
+  <span style="font-weight: 700;">INGREDIENTS: </span>{{ ingredient_list_text }}
+</div>
 {% endif %}
 {% endblock %}

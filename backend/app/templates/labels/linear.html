@@ -52,6 +52,7 @@
     <span class="nf-lbold">Tot. Carb.</span> {{ total_carb.display or total_carb.amount_str }}{% if total_carb.dv_str %} ({{ total_carb.dv_str }} DV){% endif %},
     Dietary Fiber {{ dietary_fiber.display or dietary_fiber.amount_str }}{% if dietary_fiber.dv_str %} ({{ dietary_fiber.dv_str }} DV){% endif %},
     Total Sugars {{ total_sugars.display or total_sugars.amount_str }},
+    Added Sugars {{ added_sugars.display or added_sugars.amount_str }},
     <span class="nf-lbold">Protein</span> {{ protein.display or protein.amount_str }},
     Vitamin D {{ vitamin_d.display or vitamin_d.amount_str }}{% if vitamin_d.dv_str %} ({{ vitamin_d.dv_str }} DV){% endif %},
     Calcium {{ calcium.display or calcium.amount_str }}{% if calcium.dv_str %} ({{ calcium.dv_str }} DV){% endif %},
@@ -62,10 +63,15 @@
   <p class="nf-linear-footnote">
     * % Daily Value (DV) based on a 2,000 calorie diet.
   </p>
-  {% if allergens %}
+  {% if show_allergens and allergen_text %}
   <p class="nf-allergens" style="font-size: 7pt; font-weight: 700; margin-top: 2pt;">
-    Contains: {{ allergens | join(', ') }}
+    {{ allergen_text }}
   </p>
+  {% endif %}
+  {% if show_ingredients and ingredient_list_text %}
+  <div class="nf-ingredients" style="font-size: 6pt; margin-top: 2pt; border-top: 0.5pt solid #000; padding-top: 2pt;">
+    <span style="font-weight: 700;">INGREDIENTS: </span>{{ ingredient_list_text }}
+  </div>
   {% endif %}
 </div>
 {% endblock %}

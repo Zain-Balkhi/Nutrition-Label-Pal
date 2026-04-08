@@ -5,7 +5,7 @@ User-scoped recipe CRUD endpoints. All routes require authentication.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.database import UserRow, get_session, UserIngredientCache
+from app.database import UserRow, get_session
 from app.dependencies import get_current_user
 from app.models.schemas import (
     RecipeDetail,
@@ -13,6 +13,7 @@ from app.models.schemas import (
     RecipeNutrientOut,
     RecipeSummary,
     SaveRecipeRequest,
+    TagOut,
     UpdateRecipeRequest,
 )
 from app.services.recipe_service import (
@@ -26,6 +27,10 @@ from app.services.recipe_service import (
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
 
+def _tags_to_out(recipe) -> list[TagOut]:
+    return [TagOut(id=t.id, name=t.name, color=t.color) for t in getattr(recipe, "tags", [])]
+
+
 def _recipe_to_summary(recipe) -> RecipeSummary:
     return RecipeSummary(
         id=recipe.id,
@@ -34,6 +39,7 @@ def _recipe_to_summary(recipe) -> RecipeSummary:
         serving_size=recipe.serving_size,
         created_at=recipe.created_at.isoformat() if recipe.created_at else "",
         updated_at=recipe.updated_at.isoformat() if recipe.updated_at else "",
+        tags=_tags_to_out(recipe),
     )
 
 
@@ -83,26 +89,8 @@ def _recipe_to_detail(recipe) -> RecipeDetail:
         allergens=allergens,
         created_at=recipe.created_at.isoformat() if recipe.created_at else "",
         updated_at=recipe.updated_at.isoformat() if recipe.updated_at else "",
+        tags=_tags_to_out(recipe),
     )
-
-
-def _update_ingredient_cache(session: Session, user_id: int, ingredients):
-    for ing in ingredients:
-        if ing.fdc_id is not None:
-            cached = session.query(UserIngredientCache).filter_by(
-                user_id=user_id, ingredient_name=ing.name.lower()
-            ).first()
-            if cached:
-                cached.selected_fdc_id = ing.fdc_id
-            else:
-                # Provide a minimal valid cache if not already found in parse-recipe
-                new_cache = UserIngredientCache(
-                    user_id=user_id,
-                    ingredient_name=ing.name.lower(),
-                    matches_json="[]", 
-                    selected_fdc_id=ing.fdc_id
-                )
-                session.add(new_cache)
 
 
 @router.post("", response_model=RecipeDetail, status_code=status.HTTP_201_CREATED)
@@ -118,12 +106,10 @@ def create_recipe(
         "serving_size": body.serving_size,
         "ingredients": [ing.model_dump() for ing in body.ingredients],
         "nutrients": [nut.model_dump() for nut in body.nutrients],
-        "nutrients_raw": [nut.model_dump() for nut in body.nutrients],
         "allergens": body.allergens,
     }
     try:
         recipe = save_recipe(session, user.id, data)
-        _update_ingredient_cache(session, user.id, body.ingredients)
         session.commit()
         session.refresh(recipe)
     except Exception:
@@ -176,8 +162,6 @@ def update_user_recipe(
         update_data["nutrients"] = [nut.model_dump() for nut in body.nutrients]
 
     try:
-        if body.ingredients is not None:
-            _update_ingredient_cache(session, user.id, body.ingredients)
         recipe = update_recipe(session, recipe, update_data)
         session.commit()
         session.refresh(recipe)

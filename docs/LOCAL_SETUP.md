@@ -73,7 +73,17 @@
 
 ## Running Both Services
 
-Both the backend and frontend must run simultaneously in separate terminal windows for full functionality.
+### One command (recommended)
+
+From the project root:
+```bash
+npm install   # first time only
+npm run dev
+```
+
+This starts both backend and frontend in a single terminal with color-coded output (blue for backend, green for frontend). Then open http://localhost:5173 in your browser.
+
+### Two terminals (alternative)
 
 **Terminal 1 (Backend):**
 ```bash
@@ -115,3 +125,17 @@ npm run build
 ```
 
 The production build output will be in `frontend/dist/`.
+
+## Test Recipe:
+3 very ripe bananas, (medium/large)
+½ cup unsalted butter, (8 Tbsp) at room temperature
+3/4 cup granulated sugar
+2 large eggs, lightly beaten
+1 ½ cups all-purpose flour
+1 tsp baking soda
+½ tsp salt
+½ tsp vanilla extract
+1 cup walnuts
+½ cup raisins
+10, 1 SLICE
+

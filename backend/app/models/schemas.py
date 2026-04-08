@@ -140,6 +140,24 @@ class TokenResponse(BaseModel):
     user: UserOut
 
 
+# ── Tag schemas ───────────────────────────────────────────────────────────
+
+class TagCreate(BaseModel):
+    name: str
+    color: str = "#f5a623"
+
+
+class TagUpdate(BaseModel):
+    name: str | None = None
+    color: str | None = None
+
+
+class TagOut(BaseModel):
+    id: int
+    name: str
+    color: str
+
+
 # ── Recipe CRUD schemas ────────────────────────────────────────────────────
 
 class SaveIngredientInput(BaseModel):
@@ -210,6 +228,7 @@ class RecipeSummary(BaseModel):
     serving_size: str
     created_at: str
     updated_at: str
+    tags: list[TagOut] = []
 
 
 class RecipeDetail(BaseModel):
@@ -223,6 +242,7 @@ class RecipeDetail(BaseModel):
     allergens: list[str] = []
     created_at: str
     updated_at: str
+    tags: list[TagOut] = []
 
 
 # ── Label export schemas ──────────────────────────────────────────────────
@@ -243,3 +263,7 @@ class LabelExportRequest(BaseModel):
     serving_size: str
     nutrients: list[NutrientValue]
     allergens: list[str] = []
+    show_allergens: bool = False
+    allergen_text: str = ""
+    show_ingredients: bool = False
+    ingredient_list_text: str = ""

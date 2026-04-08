@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import NutritionDisplay from './NutritionDisplay';
-import type { RecipeDetail as RecipeDetailType, NutritionResult } from '../types';
+import TagInput from './TagInput';
+import type { RecipeDetail as RecipeDetailType, NutritionResult, Tag } from '../types';
+import './Tags.css';
 
 interface RecipeDetailProps {
-  recipeId: number;
-  onBack: () => void;
   onEdit: (recipe: RecipeDetailType) => void;
   onDelete: () => void;
 }
@@ -30,12 +31,14 @@ function recipeToNutritionResult(recipe: RecipeDetailType): NutritionResult {
 }
 
 export default function RecipeDetail({
-  recipeId,
-  onBack,
   onEdit,
   onDelete,
 }: RecipeDetailProps) {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const recipeId = Number(id);
   const [recipe, setRecipe] = useState<RecipeDetailType | null>(null);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -45,8 +48,12 @@ export default function RecipeDetail({
       setLoading(true);
       setError(null);
       try {
-        const data = await api.recipes.get(recipeId);
+        const [data, tagsData] = await Promise.all([
+          api.recipes.get(recipeId),
+          api.tags.list(),
+        ]);
         setRecipe(data);
+        setAllTags(tagsData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load recipe');
       } finally {
@@ -55,6 +62,46 @@ export default function RecipeDetail({
     }
     fetchRecipe();
   }, [recipeId]);
+
+  async function handleAddTag(tag: Tag) {
+    if (!recipe) return;
+    try {
+      await api.tags.addToRecipe(recipe.id, tag.id);
+      setRecipe(prev =>
+        prev ? { ...prev, tags: [...(prev.tags ?? []), tag] } : prev,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add tag');
+    }
+  }
+
+  async function handleRemoveTag(tag: Tag) {
+    if (!recipe) return;
+    try {
+      await api.tags.removeFromRecipe(recipe.id, tag.id);
+      setRecipe(prev =>
+        prev
+          ? { ...prev, tags: (prev.tags ?? []).filter(t => t.id !== tag.id) }
+          : prev,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to remove tag');
+    }
+  }
+
+  async function handleCreateTag(name: string, color: string) {
+    if (!recipe) return;
+    try {
+      const tag = await api.tags.create(name, color);
+      setAllTags(prev => [...prev, tag].sort((a, b) => a.name.localeCompare(b.name)));
+      await api.tags.addToRecipe(recipe.id, tag.id);
+      setRecipe(prev =>
+        prev ? { ...prev, tags: [...(prev.tags ?? []), tag] } : prev,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create tag');
+    }
+  }
 
   async function handleDelete() {
     if (!recipe) return;
@@ -72,7 +119,10 @@ export default function RecipeDetail({
   if (loading) {
     return (
       <div className="recipe-detail">
-        <p className="dashboard-loading">Loading recipe...</p>
+        <div className="loading-container">
+          <div className="spinner" />
+          <span>Loading recipe...</span>
+        </div>
       </div>
     );
   }
@@ -81,7 +131,7 @@ export default function RecipeDetail({
     return (
       <div className="recipe-detail">
         <div className="error">{error ?? 'Recipe not found'}</div>
-        <button className="btn-secondary" onClick={onBack}>Back to Dashboard</button>
+        <button className="btn-secondary" onClick={() => navigate('/recipes')}>Back to Recipes</button>
       </div>
     );
   }
@@ -90,16 +140,50 @@ export default function RecipeDetail({
 
   return (
     <div className="recipe-detail">
-      <button className="btn-back-link" onClick={onBack}>
-        &larr; Back to Dashboard
+      <button className="btn-back-link" onClick={() => navigate('/recipes')}>
+        &larr; Back to Recipes
       </button>
+
+      <div className="recipe-detail-tags">
+        <div className="recipe-detail-tags-title">Tags</div>
+        <TagInput
+          availableTags={allTags}
+          selectedTags={recipe.tags ?? []}
+          onAdd={handleAddTag}
+          onRemove={handleRemoveTag}
+          onCreate={handleCreateTag}
+        />
+      </div>
 
       <NutritionDisplay
         result={nutritionResult}
         onBack={() => onEdit(recipe)}
-        saveDisabled
-        saveLabel="Saved"
-        onViewSaved={onBack}
+        onViewSaved={() => navigate('/recipes')}
+        ingredientNames={recipe.ingredients.map(i => i.name)}
+        onEditLabel={async (updates) => {
+          const result = await api.calculateNutrition(
+            recipe.ingredients.filter(i => i.fdc_id).map(i => ({
+              parsed: { name: i.name, quantity: i.quantity, unit: i.unit, preparation: i.preparation, original_text: i.original_text },
+              status: 'matched',
+              matches: i.fdc_id && i.matched_description ? [{ fdc_id: i.fdc_id, description: i.matched_description, data_type: '' }] : [],
+              selected_fdc_id: i.fdc_id,
+            })),
+            updates.servings,
+            updates.serving_size,
+            recipe.recipe_name,
+            recipe.allergens || [],
+          );
+          await api.recipes.update(recipe.id, {
+            servings: updates.servings,
+            serving_size: updates.serving_size,
+            nutrients: result.nutrients.map(n => ({
+              name: n.name, amount: n.amount, unit: n.unit,
+              daily_value_percent: n.daily_value_percent,
+              display_value: n.display_value,
+            })),
+          });
+          setRecipe(prev => prev ? { ...prev, servings: updates.servings, serving_size: updates.serving_size } : prev);
+        }}
       />
 
       <div className="detail-actions">

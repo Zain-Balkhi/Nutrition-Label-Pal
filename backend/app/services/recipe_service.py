@@ -17,7 +17,7 @@ def save_recipe(session: Session, user_id: int, data: dict) -> RecipeRow:
         raw_text=data["raw_text"],
         servings=data["servings"],
         serving_size=data["serving_size"],
-        label_json=json.dumps([n for n in data.get("nutrients_raw", [])]),
+        label_json=json.dumps([n for n in data.get("nutrients", [])]),
         allergens_json=json.dumps(data.get("allergens", [])),
     )
     session.add(recipe)

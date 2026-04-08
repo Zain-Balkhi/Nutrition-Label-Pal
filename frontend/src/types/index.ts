@@ -88,6 +88,14 @@ export interface RegisterRequest {
   full_name: string;
 }
 
+// ── Tag types ────────────────────────────────────────────────────────────
+
+export interface Tag {
+  id: number;
+  name: string;
+  color: string;
+}
+
 // ── Recipe CRUD types ─────────────────────────────────────────────────────
 
 export interface SaveIngredientInput {
@@ -158,6 +166,7 @@ export interface RecipeSummary {
   serving_size: string;
   created_at: string;
   updated_at: string;
+  tags?: Tag[];
 }
 
 export interface RecipeDetail {
@@ -171,6 +180,7 @@ export interface RecipeDetail {
   allergens: string[];
   created_at: string;
   updated_at: string;
+  tags?: Tag[];
 }
 
 // ── Label export types ──────────────────────────────────────────────────
@@ -185,7 +195,10 @@ export interface LabelExportRequest {
   servings: number;
   serving_size: string;
   nutrients: NutrientValue[];
-  allergens?: string[];
+  show_allergens?: boolean;
+  allergen_text?: string;
+  show_ingredients?: boolean;
+  ingredient_list_text?: string;
 }
 
 export const LABEL_FORMAT_INFO: Record<LabelFormat, {
