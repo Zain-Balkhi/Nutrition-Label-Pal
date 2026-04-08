@@ -89,6 +89,7 @@ export default function VerticalLabel({ nutrients, servings, serving_size, showA
           <NutrientRow label="Total Carb." n={getN(nutrients, 'Total Carbohydrate')} bold />
           <NutrientRow label="Dietary Fiber" n={getN(nutrients, 'Dietary Fiber')} indent={1} />
           <NutrientRow label="Total Sugars" n={getN(nutrients, 'Total Sugars')} indent={1} showDv={false} />
+          <NutrientRow label="Added Sugars" n={getN(nutrients, 'Added Sugars')} indent={2} showDv={false} />
           <NutrientRow label="Protein" n={getN(nutrients, 'Protein')} bold showDv={false} />
         </tbody>
       </table>

@@ -180,6 +180,14 @@
       <td>{{ total_sugars.container_amount_str }}</td>
       <td class="nf-dv"></td>
     </tr>
+    {# Added Sugars #}
+    <tr>
+      <td class="nf-name" style="padding-left: 24pt;">Added Sugars</td>
+      <td>{{ added_sugars.display or added_sugars.amount_str }}</td>
+      <td class="nf-dv"></td>
+      <td>{{ added_sugars.container_amount_str }}</td>
+      <td class="nf-dv"></td>
+    </tr>
     {# Protein #}
     <tr>
       <td class="nf-name"><span class="nf-bold">Protein</span></td>

@@ -106,7 +106,6 @@ def create_recipe(
         "serving_size": body.serving_size,
         "ingredients": [ing.model_dump() for ing in body.ingredients],
         "nutrients": [nut.model_dump() for nut in body.nutrients],
-        "nutrients_raw": [nut.model_dump() for nut in body.nutrients],
         "allergens": body.allergens,
     }
     try:

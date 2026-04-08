@@ -33,6 +33,7 @@ NUTRIENT_DISPLAY = {
     "carbohydrate": ("Total Carbohydrate", "g"),
     "fiber": ("Dietary Fiber", "g"),
     "total_sugars": ("Total Sugars", "g"),
+    "added_sugars": ("Added Sugars", "g"),
     "protein": ("Protein", "g"),
     "vitamin_d": ("Vitamin D", "mcg"),
     "calcium": ("Calcium", "mg"),
@@ -73,7 +74,7 @@ def _apply_rounding(key: str, value: float) -> tuple[float, str | None]:
         rounded = round_cholesterol(value)
     elif key == "sodium":
         rounded = round_sodium(value)
-    elif key in ("carbohydrate", "fiber", "total_sugars", "protein"):
+    elif key in ("carbohydrate", "fiber", "total_sugars", "added_sugars", "protein"):
         rounded = round_carb_fiber_sugar_protein(value)
     else:
         rounded = round(value, 1)

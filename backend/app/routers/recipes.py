@@ -41,7 +41,7 @@ async def parse_recipe_endpoint(
         raise HTTPException(status_code=401, detail="Invalid OpenAI API key. Check your OPENAI_API_KEY in .env.")
     except openai.APIError as e:
         logger.error("OpenAI API error: %s", e)
-        raise HTTPException(status_code=502, detail=f"OpenAI API error: {e.message}")
+        raise HTTPException(status_code=502, detail=f"OpenAI API error: {e}")
     except ValueError as e:
         logger.error("Recipe parsing failed: %s", e)
         raise HTTPException(status_code=502, detail=str(e))
@@ -77,8 +77,6 @@ async def parse_recipe_endpoint(
                 )
             )
     except Exception as e:
-        import traceback
-        traceback.print_exc()
         logger.error("USDA API error: %s", e)
         raise HTTPException(status_code=502, detail=str(e))
 

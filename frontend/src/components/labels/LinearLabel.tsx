@@ -61,6 +61,7 @@ export default function LinearLabel({ nutrients, servings, serving_size, showAll
         <LinearItem label="Tot. Carb." n={getN(nutrients, 'Total Carbohydrate')} bold />
         <LinearItem label="Dietary Fiber" n={getN(nutrients, 'Dietary Fiber')} />
         <LinearItem label="Total Sugars" n={getN(nutrients, 'Total Sugars')} showDv={false} />
+        <LinearItem label="Added Sugars" n={getN(nutrients, 'Added Sugars')} showDv={false} />
         <LinearItem label="Protein" n={getN(nutrients, 'Protein')} bold showDv={false} />
         <LinearItem label="Vitamin D" n={getN(nutrients, 'Vitamin D')} />
         <LinearItem label="Calcium" n={getN(nutrients, 'Calcium')} />

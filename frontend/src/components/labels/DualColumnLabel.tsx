@@ -114,6 +114,7 @@ export default function DualColumnLabel({ nutrients, servings, serving_size, sho
           <NutrientRow label="Total Carb." n={getN(nutrients, 'Total Carbohydrate')} servings={servings} bold />
           <NutrientRow label="Dietary Fiber" n={getN(nutrients, 'Dietary Fiber')} servings={servings} indent={1} />
           <NutrientRow label="Total Sugars" n={getN(nutrients, 'Total Sugars')} servings={servings} indent={1} showDv={false} />
+          <NutrientRow label="Added Sugars" n={getN(nutrients, 'Added Sugars')} servings={servings} indent={2} showDv={false} />
           <NutrientRow label="Protein" n={getN(nutrients, 'Protein')} servings={servings} bold showDv={false} />
         </tbody>
       </table>

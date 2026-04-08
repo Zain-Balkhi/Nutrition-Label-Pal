@@ -146,6 +146,14 @@
       <td>{{ total_sugars.display or total_sugars.amount_str }}</td>
       <td class="nf-hdv"></td>
     </tr>
+    {# Row 4: (empty) | (empty) | Added Sugars #}
+    <tr>
+      <td></td><td></td><td class="nf-hdv"></td>
+      <td></td><td></td><td class="nf-hdv"></td>
+      <td class="nf-hcol" style="padding-left: 16pt;">Added Sugars</td>
+      <td>{{ added_sugars.display or added_sugars.amount_str }}</td>
+      <td class="nf-hdv"></td>
+    </tr>
   </tbody>
 </table>
 

@@ -130,14 +130,15 @@ export default function Dashboard() {
           <div className="tag-filter-bar">
             <span className="tag-filter-label">Filter:</span>
             {tags.map(tag => (
-              <span
+              <button
+                type="button"
                 key={tag.id}
                 className={`tag-filter-chip ${filterTagIds.has(tag.id) ? 'tag-filter-chip-active' : ''}`}
                 style={{ backgroundColor: tag.color, color: '#fff' }}
                 onClick={() => toggleFilter(tag.id)}
               >
                 {tag.name}
-              </span>
+              </button>
             ))}
             {filterTagIds.size > 0 && (
               <button className="tag-filter-clear" onClick={() => setFilterTagIds(new Set())}>

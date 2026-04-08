@@ -50,6 +50,7 @@ _NUTRIENT_VAR_MAP = {
     "Total Carbohydrate": "total_carb",
     "Dietary Fiber": "dietary_fiber",
     "Total Sugars": "total_sugars",
+    "Added Sugars": "added_sugars",
     "Protein": "protein",
     "Vitamin D": "vitamin_d",
     "Calcium": "calcium",

@@ -37,6 +37,7 @@ export default function TabularLabel({ nutrients, servings, serving_size, showAl
   const totalCarb = getN(nutrients, 'Total Carbohydrate');
   const fiber = getN(nutrients, 'Dietary Fiber');
   const totalSugars = getN(nutrients, 'Total Sugars');
+  const addedSugars = getN(nutrients, 'Added Sugars');
   const protein = getN(nutrients, 'Protein');
   const vitD = getN(nutrients, 'Vitamin D');
   const calcium = getN(nutrients, 'Calcium');
@@ -101,6 +102,13 @@ export default function TabularLabel({ nutrients, servings, serving_size, showAl
             <td className="nf-hdv" />
             <td className="nf-hcol nf-hsub">Total Sugars</td>
             <td>{amt(totalSugars)}</td>
+            <td className="nf-hdv" />
+          </tr>
+          <tr>
+            <td /><td /><td className="nf-hdv" />
+            <td /><td /><td className="nf-hdv" />
+            <td className="nf-hcol" style={{ paddingLeft: '16pt' }}>Added Sugars</td>
+            <td>{amt(addedSugars)}</td>
             <td className="nf-hdv" />
           </tr>
         </tbody>

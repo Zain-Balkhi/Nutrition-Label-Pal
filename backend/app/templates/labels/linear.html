@@ -52,6 +52,7 @@
     <span class="nf-lbold">Tot. Carb.</span> {{ total_carb.display or total_carb.amount_str }}{% if total_carb.dv_str %} ({{ total_carb.dv_str }} DV){% endif %},
     Dietary Fiber {{ dietary_fiber.display or dietary_fiber.amount_str }}{% if dietary_fiber.dv_str %} ({{ dietary_fiber.dv_str }} DV){% endif %},
     Total Sugars {{ total_sugars.display or total_sugars.amount_str }},
+    Added Sugars {{ added_sugars.display or added_sugars.amount_str }},
     <span class="nf-lbold">Protein</span> {{ protein.display or protein.amount_str }},
     Vitamin D {{ vitamin_d.display or vitamin_d.amount_str }}{% if vitamin_d.dv_str %} ({{ vitamin_d.dv_str }} DV){% endif %},
     Calcium {{ calcium.display or calcium.amount_str }}{% if calcium.dv_str %} ({{ calcium.dv_str }} DV){% endif %},

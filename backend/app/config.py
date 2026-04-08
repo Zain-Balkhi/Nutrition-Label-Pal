@@ -22,6 +22,7 @@ class Settings(BaseSettings):
         "carbohydrate": 1005,
         "fiber": 1079,
         "total_sugars": 2000,
+        "added_sugars": 2010,
         "saturated_fat": 1258,
         "trans_fat": 1257,
         "cholesterol": 1253,
