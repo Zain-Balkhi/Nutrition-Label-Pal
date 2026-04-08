@@ -22,6 +22,9 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
+# Node (root-level)
+node_modules/
+
 # General
 .DS_Store
 *.log

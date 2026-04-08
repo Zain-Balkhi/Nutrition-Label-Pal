@@ -73,7 +73,17 @@
 
 ## Running Both Services
 
-Both the backend and frontend must run simultaneously in separate terminal windows for full functionality.
+### One command (recommended)
+
+From the project root:
+```bash
+npm install   # first time only
+npm run dev
+```
+
+This starts both backend and frontend in a single terminal with color-coded output (blue for backend, green for frontend). Then open http://localhost:5173 in your browser.
+
+### Two terminals (alternative)
 
 **Terminal 1 (Backend):**
 ```bash
