@@ -115,3 +115,17 @@ npm run build
 ```
 
 The production build output will be in `frontend/dist/`.
+
+## Test Recipe:
+3 very ripe bananas, (medium/large)
+½ cup unsalted butter, (8 Tbsp) at room temperature
+3/4 cup granulated sugar
+2 large eggs, lightly beaten
+1 ½ cups all-purpose flour
+1 tsp baking soda
+½ tsp salt
+½ tsp vanilla extract
+1 cup walnuts
+½ cup raisins
+10, 1 SLICE
+
