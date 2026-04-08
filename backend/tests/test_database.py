@@ -147,18 +147,18 @@ class TestDelete:
 
     def test_cascade(self, db, sample_ingredients, sample_label):
         """Deleting a recipe should also delete its ingredients."""
-        from app.database import save_recipe_label, delete_recipe_label, get_session
+        from app.database import save_recipe_label, delete_recipe_label, create_session
         from app.database import IngredientRow
         rid = save_recipe_label("Cascade", "", 1, "x", sample_ingredients, sample_label)
 
-        session = get_session()
+        session = create_session()
         count_before = session.query(IngredientRow).filter_by(recipe_id=rid).count()
         session.close()
         assert count_before == 2
 
         delete_recipe_label(rid)
 
-        session = get_session()
+        session = create_session()
         count_after = session.query(IngredientRow).filter_by(recipe_id=rid).count()
         session.close()
         assert count_after == 0

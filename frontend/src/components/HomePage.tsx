@@ -1,9 +1,5 @@
+import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
-
-interface HomePageProps {
-  onGetStarted: () => void;
-  onTryNow: () => void;
-}
 
 // Mock nutrition label for hero visual
 function MockLabel() {
@@ -125,7 +121,8 @@ const EXAMPLES = [
   { title: 'Homemade Granola', servings: '12 servings', desc: 'Farmers market granola' },
 ];
 
-export default function HomePage({ onGetStarted, onTryNow }: HomePageProps) {
+export default function HomePage() {
+  const navigate = useNavigate();
   return (
     <div className="home-page">
 
@@ -142,10 +139,10 @@ export default function HomePage({ onGetStarted, onTryNow }: HomePageProps) {
             without expensive lab testing.
           </p>
           <div className="home-hero-actions">
-            <button type="button" className="btn-home-primary" onClick={onGetStarted}>
+            <button type="button" className="btn-home-primary" onClick={() => navigate('/register')}>
               Create Free Account
             </button>
-            <button type="button" className="btn-home-secondary" onClick={onTryNow}>
+            <button type="button" className="btn-home-secondary" onClick={() => navigate('/generate')}>
               Try It Now →
             </button>
           </div>
@@ -221,7 +218,7 @@ export default function HomePage({ onGetStarted, onTryNow }: HomePageProps) {
             ))}
           </div>
           <div className="home-examples-cta">
-            <button type="button" className="btn-home-primary" onClick={onTryNow}>
+            <button type="button" className="btn-home-primary" onClick={() => navigate('/generate')}>
               Generate Your Own Label
             </button>
           </div>
@@ -287,10 +284,10 @@ export default function HomePage({ onGetStarted, onTryNow }: HomePageProps) {
             No lab required. Generate your first label in under 2 minutes.
           </p>
           <div className="home-hero-actions home-cta-actions">
-            <button type="button" className="btn-home-primary btn-home-primary--large" onClick={onGetStarted}>
+            <button type="button" className="btn-home-primary btn-home-primary--large" onClick={() => navigate('/register')}>
               Create Free Account
             </button>
-            <button type="button" className="btn-home-secondary" onClick={onTryNow}>
+            <button type="button" className="btn-home-secondary" onClick={() => navigate('/generate')}>
               Try Without an Account →
             </button>
           </div>

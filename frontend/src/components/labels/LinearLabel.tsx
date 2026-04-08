@@ -4,6 +4,10 @@ interface LinearLabelProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
+  showAllergens?: boolean;
+  allergenText?: string;
+  showIngredients?: boolean;
+  ingredientListText?: string;
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -39,7 +43,7 @@ function LinearItem({ label, n, bold = false, showDv = true, last = false }: Lin
   );
 }
 
-export default function LinearLabel({ nutrients, servings, serving_size }: LinearLabelProps) {
+export default function LinearLabel({ nutrients, servings, serving_size, showAllergens, allergenText, showIngredients, ingredientListText }: LinearLabelProps) {
   return (
     <div className="nf-linear">
       <div className="nf-linear-title">Nutrition Facts</div>
@@ -57,6 +61,7 @@ export default function LinearLabel({ nutrients, servings, serving_size }: Linea
         <LinearItem label="Tot. Carb." n={getN(nutrients, 'Total Carbohydrate')} bold />
         <LinearItem label="Dietary Fiber" n={getN(nutrients, 'Dietary Fiber')} />
         <LinearItem label="Total Sugars" n={getN(nutrients, 'Total Sugars')} showDv={false} />
+        <LinearItem label="Added Sugars" n={getN(nutrients, 'Added Sugars')} showDv={false} />
         <LinearItem label="Protein" n={getN(nutrients, 'Protein')} bold showDv={false} />
         <LinearItem label="Vitamin D" n={getN(nutrients, 'Vitamin D')} />
         <LinearItem label="Calcium" n={getN(nutrients, 'Calcium')} />
@@ -65,6 +70,17 @@ export default function LinearLabel({ nutrients, servings, serving_size }: Linea
       </div>
       <div className="nf-thin-bar" />
       <p className="nf-footnote">* % Daily Value (DV) based on a 2,000 calorie diet.</p>
+      {showAllergens && allergenText && (
+        <p className="nf-allergens" style={{ fontSize: '0.85em', fontWeight: 700, marginTop: '2px' }}>
+          {allergenText}
+        </p>
+      )}
+      {showIngredients && ingredientListText && (
+        <div className="nf-ingredients" style={{ fontSize: '0.8em', marginTop: '4px', borderTop: '1px solid #000', paddingTop: '2px' }}>
+          <span style={{ fontWeight: 700 }}>INGREDIENTS: </span>
+          {ingredientListText}
+        </div>
+      )}
     </div>
   );
 }

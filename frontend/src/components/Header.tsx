@@ -1,26 +1,30 @@
+import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import type { AuthUser } from '../types';
 
 interface HeaderProps {
-  activePage?: 'home' | 'generate' | 'dashboard' | 'login' | 'account';
   currentUser?: AuthUser | null;
-  onLoginClick?: () => void;
   onLogout?: () => void;
-  onLogoClick?: () => void;
-  onGenerateClick?: () => void;
-  onDashboardClick?: () => void;
-  onAccountClick?: () => void;
 }
 
 export default function Header({
-  activePage = 'generate',
   currentUser = null,
-  onLoginClick,
   onLogout,
-  onLogoClick,
-  onGenerateClick,
-  onDashboardClick,
-  onAccountClick,
 }: HeaderProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const activePage = (() => {
+    const path = location.pathname;
+    if (path === '/') return 'home';
+    if (path === '/generate') return 'generate';
+    if (path.startsWith('/recipes')) return 'dashboard';
+    if (path === '/login' || path === '/register') return 'login';
+    if (path === '/account') return 'account';
+    return 'home';
+  })();
+
   // Far-right button logic:
   // Not logged in → "Login"
   // Logged in, on account page → "Logout"
@@ -31,7 +35,7 @@ export default function Header({
         <button
           type="button"
           className={`nav-link nav-btn ${activePage === 'login' ? 'active' : ''}`}
-          onClick={onLoginClick}
+          onClick={() => { setMenuOpen(false); navigate('/login'); }}
         >
           Login
         </button>
@@ -39,7 +43,7 @@ export default function Header({
     }
     if (activePage === 'account') {
       return (
-        <button type="button" className="nav-link nav-btn" onClick={onLogout}>
+        <button type="button" className="nav-link nav-btn" onClick={() => { setMenuOpen(false); onLogout?.(); }}>
           Logout
         </button>
       );
@@ -48,7 +52,7 @@ export default function Header({
       <button
         type="button"
         className={`nav-link nav-btn`}
-        onClick={onAccountClick}
+        onClick={() => { setMenuOpen(false); navigate('/account'); }}
       >
         Account
       </button>
@@ -57,24 +61,34 @@ export default function Header({
 
   return (
     <header className="header">
-      <button type="button" className="header-left header-home-btn" onClick={onLogoClick}>
+      <button type="button" className="header-left header-home-btn" onClick={() => navigate('/')}>
         <img src="/logo.png" alt="Nutrition Label Pal" className="header-logo" />
         <h1 className="header-title">Nutrition Label Pal</h1>
       </button>
-      <nav className="header-nav">
+      <button
+        type="button"
+        className="hamburger-btn"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle navigation"
+      >
+        <span className="hamburger-line" />
+        <span className="hamburger-line" />
+        <span className="hamburger-line" />
+      </button>
+      <nav className={`header-nav ${menuOpen ? 'nav-open' : ''}`}>
         <button
           type="button"
           className={`nav-link nav-btn ${activePage === 'generate' ? 'active' : ''}`}
-          onClick={onGenerateClick ?? onLogoClick}
+          onClick={() => { setMenuOpen(false); navigate('/generate'); }}
         >
           Generate
         </button>
         <button
           type="button"
           className={`nav-link nav-btn ${activePage === 'dashboard' ? 'active' : ''}`}
-          onClick={onDashboardClick}
+          onClick={() => { setMenuOpen(false); navigate('/recipes'); }}
         >
-          Dashboard
+          Recipes
         </button>
 
         {renderFarRight()}

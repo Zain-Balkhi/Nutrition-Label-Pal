@@ -17,7 +17,8 @@ def save_recipe(session: Session, user_id: int, data: dict) -> RecipeRow:
         raw_text=data["raw_text"],
         servings=data["servings"],
         serving_size=data["serving_size"],
-        label_json=json.dumps([n for n in data.get("nutrients_raw", [])]),
+        label_json=json.dumps([n for n in data.get("nutrients", [])]),
+        allergens_json=json.dumps(data.get("allergens", [])),
     )
     session.add(recipe)
     session.flush()
@@ -73,6 +74,9 @@ def update_recipe(session: Session, recipe: RecipeRow, data: dict) -> RecipeRow:
     for field in ("recipe_name", "raw_text", "servings", "serving_size"):
         if field in data and data[field] is not None:
             setattr(recipe, field, data[field])
+
+    if "allergens" in data and data["allergens"] is not None:
+        recipe.allergens_json = json.dumps(data["allergens"])
 
     if data.get("ingredients") is not None:
         # Replace all ingredients

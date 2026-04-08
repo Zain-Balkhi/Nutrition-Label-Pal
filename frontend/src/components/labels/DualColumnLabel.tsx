@@ -4,6 +4,10 @@ interface DualColumnLabelProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
+  showAllergens?: boolean;
+  allergenText?: string;
+  showIngredients?: boolean;
+  ingredientListText?: string;
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -55,7 +59,7 @@ function NutrientRow({ label, n, servings, bold = false, indent = 0, showDv = tr
   );
 }
 
-export default function DualColumnLabel({ nutrients, servings, serving_size }: DualColumnLabelProps) {
+export default function DualColumnLabel({ nutrients, servings, serving_size, showAllergens, allergenText, showIngredients, ingredientListText }: DualColumnLabelProps) {
   const calories = getN(nutrients, 'Calories');
   const calPerServing = calories?.amount ?? 0;
   const calPerContainer = Math.round(calPerServing * servings);
@@ -110,6 +114,7 @@ export default function DualColumnLabel({ nutrients, servings, serving_size }: D
           <NutrientRow label="Total Carb." n={getN(nutrients, 'Total Carbohydrate')} servings={servings} bold />
           <NutrientRow label="Dietary Fiber" n={getN(nutrients, 'Dietary Fiber')} servings={servings} indent={1} />
           <NutrientRow label="Total Sugars" n={getN(nutrients, 'Total Sugars')} servings={servings} indent={1} showDv={false} />
+          <NutrientRow label="Added Sugars" n={getN(nutrients, 'Added Sugars')} servings={servings} indent={2} showDv={false} />
           <NutrientRow label="Protein" n={getN(nutrients, 'Protein')} servings={servings} bold showDv={false} />
         </tbody>
       </table>
@@ -130,6 +135,17 @@ export default function DualColumnLabel({ nutrients, servings, serving_size }: D
         food contributes to a daily diet. 2,000 calories a day is used for general
         nutrition advice.
       </p>
+      {showAllergens && allergenText && (
+        <p className="nf-allergens" style={{ fontSize: '0.85em', fontWeight: 700, marginTop: '4px', borderTop: 'none', paddingTop: '0' }}>
+          {allergenText}
+        </p>
+      )}
+      {showIngredients && ingredientListText && (
+        <div className="nf-ingredients" style={{ fontSize: '0.8em', marginTop: '6px', borderTop: '1px solid #000', paddingTop: '4px' }}>
+          <span style={{ fontWeight: 700 }}>INGREDIENTS: </span>
+          {ingredientListText}
+        </div>
+      )}
     </div>
   );
 }

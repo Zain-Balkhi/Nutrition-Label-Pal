@@ -22,6 +22,7 @@ class ParsedRecipe(BaseModel):
     servings: int
     serving_size: str
     ingredients: list[ParsedIngredient]
+    allergens: list[str] = []
 
 
 class USDAMatch(BaseModel):
@@ -42,6 +43,7 @@ class ParseRecipeResponse(BaseModel):
     servings: int
     serving_size: str
     ingredients: list[IngredientWithMatch]
+    allergens: list[str] = []
 
 
 class NutrientValue(BaseModel):
@@ -63,6 +65,7 @@ class CalculateNutritionRequest(BaseModel):
     servings: int
     serving_size: str
     recipe_name: str = "My Recipe"
+    allergens: list[str] = []
 
 
 class NutritionResult(BaseModel):
@@ -71,6 +74,7 @@ class NutritionResult(BaseModel):
     serving_size: str
     nutrients: list[NutrientValue]
     skipped_ingredients: list[SkippedIngredient] = []
+    allergens: list[str] = []
 
 
 # ── Auth schemas ────────────────────────────────────────────────────────────
@@ -136,6 +140,24 @@ class TokenResponse(BaseModel):
     user: UserOut
 
 
+# ── Tag schemas ───────────────────────────────────────────────────────────
+
+class TagCreate(BaseModel):
+    name: str
+    color: str = "#f5a623"
+
+
+class TagUpdate(BaseModel):
+    name: str | None = None
+    color: str | None = None
+
+
+class TagOut(BaseModel):
+    id: int
+    name: str
+    color: str
+
+
 # ── Recipe CRUD schemas ────────────────────────────────────────────────────
 
 class SaveIngredientInput(BaseModel):
@@ -164,6 +186,7 @@ class SaveRecipeRequest(BaseModel):
     serving_size: str
     ingredients: list[SaveIngredientInput]
     nutrients: list[SaveNutrientInput]
+    allergens: list[str] = []
 
 
 class UpdateRecipeRequest(BaseModel):
@@ -173,6 +196,7 @@ class UpdateRecipeRequest(BaseModel):
     serving_size: str | None = None
     ingredients: list[SaveIngredientInput] | None = None
     nutrients: list[SaveNutrientInput] | None = None
+    allergens: list[str] | None = None
 
 
 class RecipeIngredientOut(BaseModel):
@@ -204,6 +228,7 @@ class RecipeSummary(BaseModel):
     serving_size: str
     created_at: str
     updated_at: str
+    tags: list[TagOut] = []
 
 
 class RecipeDetail(BaseModel):
@@ -214,8 +239,10 @@ class RecipeDetail(BaseModel):
     serving_size: str
     ingredients: list[RecipeIngredientOut]
     nutrients: list[RecipeNutrientOut]
+    allergens: list[str] = []
     created_at: str
     updated_at: str
+    tags: list[TagOut] = []
 
 
 # ── Label export schemas ──────────────────────────────────────────────────
@@ -235,3 +262,8 @@ class LabelExportRequest(BaseModel):
     servings: int
     serving_size: str
     nutrients: list[NutrientValue]
+    allergens: list[str] = []
+    show_allergens: bool = False
+    allergen_text: str = ""
+    show_ingredients: bool = False
+    ingredient_list_text: str = ""

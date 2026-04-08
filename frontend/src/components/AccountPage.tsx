@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import type { AuthUser, UserProfile } from '../types';
 import './AccountPage.css';
@@ -8,7 +9,6 @@ interface AccountPageProps {
   onUserUpdated: (user: AuthUser) => void;
   onLogout: () => void;
   onAccountDeleted: () => void;
-  onDashboardClick: () => void;
 }
 
 export default function AccountPage({
@@ -16,8 +16,8 @@ export default function AccountPage({
   onUserUpdated,
   onLogout,
   onAccountDeleted,
-  onDashboardClick,
 }: AccountPageProps) {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -132,7 +132,10 @@ export default function AccountPage({
   if (loadingProfile) {
     return (
       <div className="account-page">
-        <div className="account-loading">Loading account...</div>
+        <div className="loading-container">
+          <div className="spinner" />
+          <span>Loading account...</span>
+        </div>
       </div>
     );
   }
@@ -197,17 +200,6 @@ export default function AccountPage({
             )}
           </div>
 
-          {/* Change password placeholder */}
-          <div className="account-field">
-            <div className="account-field-label">Password</div>
-            <div className="account-password-row">
-              <button className="account-password-btn" disabled>
-                Change Password
-              </button>
-              <span className="account-coming-soon">Coming Soon</span>
-            </div>
-          </div>
-
           <button className="account-logout-btn" onClick={onLogout}>
             Log Out
           </button>
@@ -223,8 +215,8 @@ export default function AccountPage({
               <div className="account-stat-label">
                 {recipeCount === 1 ? 'Saved Recipe' : 'Saved Recipes'}
               </div>
-              <button className="account-dashboard-link" onClick={onDashboardClick}>
-                View Dashboard
+              <button className="account-dashboard-link" onClick={() => navigate('/recipes')}>
+                View Recipes
               </button>
             </div>
             {profile?.created_at && (

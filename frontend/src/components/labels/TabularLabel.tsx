@@ -4,6 +4,10 @@ interface TabularLabelProps {
   nutrients: NutrientValue[];
   servings: number;
   serving_size: string;
+  showAllergens?: boolean;
+  allergenText?: string;
+  showIngredients?: boolean;
+  ingredientListText?: string;
 }
 
 function getN(nutrients: NutrientValue[], name: string): NutrientValue | null {
@@ -21,7 +25,7 @@ function dv(n: NutrientValue | null): string {
   return `${n.daily_value_percent}%`;
 }
 
-export default function TabularLabel({ nutrients, servings, serving_size }: TabularLabelProps) {
+export default function TabularLabel({ nutrients, servings, serving_size, showAllergens, allergenText, showIngredients, ingredientListText }: TabularLabelProps) {
   const calories = getN(nutrients, 'Calories');
   const calPerServing = calories?.amount ?? 0;
 
@@ -33,6 +37,7 @@ export default function TabularLabel({ nutrients, servings, serving_size }: Tabu
   const totalCarb = getN(nutrients, 'Total Carbohydrate');
   const fiber = getN(nutrients, 'Dietary Fiber');
   const totalSugars = getN(nutrients, 'Total Sugars');
+  const addedSugars = getN(nutrients, 'Added Sugars');
   const protein = getN(nutrients, 'Protein');
   const vitD = getN(nutrients, 'Vitamin D');
   const calcium = getN(nutrients, 'Calcium');
@@ -99,6 +104,13 @@ export default function TabularLabel({ nutrients, servings, serving_size }: Tabu
             <td>{amt(totalSugars)}</td>
             <td className="nf-hdv" />
           </tr>
+          <tr>
+            <td /><td /><td className="nf-hdv" />
+            <td /><td /><td className="nf-hdv" />
+            <td className="nf-hcol" style={{ paddingLeft: '16pt' }}>Added Sugars</td>
+            <td>{amt(addedSugars)}</td>
+            <td className="nf-hdv" />
+          </tr>
         </tbody>
       </table>
 
@@ -116,6 +128,17 @@ export default function TabularLabel({ nutrients, servings, serving_size }: Tabu
         food contributes to a daily diet. 2,000 calories a day is used for general
         nutrition advice.
       </p>
+      {showAllergens && allergenText && (
+        <p className="nf-allergens" style={{ fontSize: '0.85em', fontWeight: 700, marginTop: '4px', borderTop: 'none', paddingTop: '0' }}>
+          {allergenText}
+        </p>
+      )}
+      {showIngredients && ingredientListText && (
+        <div className="nf-ingredients" style={{ fontSize: '0.8em', marginTop: '6px', borderTop: '1px solid #000', paddingTop: '4px' }}>
+          <span style={{ fontWeight: 700 }}>INGREDIENTS: </span>
+          {ingredientListText}
+        </div>
+      )}
     </div>
   );
 }
