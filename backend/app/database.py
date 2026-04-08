@@ -122,21 +122,6 @@ class USDANutritionCache(Base):
     fetched_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
 
-class UserIngredientCache(Base):
-    """Caches parsed ingredients and their USDA matches per user/session."""
-    __tablename__ = "user_ingredient_cache"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    ingredient_name = Column(String(255), nullable=False)
-    matches_json = Column(Text, nullable=False, default="[]") 
-    selected_fdc_id = Column(Integer, nullable=True)
-    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc),
-                        onupdate=lambda: datetime.now(timezone.utc))
-
-    __table_args__ = (
-        Index("ix_user_ingredient_cache", "user_id", "ingredient_name"),
-    )
 
 # ── Engine / Session factory ──────────────────────────────────────────────
 _engine = None
@@ -174,15 +159,21 @@ def _migrate_existing_tables(engine):
     from sqlalchemy import inspect, text
 
     inspector = inspect(engine)
+    table_names = inspector.get_table_names()
 
     # Add user_id column to recipes if missing
-    if "recipes" in inspector.get_table_names():
+    if "recipes" in table_names:
         columns = [c["name"] for c in inspector.get_columns("recipes")]
         if "user_id" not in columns:
             with engine.begin() as conn:
                 conn.execute(text(
                     "ALTER TABLE recipes ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE"
                 ))
+
+    # Drop the old per-user ingredient cache (replaced by global USDANutritionCache)
+    if "user_ingredient_cache" in table_names:
+        with engine.begin() as conn:
+            conn.execute(text("DROP TABLE user_ingredient_cache"))
 
 
 # ── CRUD helpers ───────────────────────────────────────────────────────────

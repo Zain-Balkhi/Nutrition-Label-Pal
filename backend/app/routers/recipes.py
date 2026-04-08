@@ -1,4 +1,3 @@
-import json
 import logging
 
 import httpx
@@ -6,8 +5,7 @@ import openai
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import get_session, UserIngredientCache, UserRow
-from app.dependencies import get_optional_user
+from app.database import get_session
 from app.models.schemas import (
     RawRecipeInput,
     ParseRecipeResponse,
@@ -30,7 +28,6 @@ router = APIRouter()
 async def parse_recipe_endpoint(
     input_data: RawRecipeInput,
     session: Session = Depends(get_session),
-    user: UserRow | None = Depends(get_optional_user)
 ):
     settings = get_settings()
     if not settings.OPENAI_API_KEY:
@@ -59,39 +56,17 @@ async def parse_recipe_endpoint(
 
     try:
         for ingredient in parsed.ingredients:
-            cached = None
-            if user:
-                cached = session.query(UserIngredientCache).filter_by(
-                    user_id=user.id, ingredient_name=ingredient.name.lower()
-                ).first()
-
-            if cached:
-                cached_matches = json.loads(cached.matches_json)
-                matches = [USDAMatch(**m) for m in cached_matches]
-                status = "matched" if matches else "no_match"
-                selected_fdc_id = cached.selected_fdc_id
-            else:
-                results = await usda.search_food(ingredient.name)
-                matches = [
-                    USDAMatch(
-                        fdc_id=item["fdcId"],
-                        description=item.get("description", ""),
-                        data_type=item.get("dataType", ""),
-                    )
-                    for item in results
-                ]
-                status = "matched" if matches else "no_match"
-                selected_fdc_id = matches[0].fdc_id if matches else None
-
-                if user:
-                    new_cache = UserIngredientCache(
-                        user_id=user.id,
-                        ingredient_name=ingredient.name.lower(),
-                        matches_json=json.dumps([m.model_dump() for m in matches]),
-                        selected_fdc_id=selected_fdc_id
-                    )
-                    session.add(new_cache)
-                    session.commit()
+            results = await usda.search_food(ingredient.name)
+            matches = [
+                USDAMatch(
+                    fdc_id=item["fdcId"],
+                    description=item.get("description", ""),
+                    data_type=item.get("dataType", ""),
+                )
+                for item in results
+            ]
+            status = "matched" if matches else "no_match"
+            selected_fdc_id = matches[0].fdc_id if matches else None
 
             ingredients_with_matches.append(
                 IngredientWithMatch(

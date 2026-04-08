@@ -5,7 +5,7 @@ User-scoped recipe CRUD endpoints. All routes require authentication.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.database import UserRow, get_session, UserIngredientCache
+from app.database import UserRow, get_session
 from app.dependencies import get_current_user
 from app.models.schemas import (
     RecipeDetail,
@@ -86,25 +86,6 @@ def _recipe_to_detail(recipe) -> RecipeDetail:
     )
 
 
-def _update_ingredient_cache(session: Session, user_id: int, ingredients):
-    for ing in ingredients:
-        if ing.fdc_id is not None:
-            cached = session.query(UserIngredientCache).filter_by(
-                user_id=user_id, ingredient_name=ing.name.lower()
-            ).first()
-            if cached:
-                cached.selected_fdc_id = ing.fdc_id
-            else:
-                # Provide a minimal valid cache if not already found in parse-recipe
-                new_cache = UserIngredientCache(
-                    user_id=user_id,
-                    ingredient_name=ing.name.lower(),
-                    matches_json="[]", 
-                    selected_fdc_id=ing.fdc_id
-                )
-                session.add(new_cache)
-
-
 @router.post("", response_model=RecipeDetail, status_code=status.HTTP_201_CREATED)
 def create_recipe(
     body: SaveRecipeRequest,
@@ -123,7 +104,6 @@ def create_recipe(
     }
     try:
         recipe = save_recipe(session, user.id, data)
-        _update_ingredient_cache(session, user.id, body.ingredients)
         session.commit()
         session.refresh(recipe)
     except Exception:
@@ -176,8 +156,6 @@ def update_user_recipe(
         update_data["nutrients"] = [nut.model_dump() for nut in body.nutrients]
 
     try:
-        if body.ingredients is not None:
-            _update_ingredient_cache(session, user.id, body.ingredients)
         recipe = update_recipe(session, recipe, update_data)
         session.commit()
         session.refresh(recipe)
