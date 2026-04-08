@@ -17,6 +17,7 @@ interface NutritionDisplayProps {
   onEditLabel?: (updates: EditLabelUpdates) => Promise<void>;
   saveDisabled?: boolean;
   saveLabel?: string;
+  ingredientNames?: string[];
 }
 
 export default function NutritionDisplay({
@@ -27,6 +28,7 @@ export default function NutritionDisplay({
   onEditLabel,
   saveDisabled = false,
   saveLabel = 'Save Label',
+  ingredientNames = [],
 }: NutritionDisplayProps) {
   const [format, setFormat] = useState<LabelFormat>('vertical');
   const [showExport, setShowExport] = useState(false);
@@ -42,6 +44,14 @@ export default function NutritionDisplay({
   const [allergenText, setAllergenText] = useState(
     result.allergens && result.allergens.length > 0
       ? `Contains: ${result.allergens.join(', ')}`
+      : ''
+  );
+
+  // Ingredient list toggle state (default: unchecked)
+  const [showIngredients, setShowIngredients] = useState(false);
+  const [ingredientListText, setIngredientListText] = useState(
+    ingredientNames.length > 0
+      ? ingredientNames.join(', ') + '.'
       : ''
   );
 
@@ -88,6 +98,8 @@ export default function NutritionDisplay({
           serving_size={displayServingSize}
           showAllergens={showAllergens}
           allergenText={allergenText}
+          showIngredients={showIngredients}
+          ingredientListText={ingredientListText}
         />
 
         <div className="results-actions">
@@ -130,6 +142,24 @@ export default function NutritionDisplay({
                   value={allergenText}
                   onChange={e => setAllergenText(e.target.value)}
                   rows={2}
+                />
+              )}
+              {ingredientNames.length > 0 && (
+                <label className="edit-toggle-label">
+                  <input
+                    type="checkbox"
+                    checked={showIngredients}
+                    onChange={e => setShowIngredients(e.target.checked)}
+                  />
+                  Show ingredient list on label
+                </label>
+              )}
+              {showIngredients && (
+                <textarea
+                  className="edit-textarea"
+                  value={ingredientListText}
+                  onChange={e => setIngredientListText(e.target.value)}
+                  rows={3}
                 />
               )}
               <button
@@ -223,6 +253,8 @@ export default function NutritionDisplay({
           nutrients={result.nutrients}
           show_allergens={showAllergens}
           allergen_text={allergenText}
+          show_ingredients={showIngredients}
+          ingredient_list_text={ingredientListText}
           onClose={() => setShowExport(false)}
         />
       )}

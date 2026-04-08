@@ -535,6 +535,9 @@ export default function App() {
             onEditLabel={handleEditLabel}
             saveDisabled={savedRecipeId !== null}
             saveLabel={savedRecipeId !== null ? 'Saved!' : (editingRecipeId ? 'Update Recipe' : 'Save Label')}
+            ingredientNames={ingredients
+              .filter(ing => ing.selected_fdc_id !== null)
+              .map(ing => ing.parsed.name)}
           />
         )}
       </main>
