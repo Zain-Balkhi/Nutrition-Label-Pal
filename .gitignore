@@ -8,6 +8,7 @@ backend/venv/
 backend/env/
 backend/.env
 backend/recipe_nutrition.json
+backend/nutrition_pal.db
 
 # Frontend - React/Vite
 frontend/node_modules/
@@ -26,3 +27,6 @@ frontend/yarn-error.log*
 *.log
 .env.local
 CLAUDE.md
+.claude/
+.github/
+DEVELOPMENT_GUIDE.md

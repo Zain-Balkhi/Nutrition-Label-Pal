@@ -47,6 +47,36 @@ CHICKEN_BREAST_DETAILS = {
     ],
 }
 
+# Food with trace cholesterol (3mg/100g) — triggers "less than 5mg" rounding
+TRACE_CHOLESTEROL_FOOD = {
+    "fdcId": 999001,
+    "description": "Trace Cholesterol Food",
+    "foodNutrients": [
+        {"nutrient": {"id": 1008, "name": "Energy", "unitName": "kcal"}, "amount": 50},
+        {"nutrient": {"id": 1003, "name": "Protein", "unitName": "g"}, "amount": 5},
+        {"nutrient": {"id": 1004, "name": "Total lipid (fat)", "unitName": "g"}, "amount": 1},
+        {"nutrient": {"id": 1005, "name": "Carbohydrate, by difference", "unitName": "g"}, "amount": 5},
+        {"nutrient": {"id": 1253, "name": "Cholesterol", "unitName": "mg"}, "amount": 3},
+        {"nutrient": {"id": 1093, "name": "Sodium, Na", "unitName": "mg"}, "amount": 10},
+    ],
+    "foodPortions": [],
+}
+
+# Food with trace protein (0.25g/100g) — triggers "less than 1g" rounding at small serving
+TRACE_PROTEIN_FOOD = {
+    "fdcId": 999002,
+    "description": "Trace Protein Food",
+    "foodNutrients": [
+        {"nutrient": {"id": 1008, "name": "Energy", "unitName": "kcal"}, "amount": 10},
+        {"nutrient": {"id": 1003, "name": "Protein", "unitName": "g"}, "amount": 0.25},
+        {"nutrient": {"id": 1004, "name": "Total lipid (fat)", "unitName": "g"}, "amount": 0},
+        {"nutrient": {"id": 1005, "name": "Carbohydrate, by difference", "unitName": "g"}, "amount": 2},
+        {"nutrient": {"id": 1253, "name": "Cholesterol", "unitName": "mg"}, "amount": 0},
+        {"nutrient": {"id": 1093, "name": "Sodium, Na", "unitName": "mg"}, "amount": 0},
+    ],
+    "foodPortions": [],
+}
+
 OLIVE_OIL_DETAILS = {
     "fdcId": 171413,
     "description": "Oil, olive, salad or cooking",
@@ -119,14 +149,34 @@ class TestExtractNutrients:
 class TestApplyRounding:
     def test_calories(self):
         # Python banker's rounding: 165 -> 160 (round to even)
-        assert _apply_rounding("energy", 165) == 160.0
-        assert _apply_rounding("energy", 167) == 170.0
+        amount, display = _apply_rounding("energy", 165)
+        assert amount == 160.0
+        assert display is None
+        amount, display = _apply_rounding("energy", 167)
+        assert amount == 170.0
+        assert display is None
 
     def test_fat_small(self):
-        assert _apply_rounding("total_fat", 0.3) == 0.0
+        amount, display = _apply_rounding("total_fat", 0.3)
+        assert amount == 0.0
+        assert display is None
 
     def test_protein_regular(self):
-        assert _apply_rounding("protein", 31.2) == 31.0
+        amount, display = _apply_rounding("protein", 31.2)
+        assert amount == 31.0
+        assert display is None
+
+    def test_apply_rounding_cholesterol_trace(self):
+        """Cholesterol in 2–5mg range returns 0.0 with '< 5mg' display string."""
+        amount, display = _apply_rounding("cholesterol", 3.0)
+        assert amount == 0.0
+        assert display == "< 5mg"
+
+    def test_apply_rounding_protein_trace(self):
+        """Protein in 0.5–1g range returns 0.0 with '< 1g' display string."""
+        amount, display = _apply_rounding("protein", 0.7)
+        assert amount == 0.0
+        assert display == "< 1g"
 
 
 @pytest.mark.asyncio
@@ -271,3 +321,76 @@ class TestCalculateNutrition:
         # Calories should NOT have %DV
         cal = next(n for n in result.nutrients if n.name == "Calories")
         assert cal.daily_value_percent is None
+
+    async def test_dv_percent_uses_rounded_value(self):
+        """Trace protein that rounds to 0g must have 0% DV, not 1%."""
+        # 0.25g/100g protein; 100g serving → 0.25g raw → rounds to 0.0g ("< 1g")
+        ingredients = [_make_ingredient("trace protein food", 100, "g", 999002)]
+        usda = _make_mock_usda({999002: TRACE_PROTEIN_FOOD})
+
+        result = await calculate_nutrition(
+            ingredients=ingredients,
+            servings=1,
+            serving_size="100g",
+            recipe_name="DV Rounding Test",
+            usda_service=usda,
+        )
+
+        protein = next(n for n in result.nutrients if n.name == "Protein")
+        # Rounds to 0 (< 1g range), so %DV must also be 0
+        assert protein.amount == 0.0
+        assert protein.daily_value_percent == 0
+
+    async def test_display_value_set_for_trace_cholesterol(self):
+        """Cholesterol in 2–5mg range gets display_value='< 5mg' and amount=0.0."""
+        # 3mg/100g cholesterol; 100g serving → 3mg raw → "less than 5mg"
+        ingredients = [_make_ingredient("trace cholesterol food", 100, "g", 999001)]
+        usda = _make_mock_usda({999001: TRACE_CHOLESTEROL_FOOD})
+
+        result = await calculate_nutrition(
+            ingredients=ingredients,
+            servings=1,
+            serving_size="100g",
+            recipe_name="Cholesterol Display Test",
+            usda_service=usda,
+        )
+
+        chol = next(n for n in result.nutrients if n.name == "Cholesterol")
+        assert chol.amount == 0.0
+        assert chol.display_value == "< 5mg"
+        # %DV should be 0 since rounded amount is 0
+        assert chol.daily_value_percent == 0
+
+    async def test_daily_value_percentages(self):
+        """%DV matches the rounded amount, not the raw amount."""
+        ingredients = [_make_ingredient("chicken breast", 2, "cups", 171077)]
+        usda = _make_mock_usda({171077: CHICKEN_BREAST_DETAILS})
+
+        result = await calculate_nutrition(
+            ingredients=ingredients,
+            servings=1,
+            serving_size="1 serving",
+            recipe_name="DV Consistency Test",
+            usda_service=usda,
+        )
+
+        from app.config import get_settings
+        settings = get_settings()
+
+        for nutrient in result.nutrients:
+            if nutrient.daily_value_percent is None:
+                continue
+            # Find the key for this nutrient name
+            from app.services.calculator import NUTRIENT_DISPLAY
+            key = next(
+                (k for k, (name, _) in NUTRIENT_DISPLAY.items() if name == nutrient.name),
+                None,
+            )
+            if key is None or key not in settings.FDA_DAILY_VALUES:
+                continue
+            dv = settings.FDA_DAILY_VALUES[key]
+            expected_dv = round(nutrient.amount / dv * 100)
+            assert nutrient.daily_value_percent == expected_dv, (
+                f"{nutrient.name}: %DV={nutrient.daily_value_percent} "
+                f"but expected {expected_dv} from rounded amount {nutrient.amount}"
+            )

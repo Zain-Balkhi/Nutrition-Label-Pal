@@ -1,22 +1,79 @@
-import type { NutritionResult } from '../types';
+import { useState } from 'react';
+import type { NutritionResult, LabelFormat } from '../types';
+import StepIndicator from './StepIndicator';
+import LabelPreview from './labels/LabelPreview';
+import ExportModal from './ExportModal';
 
 interface NutritionDisplayProps {
   result: NutritionResult;
   onBack: () => void;
+  onSave?: () => void;
+  onViewSaved?: () => void;
+  saveDisabled?: boolean;
+  saveLabel?: string;
 }
 
-export default function NutritionDisplay({ result, onBack }: NutritionDisplayProps) {
+export default function NutritionDisplay({
+  result,
+  onBack,
+  onSave,
+  onViewSaved,
+  saveDisabled = false,
+  saveLabel = 'Save Label',
+}: NutritionDisplayProps) {
+  const [format, setFormat] = useState<LabelFormat>('vertical');
+  const [showExport, setShowExport] = useState(false);
+
   return (
     <div className="nutrition-display">
-      <h2>Nutrition Results</h2>
-      <pre className="nutrition-json">
-        {JSON.stringify(result, null, 2)}
-      </pre>
+      <h2 className="page-title">Label Results</h2>
+      <StepIndicator currentStep={3} />
+
+      <div className="results-layout">
+        <LabelPreview
+          format={format}
+          onFormatChange={setFormat}
+          nutrients={result.nutrients}
+          servings={result.servings}
+          serving_size={result.serving_size}
+          allergens={result.allergens}
+        />
+
+        <div className="results-actions">
+          <button onClick={onBack} className="btn-start-new">
+            Start New Recipe
+          </button>
+          <button
+            className="btn-save-label"
+            onClick={onSave}
+            disabled={saveDisabled}
+          >
+            {saveLabel}
+          </button>
+          <button
+            type="button"
+            className="btn-download-pdf"
+            onClick={() => setShowExport(true)}
+          >
+            Download PDF
+          </button>
+          <button
+            type="button"
+            className="view-saved-link"
+            onClick={onViewSaved}
+          >
+            View Saved Labels
+          </button>
+        </div>
+      </div>
 
       {result.skipped_ingredients && result.skipped_ingredients.length > 0 && (
         <div className="skipped-ingredients">
-          <h3>⚠ Skipped Ingredients</h3>
-          <p>The following ingredients could not be matched in the USDA database and are <strong>not</strong> included in the nutrition totals:</p>
+          <h3>Skipped Ingredients</h3>
+          <p>
+            The following ingredients could not be matched and are{' '}
+            <strong>not</strong> included in the totals:
+          </p>
           <ul>
             {result.skipped_ingredients.map((item, idx) => (
               <li key={idx}>
@@ -27,9 +84,27 @@ export default function NutritionDisplay({ result, onBack }: NutritionDisplayPro
         </div>
       )}
 
-      <button type="button" onClick={onBack} className="secondary">
-        Start Over
-      </button>
+      {result.allergens && result.allergens.length > 0 && (
+        <div className="allergens-warning" style={{ marginTop: '16px', padding: '12px', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '4px', border: '1px solid #ffeeba' }}>
+          <h3 style={{ marginTop: 0, marginBottom: '8px', fontSize: '1.1rem' }}>⚠️ Allergen Notice</h3>
+          <p style={{ margin: 0 }}>
+            This recipe includes common allergens: <strong>{result.allergens.join(', ')}</strong>.
+            They have been automatically flagged on your nutrition label.
+          </p>
+        </div>
+      )}
+
+      {showExport && (
+        <ExportModal
+          format={format}
+          recipe_name={result.recipe_name}
+          servings={result.servings}
+          serving_size={result.serving_size}
+          nutrients={result.nutrients}
+          allergens={result.allergens}
+          onClose={() => setShowExport(false)}
+        />
+      )}
     </div>
   );
 }
