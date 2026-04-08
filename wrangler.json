@@ -1,0 +1,4 @@
+{
+  "name": "nutrition-label-pal",
+  "pages_build_output_dir": "frontend/dist"
+}
