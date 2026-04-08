@@ -57,7 +57,7 @@ export default function RecipeInput({ onParse, loading, initialText, initialServ
 
       <div className="button-center">
         <button type="submit" disabled={loading || !rawText.trim()} className="btn-create">
-          {loading ? 'Parsing...' : 'Create'}
+          {loading ? <><span className="spinner spinner-sm" />Parsing...</> : 'Create'}
         </button>
       </div>
     </form>

@@ -1314,3 +1314,58 @@
       font-size: 1.4rem;
     }
   }
+
+  /* ===========================
+     Spinner
+     =========================== */
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--gray-light);
+    border-top-color: var(--accent-orange);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  .spinner-sm {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 4rem 1rem;
+    color: var(--text-gray);
+    font-size: 1rem;
+  }
+
+  /* ===========================
+     Step Transitions
+     =========================== */
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .recipe-input,
+  .ingredient-review,
+  .nutrition-display {
+    animation: fadeSlideIn 0.3s ease-out;
+  }

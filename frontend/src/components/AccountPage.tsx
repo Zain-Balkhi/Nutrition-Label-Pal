@@ -132,7 +132,10 @@ export default function AccountPage({
   if (loadingProfile) {
     return (
       <div className="account-page">
-        <div className="account-loading">Loading account...</div>
+        <div className="loading-container">
+          <div className="spinner" />
+          <span>Loading account...</span>
+        </div>
       </div>
     );
   }
@@ -197,17 +200,6 @@ export default function AccountPage({
             )}
           </div>
 
-          {/* Change password placeholder */}
-          <div className="account-field">
-            <div className="account-field-label">Password</div>
-            <div className="account-password-row">
-              <button className="account-password-btn" disabled>
-                Change Password
-              </button>
-              <span className="account-coming-soon">Coming Soon</span>
-            </div>
-          </div>
-
           <button className="account-logout-btn" onClick={onLogout}>
             Log Out
           </button>
@@ -224,7 +216,7 @@ export default function AccountPage({
                 {recipeCount === 1 ? 'Saved Recipe' : 'Saved Recipes'}
               </div>
               <button className="account-dashboard-link" onClick={onDashboardClick}>
-                View Dashboard
+                View Recipes
               </button>
             </div>
             {profile?.created_at && (

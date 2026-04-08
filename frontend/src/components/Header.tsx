@@ -74,7 +74,7 @@ export default function Header({
           className={`nav-link nav-btn ${activePage === 'dashboard' ? 'active' : ''}`}
           onClick={onDashboardClick}
         >
-          Dashboard
+          Recipes
         </button>
 
         {renderFarRight()}

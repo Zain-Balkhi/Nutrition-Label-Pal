@@ -114,7 +114,10 @@ export default function Dashboard({ onViewRecipe, onNewRecipe }: DashboardProps)
     return (
       <div className="dashboard">
         <h2 className="page-title">My Recipes</h2>
-        <p className="dashboard-loading">Loading recipes...</p>
+        <div className="loading-container">
+          <div className="spinner" />
+          <span>Loading recipes...</span>
+        </div>
       </div>
     );
   }

@@ -83,7 +83,7 @@ A round of visual and UX improvements across the app.
 - **Rename Dashboard tab to "Recipes"**
 - **Loading states:** Add spinners or skeleton loaders between API requests (recipe parsing, nutrition calculation, recipe saving). Currently the UI has no feedback during these async operations.
 - **Animations:** Add subtle transitions between the 3-step flow (input, review, results) and when elements appear/disappear
-- **Accounts page polish:** Clean up the accounts/profile page layout, improve form styling, add feedback for profile updates
+- **Accounts page polish:** Clean up the accounts/profile page layout, improve form styling, add feedback for profile updates, remove the edit password item.
 
 **Why here:** Quality-of-life improvements that make the app feel polished. No new features or data model changes — purely frontend. Should come after Step 3 editing features are in place to avoid rework.
 

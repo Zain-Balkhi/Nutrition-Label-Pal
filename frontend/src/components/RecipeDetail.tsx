@@ -119,7 +119,10 @@ export default function RecipeDetail({
   if (loading) {
     return (
       <div className="recipe-detail">
-        <p className="dashboard-loading">Loading recipe...</p>
+        <div className="loading-container">
+          <div className="spinner" />
+          <span>Loading recipe...</span>
+        </div>
       </div>
     );
   }
