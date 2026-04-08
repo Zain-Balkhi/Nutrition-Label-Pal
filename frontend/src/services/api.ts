@@ -8,6 +8,7 @@ import type {
   RecipeSummary,
   RegisterRequest,
   SaveRecipeRequest,
+  Tag,
   TokenResponse,
   UpdateRecipeRequest,
   UserProfile,
@@ -190,6 +191,69 @@ export const api = {
         headers: headers(),
       }).then(r => {
         if (!r.ok) throw new Error('Failed to delete recipe');
+      }),
+  },
+
+  tags: {
+    list: (): Promise<Tag[]> =>
+      fetch(`${API_BASE}/tags`, {
+        headers: headers(),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to load tags');
+        }
+        return r.json();
+      }),
+
+    create: (name: string, color: string): Promise<Tag> =>
+      fetch(`${API_BASE}/tags`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({ name, color }),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to create tag');
+        }
+        return r.json();
+      }),
+
+    update: (id: number, data: { name?: string; color?: string }): Promise<Tag> =>
+      fetch(`${API_BASE}/tags/${id}`, {
+        method: 'PUT',
+        headers: headers(),
+        body: JSON.stringify(data),
+      }).then(async r => {
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          throw new Error(err.detail ?? 'Failed to update tag');
+        }
+        return r.json();
+      }),
+
+    delete: (id: number): Promise<void> =>
+      fetch(`${API_BASE}/tags/${id}`, {
+        method: 'DELETE',
+        headers: headers(),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to delete tag');
+      }),
+
+    addToRecipe: (recipeId: number, tagId: number): Promise<void> =>
+      fetch(`${API_BASE}/recipes/${recipeId}/tags/${tagId}`, {
+        method: 'POST',
+        headers: headers(),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to assign tag');
+      }),
+
+    removeFromRecipe: (recipeId: number, tagId: number): Promise<void> =>
+      fetch(`${API_BASE}/recipes/${recipeId}/tags/${tagId}`, {
+        method: 'DELETE',
+        headers: headers(),
+      }).then(r => {
+        if (!r.ok) throw new Error('Failed to remove tag');
       }),
   },
 

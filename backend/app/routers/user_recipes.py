@@ -13,6 +13,7 @@ from app.models.schemas import (
     RecipeNutrientOut,
     RecipeSummary,
     SaveRecipeRequest,
+    TagOut,
     UpdateRecipeRequest,
 )
 from app.services.recipe_service import (
@@ -26,6 +27,10 @@ from app.services.recipe_service import (
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
 
+def _tags_to_out(recipe) -> list[TagOut]:
+    return [TagOut(id=t.id, name=t.name, color=t.color) for t in getattr(recipe, "tags", [])]
+
+
 def _recipe_to_summary(recipe) -> RecipeSummary:
     return RecipeSummary(
         id=recipe.id,
@@ -34,6 +39,7 @@ def _recipe_to_summary(recipe) -> RecipeSummary:
         serving_size=recipe.serving_size,
         created_at=recipe.created_at.isoformat() if recipe.created_at else "",
         updated_at=recipe.updated_at.isoformat() if recipe.updated_at else "",
+        tags=_tags_to_out(recipe),
     )
 
 
@@ -83,6 +89,7 @@ def _recipe_to_detail(recipe) -> RecipeDetail:
         allergens=allergens,
         created_at=recipe.created_at.isoformat() if recipe.created_at else "",
         updated_at=recipe.updated_at.isoformat() if recipe.updated_at else "",
+        tags=_tags_to_out(recipe),
     )
 
 

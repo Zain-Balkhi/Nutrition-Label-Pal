@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import NutritionDisplay from './NutritionDisplay';
-import type { RecipeDetail as RecipeDetailType, NutritionResult } from '../types';
+import TagInput from './TagInput';
+import type { RecipeDetail as RecipeDetailType, NutritionResult, Tag } from '../types';
+import './Tags.css';
 
 interface RecipeDetailProps {
   recipeId: number;
@@ -36,6 +38,7 @@ export default function RecipeDetail({
   onDelete,
 }: RecipeDetailProps) {
   const [recipe, setRecipe] = useState<RecipeDetailType | null>(null);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -45,8 +48,12 @@ export default function RecipeDetail({
       setLoading(true);
       setError(null);
       try {
-        const data = await api.recipes.get(recipeId);
+        const [data, tagsData] = await Promise.all([
+          api.recipes.get(recipeId),
+          api.tags.list(),
+        ]);
         setRecipe(data);
+        setAllTags(tagsData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load recipe');
       } finally {
@@ -55,6 +62,46 @@ export default function RecipeDetail({
     }
     fetchRecipe();
   }, [recipeId]);
+
+  async function handleAddTag(tag: Tag) {
+    if (!recipe) return;
+    try {
+      await api.tags.addToRecipe(recipe.id, tag.id);
+      setRecipe(prev =>
+        prev ? { ...prev, tags: [...(prev.tags ?? []), tag] } : prev,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add tag');
+    }
+  }
+
+  async function handleRemoveTag(tag: Tag) {
+    if (!recipe) return;
+    try {
+      await api.tags.removeFromRecipe(recipe.id, tag.id);
+      setRecipe(prev =>
+        prev
+          ? { ...prev, tags: (prev.tags ?? []).filter(t => t.id !== tag.id) }
+          : prev,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to remove tag');
+    }
+  }
+
+  async function handleCreateTag(name: string, color: string) {
+    if (!recipe) return;
+    try {
+      const tag = await api.tags.create(name, color);
+      setAllTags(prev => [...prev, tag].sort((a, b) => a.name.localeCompare(b.name)));
+      await api.tags.addToRecipe(recipe.id, tag.id);
+      setRecipe(prev =>
+        prev ? { ...prev, tags: [...(prev.tags ?? []), tag] } : prev,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create tag');
+    }
+  }
 
   async function handleDelete() {
     if (!recipe) return;
@@ -93,6 +140,17 @@ export default function RecipeDetail({
       <button className="btn-back-link" onClick={onBack}>
         &larr; Back to Dashboard
       </button>
+
+      <div className="recipe-detail-tags">
+        <div className="recipe-detail-tags-title">Tags</div>
+        <TagInput
+          availableTags={allTags}
+          selectedTags={recipe.tags ?? []}
+          onAdd={handleAddTag}
+          onRemove={handleRemoveTag}
+          onCreate={handleCreateTag}
+        />
+      </div>
 
       <NutritionDisplay
         result={nutritionResult}

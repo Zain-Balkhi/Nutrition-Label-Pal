@@ -78,6 +78,7 @@ class RecipeRow(Base):
                                cascade="all, delete-orphan")
     nutrition = relationship("RecipeNutritionRow", back_populates="recipe",
                              cascade="all, delete-orphan")
+    tags = relationship("TagRow", secondary="recipe_tags", back_populates="recipes")
 
 
 class IngredientRow(Base):
@@ -122,6 +123,33 @@ class USDANutritionCache(Base):
     fetched_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
 
+class TagRow(Base):
+    __tablename__ = "tags"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(100), nullable=False)
+    color = Column(String(7), nullable=False, default="#f5a623")
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("UserRow")
+    recipes = relationship("RecipeRow", secondary="recipe_tags", back_populates="tags")
+
+    __table_args__ = (
+        Index("ix_tags_user", "user_id"),
+    )
+
+
+class RecipeTagRow(Base):
+    __tablename__ = "recipe_tags"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    recipe_id = Column(Integer, ForeignKey("recipes.id", ondelete="CASCADE"), nullable=False)
+    tag_id = Column(Integer, ForeignKey("tags.id", ondelete="CASCADE"), nullable=False)
+
+    __table_args__ = (
+        Index("ix_recipe_tags_unique", "recipe_id", "tag_id", unique=True),
+    )
 
 # ── Engine / Session factory ──────────────────────────────────────────────
 _engine = None
