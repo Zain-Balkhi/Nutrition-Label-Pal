@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 
@@ -8,6 +9,14 @@ from app.config import get_settings
 from app.models.schemas import ParsedRecipe
 
 logger = logging.getLogger(__name__)
+
+OCR_SYSTEM_PROMPT = """You are a recipe transcription assistant. Transcribe ONLY the text that is actually visible in the provided image. Output the transcribed text exactly as it appears — do not reformat, reorder, summarize, or add anything.
+
+Strict rules:
+- If the image contains no readable text (e.g. a photo of a dog, landscape, or blank page), output an empty response.
+- Never invent or guess ingredients, quantities, or instructions. If something is illegible, skip it or write [illegible].
+- Preserve line breaks between ingredients/steps.
+- Do not add commentary, headers, or markdown. Plain text only."""
 
 SYSTEM_PROMPT = """You are a recipe parsing assistant. Given raw recipe text, extract structured data.
 
@@ -58,3 +67,34 @@ async def parse_recipe(raw_text: str) -> ParsedRecipe:
     except ValidationError as e:
         logger.error("LLM response failed validation: %s", e)
         raise ValueError(f"LLM response missing or invalid fields: {e}") from e
+
+
+async def transcribe_recipe_image(image_bytes: bytes, mime_type: str) -> str:
+    """Send an image to gpt-4o-mini vision and return the transcribed recipe text.
+
+    Returns an empty string if the image contains no readable text.
+    """
+    settings = get_settings()
+    client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+
+    b64 = base64.b64encode(image_bytes).decode("ascii")
+    data_uri = f"data:{mime_type};base64,{b64}"
+
+    response = await client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": OCR_SYSTEM_PROMPT},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Transcribe the recipe in this image."},
+                    {"type": "image_url", "image_url": {"url": data_uri, "detail": "high"}},
+                ],
+            },
+        ],
+        temperature=0.0,
+        max_tokens=1500,
+    )
+
+    content = response.choices[0].message.content or ""
+    return content.strip()

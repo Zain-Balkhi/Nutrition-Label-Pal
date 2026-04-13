@@ -272,6 +272,22 @@
     border-color: var(--accent-orange);
     box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
   }
+
+  .field--missing input {
+    border-style: solid;
+    border-color: #d9534f;
+    background: #fff6f5;
+    box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.15);
+  }
+
+  .field--missing input::placeholder {
+    color: #b13b38;
+  }
+
+  .field--missing input:focus {
+    border-color: #d9534f;
+    box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.25);
+  }
   
   .button-center {
     display: flex;
@@ -295,9 +311,15 @@
     transform: translateY(-1px);
   }
   
-  .btn-create:disabled {
+  .btn-create:disabled,
+  .btn-create--dulled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .btn-create--dulled:hover {
+    background: var(--accent-green);
+    transform: none;
   }
 
   /* ===========================
@@ -364,6 +386,26 @@
     margin-bottom: 1rem;
     font-size: 0.85rem;
     font-weight: 500;
+  }
+
+  .ocr-review-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: #fff8e1;
+    color: #8a6d00;
+    border: 1px solid #ffd766;
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .ocr-review-banner__icon {
+    font-size: 1rem;
+    line-height: 1.35;
   }
 
   /* ===========================

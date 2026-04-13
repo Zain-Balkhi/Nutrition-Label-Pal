@@ -101,6 +101,92 @@ class TestParseRecipeEndpoint:
 
 
 @pytest.mark.asyncio
+class TestTranscribeRecipeImageEndpoint:
+    """Tests for POST /api/transcribe-recipe-image."""
+
+    @staticmethod
+    def _mock_settings():
+        from app.config import Settings
+        return Settings(
+            USDA_API_KEY="fake",
+            OPENAI_API_KEY="fake_key",
+            DATABASE_URL="sqlite:///./test_temp.db",
+        )
+
+    async def test_transcribe_happy_path(self, transport):
+        with patch("app.routers.recipes.transcribe_recipe_image", new_callable=AsyncMock) as mock_ocr, \
+             patch("app.routers.recipes.get_settings", return_value=self._mock_settings()):
+            mock_ocr.return_value = "2 cups flour\n1 cup milk"
+            files = {"image": ("recipe.png", b"\x89PNG\r\n\x1a\nfake", "image/png")}
+            async with AsyncClient(transport=transport, base_url="http://test") as ac:
+                resp = await ac.post("/api/transcribe-recipe-image", files=files)
+        assert resp.status_code == 200
+        assert resp.json() == {"raw_text": "2 cups flour\n1 cup milk"}
+
+    async def test_transcribe_rejects_non_image_mime(self, transport):
+        with patch("app.routers.recipes.get_settings", return_value=self._mock_settings()):
+            files = {"image": ("notes.txt", b"not an image", "text/plain")}
+            async with AsyncClient(transport=transport, base_url="http://test") as ac:
+                resp = await ac.post("/api/transcribe-recipe-image", files=files)
+        assert resp.status_code == 400
+        assert "image" in resp.json()["detail"].lower()
+
+    async def test_transcribe_rejects_empty_file(self, transport):
+        with patch("app.routers.recipes.get_settings", return_value=self._mock_settings()):
+            files = {"image": ("empty.png", b"", "image/png")}
+            async with AsyncClient(transport=transport, base_url="http://test") as ac:
+                resp = await ac.post("/api/transcribe-recipe-image", files=files)
+        assert resp.status_code == 400
+        assert "empty" in resp.json()["detail"].lower()
+
+    async def test_transcribe_rejects_oversized(self, transport):
+        with patch("app.routers.recipes.get_settings", return_value=self._mock_settings()):
+            # 6MB payload > 5MB limit
+            big_bytes = b"\x00" * (6 * 1024 * 1024)
+            files = {"image": ("big.png", big_bytes, "image/png")}
+            async with AsyncClient(transport=transport, base_url="http://test") as ac:
+                resp = await ac.post("/api/transcribe-recipe-image", files=files)
+        assert resp.status_code == 400
+        assert "5 mb" in resp.json()["detail"].lower()
+
+    async def test_transcribe_no_api_key(self, transport):
+        from app.config import Settings
+        mock_settings = Settings(
+            USDA_API_KEY="fake",
+            OPENAI_API_KEY="",
+            DATABASE_URL="sqlite:///./test_temp.db",
+        )
+        with patch("app.routers.recipes.get_settings", return_value=mock_settings):
+            files = {"image": ("recipe.png", b"fake", "image/png")}
+            async with AsyncClient(transport=transport, base_url="http://test") as ac:
+                resp = await ac.post("/api/transcribe-recipe-image", files=files)
+        assert resp.status_code == 500
+        assert "OpenAI" in resp.json()["detail"]
+
+    async def test_transcribe_handles_openai_auth_error(self, transport):
+        import openai
+        auth_error = openai.AuthenticationError.__new__(openai.AuthenticationError)
+        with patch("app.routers.recipes.transcribe_recipe_image", new_callable=AsyncMock) as mock_ocr, \
+             patch("app.routers.recipes.get_settings", return_value=self._mock_settings()):
+            mock_ocr.side_effect = auth_error
+            files = {"image": ("recipe.png", b"fake", "image/png")}
+            async with AsyncClient(transport=transport, base_url="http://test") as ac:
+                resp = await ac.post("/api/transcribe-recipe-image", files=files)
+        assert resp.status_code == 401
+
+    async def test_transcribe_empty_text_returned(self, transport):
+        """Model returned empty string (non-recipe image) — endpoint still 200."""
+        with patch("app.routers.recipes.transcribe_recipe_image", new_callable=AsyncMock) as mock_ocr, \
+             patch("app.routers.recipes.get_settings", return_value=self._mock_settings()):
+            mock_ocr.return_value = ""
+            files = {"image": ("dog.jpg", b"fake-jpeg", "image/jpeg")}
+            async with AsyncClient(transport=transport, base_url="http://test") as ac:
+                resp = await ac.post("/api/transcribe-recipe-image", files=files)
+        assert resp.status_code == 200
+        assert resp.json() == {"raw_text": ""}
+
+
+@pytest.mark.asyncio
 class TestLabelsEndpoint:
     async def test_list_labels_empty(self, transport):
         with patch("app.routers.labels.list_recipe_labels", return_value=[]):

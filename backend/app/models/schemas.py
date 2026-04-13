@@ -9,6 +9,10 @@ class RawRecipeInput(BaseModel):
     serving_size: str | None = None
 
 
+class TranscribeImageResponse(BaseModel):
+    raw_text: str
+
+
 class ParsedIngredient(BaseModel):
     name: str
     quantity: float
