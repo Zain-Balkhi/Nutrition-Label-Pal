@@ -12,6 +12,7 @@ import SaveLabelModal from './components/SaveLabelModal';
 import AccountPage from './components/AccountPage';
 import HomePage from './components/HomePage';
 import { api } from './services/api';
+import { AUTH_EXPIRED_EVENT, clearAuth, getToken, isTokenExpired } from './services/auth';
 import type {
   AuthUser,
   IngredientWithMatch,
@@ -37,9 +38,36 @@ export default function App() {
   const location = useLocation();
 
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
+    // If the stored token is already past its exp, treat the session as
+    // gone — don't restore the user from localStorage, and wipe the stale
+    // blobs so nothing tries to use them.
+    if (isTokenExpired(localStorage.getItem(TOKEN_KEY))) {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      return null;
+    }
     const stored = localStorage.getItem(USER_KEY);
     return stored ? (JSON.parse(stored) as AuthUser) : null;
   });
+
+  // Listen for auth:expired events dispatched by the api layer (and by
+  // clearAuth()). When fired, drop the React user state — ProtectedRoute
+  // will then redirect /recipes, /recipes/:id, and /account to /login.
+  useEffect(() => {
+    const handler = () => setCurrentUser(null);
+    window.addEventListener(AUTH_EXPIRED_EVENT, handler);
+    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handler);
+  }, []);
+
+  // On every route change, re-check the token's exp claim. This catches the
+  // case where a user's token ticked past its 24h TTL mid-session without
+  // triggering an API call — as soon as they navigate to a protected page,
+  // we clear the stale session and they get bounced to /login.
+  useEffect(() => {
+    if (currentUser && isTokenExpired(getToken())) {
+      clearAuth();
+    }
+  }, [location.pathname, currentUser]);
 
   const [step, setStep] = useState<AppStep>('input');
   const [loading, setLoading] = useState(false);

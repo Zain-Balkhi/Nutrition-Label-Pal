@@ -14,13 +14,9 @@ import type {
   UserProfile,
   UserProfileUpdated,
 } from '../types';
+import { clearAuth, getToken, isTokenExpired } from './auth';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
-
-/** Returns the stored JWT token, if any. */
-function getToken(): string | null {
-  return localStorage.getItem('auth_token');
-}
 
 /** Build headers, injecting Authorization when a token is available. */
 function headers(extra?: Record<string, string>): Record<string, string> {
@@ -30,16 +26,36 @@ function headers(extra?: Record<string, string>): Record<string, string> {
   return base;
 }
 
+/**
+ * Wrapper around fetch that treats a 401 on an authenticated request as an
+ * expired session. Clears stored credentials and fires the auth:expired event
+ * so App.tsx can redirect to /login. We only clear when a token was actually
+ * attached — a 401 from /auth/login means bad credentials, not expiry.
+ */
+async function apiFetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
+  const hadToken = getToken() !== null;
+  // Proactively clear a token we already know is expired so we don't waste a
+  // round trip and so the auth:expired event fires immediately.
+  if (hadToken && isTokenExpired(getToken())) {
+    clearAuth();
+  }
+  const response = await fetch(input, init);
+  if (response.status === 401 && hadToken) {
+    clearAuth();
+  }
+  return response;
+}
+
 export const api = {
   health: (): Promise<{ status: string; service: string }> =>
-    fetch(`${API_BASE}/health`).then(r => r.json()),
+    apiFetch(`${API_BASE}/health`).then(r => r.json()),
 
   parseRecipe: (
     rawText: string,
     servings?: number,
     servingSize?: string,
   ): Promise<ParseRecipeResponse> =>
-    fetch(`${API_BASE}/parse-recipe`, {
+    apiFetch(`${API_BASE}/parse-recipe`, {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify({
@@ -52,6 +68,25 @@ export const api = {
       return r.json();
     }),
 
+  transcribeRecipeImage: (file: File): Promise<{ raw_text: string }> => {
+    const form = new FormData();
+    form.append('image', file);
+    const token = getToken();
+    const h: Record<string, string> = {};
+    if (token) h['Authorization'] = `Bearer ${token}`;
+    return apiFetch(`${API_BASE}/transcribe-recipe-image`, {
+      method: 'POST',
+      headers: h,
+      body: form,
+    }).then(async r => {
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        throw new Error(err.detail ?? `Transcription failed: ${r.statusText}`);
+      }
+      return r.json();
+    });
+  },
+
   calculateNutrition: (
     ingredients: IngredientWithMatch[],
     servings: number,
@@ -59,7 +94,7 @@ export const api = {
     recipeName: string,
     allergens: string[],
   ): Promise<NutritionResult> =>
-    fetch(`${API_BASE}/calculate-nutrition`, {
+    apiFetch(`${API_BASE}/calculate-nutrition`, {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify({
@@ -76,7 +111,7 @@ export const api = {
 
   auth: {
     register: (data: RegisterRequest): Promise<TokenResponse> =>
-      fetch(`${API_BASE}/auth/register`, {
+      apiFetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -89,7 +124,7 @@ export const api = {
       }),
 
     login: (data: LoginRequest): Promise<TokenResponse> =>
-      fetch(`${API_BASE}/auth/login`, {
+      apiFetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -104,7 +139,7 @@ export const api = {
 
   users: {
     getMe: (): Promise<UserProfile> =>
-      fetch(`${API_BASE}/users/me`, {
+      apiFetch(`${API_BASE}/users/me`, {
         headers: headers(),
       }).then(async r => {
         if (!r.ok) {
@@ -115,7 +150,7 @@ export const api = {
       }),
 
     updateMe: (full_name: string): Promise<UserProfileUpdated> =>
-      fetch(`${API_BASE}/users/me`, {
+      apiFetch(`${API_BASE}/users/me`, {
         method: 'PUT',
         headers: headers(),
         body: JSON.stringify({ full_name }),
@@ -128,7 +163,7 @@ export const api = {
       }),
 
     deleteMe: (): Promise<void> =>
-      fetch(`${API_BASE}/users/me`, {
+      apiFetch(`${API_BASE}/users/me`, {
         method: 'DELETE',
         headers: headers(),
       }).then(r => {
@@ -138,7 +173,7 @@ export const api = {
 
   recipes: {
     save: (data: SaveRecipeRequest): Promise<RecipeDetail> =>
-      fetch(`${API_BASE}/recipes`, {
+      apiFetch(`${API_BASE}/recipes`, {
         method: 'POST',
         headers: headers(),
         body: JSON.stringify(data),
@@ -151,7 +186,7 @@ export const api = {
       }),
 
     list: (): Promise<RecipeSummary[]> =>
-      fetch(`${API_BASE}/recipes`, {
+      apiFetch(`${API_BASE}/recipes`, {
         headers: headers(),
       }).then(async r => {
         if (!r.ok) {
@@ -162,7 +197,7 @@ export const api = {
       }),
 
     get: (id: number): Promise<RecipeDetail> =>
-      fetch(`${API_BASE}/recipes/${id}`, {
+      apiFetch(`${API_BASE}/recipes/${id}`, {
         headers: headers(),
       }).then(async r => {
         if (!r.ok) {
@@ -173,7 +208,7 @@ export const api = {
       }),
 
     update: (id: number, data: UpdateRecipeRequest): Promise<RecipeDetail> =>
-      fetch(`${API_BASE}/recipes/${id}`, {
+      apiFetch(`${API_BASE}/recipes/${id}`, {
         method: 'PUT',
         headers: headers(),
         body: JSON.stringify(data),
@@ -186,7 +221,7 @@ export const api = {
       }),
 
     delete: (id: number): Promise<void> =>
-      fetch(`${API_BASE}/recipes/${id}`, {
+      apiFetch(`${API_BASE}/recipes/${id}`, {
         method: 'DELETE',
         headers: headers(),
       }).then(r => {
@@ -196,7 +231,7 @@ export const api = {
 
   tags: {
     list: (): Promise<Tag[]> =>
-      fetch(`${API_BASE}/tags`, {
+      apiFetch(`${API_BASE}/tags`, {
         headers: headers(),
       }).then(async r => {
         if (!r.ok) {
@@ -207,7 +242,7 @@ export const api = {
       }),
 
     create: (name: string, color: string): Promise<Tag> =>
-      fetch(`${API_BASE}/tags`, {
+      apiFetch(`${API_BASE}/tags`, {
         method: 'POST',
         headers: headers(),
         body: JSON.stringify({ name, color }),
@@ -220,7 +255,7 @@ export const api = {
       }),
 
     update: (id: number, data: { name?: string; color?: string }): Promise<Tag> =>
-      fetch(`${API_BASE}/tags/${id}`, {
+      apiFetch(`${API_BASE}/tags/${id}`, {
         method: 'PUT',
         headers: headers(),
         body: JSON.stringify(data),
@@ -233,7 +268,7 @@ export const api = {
       }),
 
     delete: (id: number): Promise<void> =>
-      fetch(`${API_BASE}/tags/${id}`, {
+      apiFetch(`${API_BASE}/tags/${id}`, {
         method: 'DELETE',
         headers: headers(),
       }).then(r => {
@@ -241,7 +276,7 @@ export const api = {
       }),
 
     addToRecipe: (recipeId: number, tagId: number): Promise<void> =>
-      fetch(`${API_BASE}/recipes/${recipeId}/tags/${tagId}`, {
+      apiFetch(`${API_BASE}/recipes/${recipeId}/tags/${tagId}`, {
         method: 'POST',
         headers: headers(),
       }).then(r => {
@@ -249,7 +284,7 @@ export const api = {
       }),
 
     removeFromRecipe: (recipeId: number, tagId: number): Promise<void> =>
-      fetch(`${API_BASE}/recipes/${recipeId}/tags/${tagId}`, {
+      apiFetch(`${API_BASE}/recipes/${recipeId}/tags/${tagId}`, {
         method: 'DELETE',
         headers: headers(),
       }).then(r => {
@@ -258,7 +293,7 @@ export const api = {
   },
 
   exportLabel: (request: LabelExportRequest): Promise<Blob> =>
-    fetch(`${API_BASE}/labels/export`, {
+    apiFetch(`${API_BASE}/labels/export`, {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify(request),
