@@ -272,6 +272,22 @@
     border-color: var(--accent-orange);
     box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
   }
+
+  .field--missing input {
+    border-style: solid;
+    border-color: #d9534f;
+    background: #fff6f5;
+    box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.15);
+  }
+
+  .field--missing input::placeholder {
+    color: #b13b38;
+  }
+
+  .field--missing input:focus {
+    border-color: #d9534f;
+    box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.25);
+  }
   
   .button-center {
     display: flex;
@@ -295,9 +311,15 @@
     transform: translateY(-1px);
   }
   
-  .btn-create:disabled {
+  .btn-create:disabled,
+  .btn-create--dulled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .btn-create--dulled:hover {
+    background: var(--accent-green);
+    transform: none;
   }
 
   /* ===========================
@@ -364,6 +386,26 @@
     margin-bottom: 1rem;
     font-size: 0.85rem;
     font-weight: 500;
+  }
+
+  .ocr-review-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: #fff8e1;
+    color: #8a6d00;
+    border: 1px solid #ffd766;
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .ocr-review-banner__icon {
+    font-size: 1rem;
+    line-height: 1.35;
   }
 
   /* ===========================
@@ -728,9 +770,35 @@
     white-space: nowrap;
   }
   
-  .btn-save-label:hover {
+  .btn-save-label:hover:not(:disabled) {
     background: var(--accent-green-dark);
     transform: translateY(-1px);
+  }
+
+  .btn-save-label:disabled {
+    background: #e0e0e0;
+    color: #888;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* Pulse highlight when there are pending changes to persist. */
+  .btn-save-label:not(:disabled) {
+    animation: savePulse 1.8s ease-in-out 1;
+    box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.4);
+  }
+
+  @keyframes savePulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.55);
+    }
+    60% {
+      box-shadow: 0 0 0 10px rgba(245, 166, 35, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(245, 166, 35, 0);
+    }
   }
   
   .view-saved-link {
@@ -1777,4 +1845,268 @@
   .ingredient-review,
   .nutrition-display {
     animation: fadeSlideIn 0.3s ease-out;
+  }
+
+  /* ===========================
+     Recipe Photo Card (Step 3)
+     =========================== */
+  .recipe-photo-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 0.85rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .recipe-photo-card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .recipe-photo-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .recipe-photo-thumb {
+    width: 112px;
+    height: 84px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+    border: 1px solid var(--gray-medium, #ccc);
+  }
+
+  .recipe-photo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+  }
+
+  .recipe-photo-upload-btn {
+    padding: 1.25rem 0.75rem;
+    background: transparent;
+    border: 2px dashed var(--accent-orange);
+    border-radius: 10px;
+    color: var(--accent-orange);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+
+  .recipe-photo-upload-btn:hover:not(:disabled) {
+    background: rgba(245, 166, 35, 0.08);
+  }
+
+  .recipe-photo-upload-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  .recipe-photo-error {
+    color: #e74c3c;
+    font-size: 0.8rem;
+  }
+
+  .btn-small {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  /* ===========================
+     Recipe Notes Panel (Step 3)
+     =========================== */
+  .recipe-notes-panel {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  .recipe-notes-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .recipe-notes-textarea-wrap {
+    position: relative;
+  }
+
+  .recipe-notes-textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 0.75rem;
+    padding-bottom: 1.75rem;
+    border: 1px solid var(--gray-medium, #ccc);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    box-sizing: border-box;
+    line-height: 1.5;
+    color: var(--text-dark);
+    background: #fff;
+  }
+
+  .recipe-notes-textarea:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+  }
+
+  .recipe-notes-counter {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--text-muted, #888);
+    background: rgba(255, 255, 255, 0.85);
+    padding: 0 0.25rem;
+    border-radius: 4px;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .recipe-notes-counter-max {
+    color: #c0392b;
+    font-weight: 600;
+  }
+
+  /* ===========================
+     Recipe Card Image (Dashboard)
+     =========================== */
+  .recipe-card-has-image {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+    overflow: hidden;
+  }
+
+  .recipe-card-image {
+    margin: 0 -1.25rem 0.75rem -1.25rem;
+    aspect-ratio: 4 / 3;
+    background: #f0f0f0;
+    overflow: hidden;
+  }
+
+  .recipe-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .recipe-card-has-image .recipe-card-title {
+    margin-top: 0.25rem;
+  }
+
+  /* ===========================
+     Image Cropper Modal
+     =========================== */
+  .cropper-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+  }
+
+  .cropper-modal {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    max-height: 92vh;
+    overflow: hidden;
+  }
+
+  .cropper-modal-header {
+    padding: 1.25rem 1.25rem 0.5rem;
+  }
+
+  .cropper-modal-title {
+    margin: 0 0 0.35rem 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .cropper-modal-subtitle {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    line-height: 1.4;
+  }
+
+  .cropper-stage {
+    position: relative;
+    width: 100%;
+    height: 360px;
+    background: #111;
+    margin: 0.75rem 0;
+    /* react-easy-crop needs a positioned container */
+  }
+
+  .cropper-controls {
+    padding: 0 1.25rem;
+  }
+
+  .cropper-zoom-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-gray);
+  }
+
+  .cropper-zoom-slider {
+    flex: 1;
+    accent-color: var(--accent-orange);
+    height: 4px;
+  }
+
+  .cropper-error {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    padding: 0.5rem 1.25rem 0;
+  }
+
+  .cropper-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 1.25rem;
+  }
+
+  @media (max-width: 480px) {
+    .cropper-stage {
+      height: 280px;
+    }
+    .cropper-modal-header {
+      padding: 1rem 1rem 0.25rem;
+    }
+    .cropper-controls {
+      padding: 0 1rem;
+    }
+    .cropper-modal-actions {
+      padding: 0.75rem 1rem 1rem;
+    }
   }

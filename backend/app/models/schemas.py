@@ -9,6 +9,10 @@ class RawRecipeInput(BaseModel):
     serving_size: str | None = None
 
 
+class TranscribeImageResponse(BaseModel):
+    raw_text: str
+
+
 class ParsedIngredient(BaseModel):
     name: str
     quantity: float
@@ -179,6 +183,9 @@ class SaveNutrientInput(BaseModel):
     display_value: str | None = None
 
 
+RECIPE_NOTES_MAX_LENGTH = 2000
+
+
 class SaveRecipeRequest(BaseModel):
     recipe_name: str
     raw_text: str
@@ -187,6 +194,17 @@ class SaveRecipeRequest(BaseModel):
     ingredients: list[SaveIngredientInput]
     nutrients: list[SaveNutrientInput]
     allergens: list[str] = []
+    notes: str | None = None
+    image_data_url: str | None = None
+
+    @field_validator("notes")
+    @classmethod
+    def notes_max_length(cls, v: str | None) -> str | None:
+        if v is not None and len(v) > RECIPE_NOTES_MAX_LENGTH:
+            raise ValueError(
+                f"Notes must be {RECIPE_NOTES_MAX_LENGTH} characters or fewer"
+            )
+        return v
 
 
 class UpdateRecipeRequest(BaseModel):
@@ -197,6 +215,17 @@ class UpdateRecipeRequest(BaseModel):
     ingredients: list[SaveIngredientInput] | None = None
     nutrients: list[SaveNutrientInput] | None = None
     allergens: list[str] | None = None
+    notes: str | None = None
+    image_data_url: str | None = None
+
+    @field_validator("notes")
+    @classmethod
+    def notes_max_length(cls, v: str | None) -> str | None:
+        if v is not None and len(v) > RECIPE_NOTES_MAX_LENGTH:
+            raise ValueError(
+                f"Notes must be {RECIPE_NOTES_MAX_LENGTH} characters or fewer"
+            )
+        return v
 
 
 class RecipeIngredientOut(BaseModel):
@@ -229,6 +258,7 @@ class RecipeSummary(BaseModel):
     created_at: str
     updated_at: str
     tags: list[TagOut] = []
+    image_data_url: str | None = None
 
 
 class RecipeDetail(BaseModel):
@@ -243,6 +273,8 @@ class RecipeDetail(BaseModel):
     created_at: str
     updated_at: str
     tags: list[TagOut] = []
+    notes: str | None = None
+    image_data_url: str | None = None
 
 
 # ── Label export schemas ──────────────────────────────────────────────────

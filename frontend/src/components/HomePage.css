@@ -615,8 +615,6 @@
 .home-footer-logo {
   height: 32px;
   width: auto;
-  filter: brightness(0) invert(1);
-  opacity: 0.9;
 }
 
 .home-footer-name {

@@ -52,6 +52,25 @@ export const api = {
       return r.json();
     }),
 
+  transcribeRecipeImage: (file: File): Promise<{ raw_text: string }> => {
+    const form = new FormData();
+    form.append('image', file);
+    const token = getToken();
+    const h: Record<string, string> = {};
+    if (token) h['Authorization'] = `Bearer ${token}`;
+    return fetch(`${API_BASE}/transcribe-recipe-image`, {
+      method: 'POST',
+      headers: h,
+      body: form,
+    }).then(async r => {
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        throw new Error(err.detail ?? `Transcription failed: ${r.statusText}`);
+      }
+      return r.json();
+    });
+  },
+
   calculateNutrition: (
     ingredients: IngredientWithMatch[],
     servings: number,

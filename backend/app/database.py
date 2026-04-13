@@ -69,6 +69,8 @@ class RecipeRow(Base):
     serving_size = Column(String(100), nullable=False, default="1 serving")
     label_json = Column(Text, nullable=False, default="{}")
     allergens_json = Column(Text, nullable=False, default="[]")
+    notes = Column(Text, nullable=True)
+    image_data_url = Column(Text, nullable=True)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc))
@@ -215,6 +217,16 @@ def _migrate_existing_tables(engine):
             with engine.begin() as conn:
                 conn.execute(text(
                     "ALTER TABLE recipes ADD COLUMN allergens_json TEXT NOT NULL DEFAULT '[]'"
+                ))
+        if "notes" not in columns:
+            with engine.begin() as conn:
+                conn.execute(text(
+                    "ALTER TABLE recipes ADD COLUMN notes TEXT"
+                ))
+        if "image_data_url" not in columns:
+            with engine.begin() as conn:
+                conn.execute(text(
+                    "ALTER TABLE recipes ADD COLUMN image_data_url TEXT"
                 ))
 
     # Drop the old per-user ingredient cache (replaced by global USDANutritionCache)

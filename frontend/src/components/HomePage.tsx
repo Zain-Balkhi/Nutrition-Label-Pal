@@ -82,10 +82,10 @@ const FEATURES = [
       'Create a free account to save, edit, and manage all your recipes in one place. Access them anytime.',
   },
   {
-    icon: '📊',
-    title: 'Serving Size Control',
+    icon: '🎙️',
+    title: 'Voice & OCR Input',
     description:
-      'Specify custom serving sizes and servings per container. Scale your recipe up or down before generating.',
+      'Skip the typing — speak your recipe aloud or snap a photo of a handwritten or printed recipe and let us extract the ingredients for you.',
   },
 ];
 
@@ -113,14 +113,6 @@ const STEPS = [
   },
 ];
 
-// Example recipe cards shown in the examples section
-// Replace these placeholder descriptions with actual screenshots when available
-const EXAMPLES = [
-  { title: 'Chocolate Chip Cookies', servings: '24 cookies', desc: 'Classic bakery-style cookie' },
-  { title: 'Banana Protein Smoothie', servings: '1 serving (400g)', desc: 'Meal prep shake' },
-  { title: 'Homemade Granola', servings: '12 servings', desc: 'Farmers market granola' },
-];
-
 export default function HomePage() {
   const navigate = useNavigate();
   return (
@@ -146,9 +138,6 @@ export default function HomePage() {
               Try It Now →
             </button>
           </div>
-          <p className="home-hero-note">
-            No credit card required. Powered by USDA FoodData Central + OpenAI.
-          </p>
         </div>
         <div className="home-hero-visual">
           <div className="home-hero-visual-label">
@@ -191,36 +180,6 @@ export default function HomePage() {
                 {i < STEPS.length - 1 && <div className="home-step-arrow">→</div>}
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Example Labels ── */}
-      <section className="home-section home-examples">
-        <div className="home-section-inner">
-          <h2 className="home-section-title">See it in action</h2>
-          <p className="home-section-subtitle">
-            Labels generated in seconds from plain-text recipes.
-          </p>
-          <div className="home-examples-grid">
-            {EXAMPLES.map((ex) => (
-              <div key={ex.title} className="home-example-card">
-                {/* Replace the placeholder below with an actual label screenshot PNG */}
-                <div className="home-example-img-placeholder">
-                  <img src="/logo.png" alt={ex.title} className="home-example-logo-placeholder" />
-                  <span className="home-example-placeholder-note">Replace with label screenshot</span>
-                </div>
-                <div className="home-example-info">
-                  <h4 className="home-example-title">{ex.title}</h4>
-                  <p className="home-example-meta">{ex.servings} · {ex.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="home-examples-cta">
-            <button type="button" className="btn-home-primary" onClick={() => navigate('/generate')}>
-              Generate Your Own Label
-            </button>
           </div>
         </div>
       </section>

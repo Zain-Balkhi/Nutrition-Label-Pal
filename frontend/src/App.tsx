@@ -54,6 +54,29 @@ export default function App() {
   const [ingredients, setIngredients] = useState<IngredientWithMatch[]>([]);
   const [allergens, setAllergens] = useState<string[]>([]);
   const [nutritionResult, setNutritionResult] = useState<NutritionResult | null>(null);
+  const [recipeNotes, setRecipeNotes] = useState<string>('');
+  const [recipeImage, setRecipeImage] = useState<string | null>(null);
+
+  // Snapshot of last-persisted values — used to detect unsaved changes.
+  // null = never saved (button should be enabled so user can save).
+  type SavedSnapshot = {
+    recipe_name: string;
+    servings: number;
+    serving_size: string;
+    notes: string;
+    image: string | null;
+    allergens: string[];
+  };
+  const [savedSnapshot, setSavedSnapshot] = useState<SavedSnapshot | null>(null);
+
+  const isDirty =
+    !savedSnapshot ||
+    savedSnapshot.recipe_name !== recipeName ||
+    savedSnapshot.servings !== servings ||
+    savedSnapshot.serving_size !== servingSize ||
+    savedSnapshot.notes !== recipeNotes ||
+    savedSnapshot.image !== recipeImage ||
+    savedSnapshot.allergens.join('\u0000') !== allergens.join('\u0000');
 
   // Save modal state
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -174,6 +197,8 @@ export default function App() {
       );
       setNutritionResult(result);
       setSavedRecipeId(null);
+      // Fresh calculation = nothing persisted yet → dirty until saved.
+      setSavedSnapshot(null);
       setStep('results');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to calculate nutrition');
@@ -193,6 +218,9 @@ export default function App() {
     setError(null);
     setSavedRecipeId(null);
     setEditingRecipeId(null);
+    setRecipeNotes('');
+    setRecipeImage(null);
+    setSavedSnapshot(null);
   };
 
   const handleBackToInput = () => setStep('input');
@@ -226,6 +254,8 @@ export default function App() {
         display_value: n.display_value,
       })) ?? [],
       allergens: allergens,
+      notes: recipeNotes,
+      image_data_url: recipeImage,
     };
   }
 
@@ -237,7 +267,37 @@ export default function App() {
       navigate('/login');
       return;
     }
+    // If the recipe already exists on the server, skip the title-prompt
+    // modal and just update it. This covers both the "editing a saved
+    // recipe" path and the "user saved once then tweaked something" path.
+    const existingId = editingRecipeId ?? savedRecipeId;
+    if (existingId !== null) {
+      void handleDirectUpdate(existingId);
+      return;
+    }
     setShowSaveModal(true);
+  }
+
+  async function handleDirectUpdate(existingId: number) {
+    setSaving(true);
+    try {
+      const req = buildSaveRequest(recipeName);
+      const updated = await api.recipes.update(existingId, req);
+      setSavedRecipeId(updated.id);
+      setSavedSnapshot({
+        recipe_name: recipeName,
+        servings,
+        serving_size: servingSize,
+        notes: recipeNotes,
+        image: recipeImage,
+        allergens: [...allergens],
+      });
+      setEditingRecipeId(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save recipe');
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleSaveConfirm(title: string) {
@@ -252,6 +312,15 @@ export default function App() {
         const saved = await api.recipes.save(req);
         setSavedRecipeId(saved.id);
       }
+      setRecipeName(title);
+      setSavedSnapshot({
+        recipe_name: title,
+        servings,
+        serving_size: servingSize,
+        notes: recipeNotes,
+        image: recipeImage,
+        allergens: [...allergens],
+      });
       setShowSaveModal(false);
       setEditingRecipeId(null);
     } catch (err) {
@@ -274,7 +343,17 @@ export default function App() {
     setServings(recipe.servings);
     setServingSize(recipe.serving_size);
     setAllergens(recipe.allergens || []);
+    setRecipeNotes(recipe.notes ?? '');
+    setRecipeImage(recipe.image_data_url ?? null);
     setEditingRecipeId(recipe.id);
+    setSavedSnapshot({
+      recipe_name: recipe.recipe_name,
+      servings: recipe.servings,
+      serving_size: recipe.serving_size,
+      notes: recipe.notes ?? '',
+      image: recipe.image_data_url ?? null,
+      allergens: recipe.allergens ?? [],
+    });
 
     // Reconstruct ingredients from saved data
     setIngredients(
@@ -327,6 +406,13 @@ export default function App() {
             display_value: n.display_value,
           })),
         });
+        // Reflect the persisted change in the snapshot so the Save button
+        // stays disabled unless a further change is made.
+        setSavedSnapshot(prev =>
+          prev
+            ? { ...prev, servings: updates.servings, serving_size: updates.serving_size }
+            : prev,
+        );
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to recalculate nutrition');
@@ -381,11 +467,23 @@ export default function App() {
                 onSave={handleSaveClick}
                 onViewSaved={handleViewSaved}
                 onEditLabel={handleEditLabel}
-                saveDisabled={savedRecipeId !== null}
-                saveLabel={savedRecipeId !== null ? 'Saved!' : (editingRecipeId ? 'Update Recipe' : 'Save Label')}
+                saveDisabled={!isDirty}
+                saveLabel={
+                  !isDirty
+                    ? 'Saved!'
+                    : editingRecipeId
+                      ? 'Update Recipe'
+                      : savedRecipeId !== null
+                        ? 'Save Changes'
+                        : 'Save Label'
+                }
                 ingredientNames={ingredients
                   .filter(ing => ing.selected_fdc_id !== null)
                   .map(ing => ing.parsed.name)}
+                notes={recipeNotes}
+                imageDataUrl={recipeImage}
+                onNotesChange={setRecipeNotes}
+                onImageChange={setRecipeImage}
               />
             )}
           </main>
