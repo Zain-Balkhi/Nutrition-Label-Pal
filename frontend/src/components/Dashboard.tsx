@@ -168,9 +168,14 @@ export default function Dashboard() {
         {filteredRecipes.map(recipe => (
           <div
             key={recipe.id}
-            className="recipe-card"
+            className={`recipe-card ${recipe.image_data_url ? 'recipe-card-has-image' : ''}`}
             onClick={() => navigate(`/recipes/${recipe.id}`)}
           >
+            {recipe.image_data_url && (
+              <div className="recipe-card-image">
+                <img src={recipe.image_data_url} alt={recipe.recipe_name} />
+              </div>
+            )}
             <h3 className="recipe-card-title">{recipe.recipe_name}</h3>
             {recipe.tags && recipe.tags.length > 0 && (
               <div className="recipe-card-tags">

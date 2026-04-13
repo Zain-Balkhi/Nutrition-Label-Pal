@@ -42,6 +42,9 @@ export default function RecipeDetail({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [notes, setNotes] = useState<string>('');
+  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+  const [savingMeta, setSavingMeta] = useState(false);
 
   useEffect(() => {
     async function fetchRecipe() {
@@ -54,6 +57,8 @@ export default function RecipeDetail({
         ]);
         setRecipe(data);
         setAllTags(tagsData);
+        setNotes(data.notes ?? '');
+        setImageDataUrl(data.image_data_url ?? null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load recipe');
       } finally {
@@ -137,6 +142,9 @@ export default function RecipeDetail({
   }
 
   const nutritionResult = recipeToNutritionResult(recipe);
+  const metaDirty =
+    (recipe.notes ?? '') !== notes ||
+    (recipe.image_data_url ?? null) !== imageDataUrl;
 
   return (
     <div className="recipe-detail">
@@ -160,6 +168,32 @@ export default function RecipeDetail({
         onBack={() => onEdit(recipe)}
         onViewSaved={() => navigate('/recipes')}
         ingredientNames={recipe.ingredients.map(i => i.name)}
+        notes={notes}
+        imageDataUrl={imageDataUrl}
+        onNotesChange={setNotes}
+        onImageChange={setImageDataUrl}
+        saveDisabled={!metaDirty || savingMeta}
+        saveLabel={savingMeta ? 'Saving…' : metaDirty ? 'Save Changes' : 'Saved!'}
+        onSave={async () => {
+          if (!metaDirty) return;
+          setSavingMeta(true);
+          try {
+            await api.recipes.update(recipe.id, {
+              // Empty string tells the backend to clear these fields.
+              notes: notes,
+              image_data_url: imageDataUrl ?? '',
+            });
+            setRecipe(prev =>
+              prev
+                ? { ...prev, notes, image_data_url: imageDataUrl }
+                : prev,
+            );
+          } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to save changes');
+          } finally {
+            setSavingMeta(false);
+          }
+        }}
         onEditLabel={async (updates) => {
           const result = await api.calculateNutrition(
             recipe.ingredients.filter(i => i.fdc_id).map(i => ({
