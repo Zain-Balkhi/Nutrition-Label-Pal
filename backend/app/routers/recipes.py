@@ -2,7 +2,7 @@ import logging
 
 import httpx
 import openai
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.database import get_session
@@ -12,12 +12,15 @@ from app.models.schemas import (
     CalculateNutritionRequest,
     NutritionResult,
     IngredientWithMatch,
+    TranscribeImageResponse,
     USDAMatch,
 )
-from app.services.llm_service import parse_recipe
+from app.services.llm_service import parse_recipe, transcribe_recipe_image
 from app.services.usda_service import USDAService
 from app.services.calculator import calculate_nutrition
 from app.config import get_settings
+
+MAX_IMAGE_BYTES = 5 * 1024 * 1024  # 5 MB
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +90,33 @@ async def parse_recipe_endpoint(
         ingredients=ingredients_with_matches,
         allergens=parsed.allergens,
     )
+
+
+@router.post("/transcribe-recipe-image", response_model=TranscribeImageResponse)
+async def transcribe_recipe_image_endpoint(image: UploadFile = File(...)):
+    settings = get_settings()
+    if not settings.OPENAI_API_KEY:
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+
+    content_type = (image.content_type or "").lower()
+    if not content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Uploaded file must be an image.")
+
+    image_bytes = await image.read()
+    if len(image_bytes) == 0:
+        raise HTTPException(status_code=400, detail="Uploaded image is empty.")
+    if len(image_bytes) > MAX_IMAGE_BYTES:
+        raise HTTPException(status_code=400, detail="Image exceeds 5 MB size limit.")
+
+    try:
+        text = await transcribe_recipe_image(image_bytes, content_type)
+    except openai.AuthenticationError:
+        raise HTTPException(status_code=401, detail="Invalid OpenAI API key. Check your OPENAI_API_KEY in .env.")
+    except openai.APIError as e:
+        logger.error("OpenAI API error during OCR: %s", e)
+        raise HTTPException(status_code=502, detail=f"OpenAI API error: {e}")
+
+    return TranscribeImageResponse(raw_text=text)
 
 
 @router.post("/calculate-nutrition", response_model=NutritionResult)

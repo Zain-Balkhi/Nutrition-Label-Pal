@@ -125,6 +125,8 @@ export interface SaveRecipeRequest {
   ingredients: SaveIngredientInput[];
   nutrients: SaveNutrientInput[];
   allergens?: string[];
+  notes?: string | null;
+  image_data_url?: string | null;
 }
 
 export interface UpdateRecipeRequest {
@@ -135,6 +137,8 @@ export interface UpdateRecipeRequest {
   ingredients?: SaveIngredientInput[];
   nutrients?: SaveNutrientInput[];
   allergens?: string[];
+  notes?: string | null;
+  image_data_url?: string | null;
 }
 
 export interface RecipeIngredientOut {
@@ -167,6 +171,7 @@ export interface RecipeSummary {
   created_at: string;
   updated_at: string;
   tags?: Tag[];
+  image_data_url?: string | null;
 }
 
 export interface RecipeDetail {
@@ -181,6 +186,8 @@ export interface RecipeDetail {
   created_at: string;
   updated_at: string;
   tags?: Tag[];
+  notes?: string | null;
+  image_data_url?: string | null;
 }
 
 // ── Label export types ──────────────────────────────────────────────────

@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { NutritionResult, LabelFormat } from '../types';
 import StepIndicator from './StepIndicator';
 import LabelPreview from './labels/LabelPreview';
 import ExportModal from './ExportModal';
+import ImageCropperModal from './ImageCropperModal';
+import { compressImage } from '../utils/imageCompress';
+
+const NOTES_MAX_LENGTH = 2000;
 
 interface EditLabelUpdates {
   servings: number;
@@ -18,6 +22,11 @@ interface NutritionDisplayProps {
   saveDisabled?: boolean;
   saveLabel?: string;
   ingredientNames?: string[];
+  // Notes + image (optional)
+  notes?: string;
+  imageDataUrl?: string | null;
+  onNotesChange?: (value: string) => void;
+  onImageChange?: (dataUrl: string | null) => void;
 }
 
 export default function NutritionDisplay({
@@ -29,9 +38,66 @@ export default function NutritionDisplay({
   saveDisabled = false,
   saveLabel = 'Save Label',
   ingredientNames = [],
+  notes,
+  imageDataUrl,
+  onNotesChange,
+  onImageChange,
 }: NutritionDisplayProps) {
   const [format, setFormat] = useState<LabelFormat>('vertical');
   const [showExport, setShowExport] = useState(false);
+
+  // Image upload + cropping
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [cropperSourceUrl, setCropperSourceUrl] = useState<string | null>(null);
+
+  // Revoke the temporary blob URL when the cropper closes
+  useEffect(() => {
+    return () => {
+      if (cropperSourceUrl && cropperSourceUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(cropperSourceUrl);
+      }
+    };
+  }, [cropperSourceUrl]);
+
+  async function handleImageFileSelected(file: File) {
+    setImageError(null);
+    if (!file.type.startsWith('image/')) {
+      setImageError('Please choose an image file.');
+      return;
+    }
+    setImageUploading(true);
+    try {
+      // Downscale very large photos before handing to the cropper so pan/zoom
+      // stays responsive; the final crop is re-encoded to 800x600 anyway.
+      const shrunk = await compressImage(file, 1600, 0.9);
+      const blobUrl = URL.createObjectURL(shrunk);
+      setCropperSourceUrl(blobUrl);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Failed to load image');
+    } finally {
+      setImageUploading(false);
+    }
+  }
+
+  function handleCropperSave(dataUrl: string) {
+    onImageChange?.(dataUrl);
+    closeCropper();
+  }
+
+  function closeCropper() {
+    if (cropperSourceUrl && cropperSourceUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(cropperSourceUrl);
+    }
+    setCropperSourceUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function handleRemoveImage() {
+    onImageChange?.(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
 
   // Edit mode state
   const [editing, setEditing] = useState(false);
@@ -103,6 +169,58 @@ export default function NutritionDisplay({
         />
 
         <div className="results-actions">
+          {onImageChange && !editing && (
+            <div className="recipe-photo-card">
+              <div className="recipe-photo-card-title">Recipe Photo</div>
+              {imageDataUrl ? (
+                <div className="recipe-photo-preview">
+                  <img
+                    src={imageDataUrl}
+                    alt="Recipe"
+                    className="recipe-photo-thumb"
+                  />
+                  <div className="recipe-photo-actions">
+                    <button
+                      type="button"
+                      className="btn-secondary btn-small"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={imageUploading}
+                    >
+                      Replace
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-secondary btn-small"
+                      onClick={handleRemoveImage}
+                      disabled={imageUploading}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="recipe-photo-upload-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={imageUploading}
+                >
+                  {imageUploading ? 'Uploading…' : '+ Add Photo'}
+                </button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  const f = e.target.files?.[0];
+                  if (f) void handleImageFileSelected(f);
+                }}
+                style={{ display: 'none' }}
+              />
+              {imageError && <div className="recipe-photo-error">{imageError}</div>}
+            </div>
+          )}
           {editing ? (
             <>
               <div className="edit-fields">
@@ -221,6 +339,30 @@ export default function NutritionDisplay({
         </div>
       </div>
 
+      {onNotesChange && !editing && (
+        <div className="recipe-notes-panel">
+          <h3 className="recipe-notes-title">Recipe Notes</h3>
+          <div className="recipe-notes-textarea-wrap">
+            <textarea
+              className="recipe-notes-textarea"
+              placeholder="Add preparation tips, variations, or reminders for this recipe…"
+              value={notes ?? ''}
+              onChange={e => onNotesChange(e.target.value.slice(0, NOTES_MAX_LENGTH))}
+              maxLength={NOTES_MAX_LENGTH}
+              rows={5}
+            />
+            <div
+              className={
+                'recipe-notes-counter' +
+                ((notes?.length ?? 0) >= NOTES_MAX_LENGTH ? ' recipe-notes-counter-max' : '')
+              }
+            >
+              {notes?.length ?? 0} / {NOTES_MAX_LENGTH}
+            </div>
+          </div>
+        </div>
+      )}
+
       {result.skipped_ingredients && result.skipped_ingredients.length > 0 && (
         <div className="skipped-ingredients">
           <h3>Skipped Ingredients</h3>
@@ -260,6 +402,14 @@ export default function NutritionDisplay({
           show_ingredients={showIngredients}
           ingredient_list_text={ingredientListText}
           onClose={() => setShowExport(false)}
+        />
+      )}
+
+      {cropperSourceUrl && (
+        <ImageCropperModal
+          sourceUrl={cropperSourceUrl}
+          onSave={handleCropperSave}
+          onCancel={closeCropper}
         />
       )}
     </div>

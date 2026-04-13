@@ -157,3 +157,75 @@ class TestLLMDifferentRecipes:
         flour = result.ingredients[0]
         assert flour.quantity == 1.5
         assert flour.unit == "cups"
+
+
+@pytest.mark.asyncio
+class TestTranscribeRecipeImage:
+    """Test transcribe_recipe_image with mocked OpenAI vision."""
+
+    @patch("app.services.llm_service.AsyncOpenAI")
+    async def test_transcribe_returns_text(self, MockOpenAI):
+        mock_client = AsyncMock()
+        MockOpenAI.return_value = mock_client
+        mock_client.chat.completions.create.return_value = _make_mock_response(
+            "2 cups flour\n1 cup milk\n2 eggs"
+        )
+
+        from app.services.llm_service import transcribe_recipe_image
+        result = await transcribe_recipe_image(b"fake-png-bytes", "image/png")
+
+        assert result == "2 cups flour\n1 cup milk\n2 eggs"
+
+    @patch("app.services.llm_service.AsyncOpenAI")
+    async def test_transcribe_empty_response_for_non_recipe(self, MockOpenAI):
+        mock_client = AsyncMock()
+        MockOpenAI.return_value = mock_client
+        mock_client.chat.completions.create.return_value = _make_mock_response("")
+
+        from app.services.llm_service import transcribe_recipe_image
+        result = await transcribe_recipe_image(b"fake-jpeg-bytes", "image/jpeg")
+
+        assert result == ""
+
+    @patch("app.services.llm_service.AsyncOpenAI")
+    async def test_transcribe_strips_whitespace(self, MockOpenAI):
+        mock_client = AsyncMock()
+        MockOpenAI.return_value = mock_client
+        mock_client.chat.completions.create.return_value = _make_mock_response(
+            "  recipe text\n"
+        )
+
+        from app.services.llm_service import transcribe_recipe_image
+        result = await transcribe_recipe_image(b"bytes", "image/png")
+
+        assert result == "recipe text"
+
+    @patch("app.services.llm_service.AsyncOpenAI")
+    async def test_transcribe_handles_none_content(self, MockOpenAI):
+        """OpenAI may return None content — ensure we coerce to empty string."""
+        mock_client = AsyncMock()
+        MockOpenAI.return_value = mock_client
+        mock_client.chat.completions.create.return_value = _make_mock_response(None)
+
+        from app.services.llm_service import transcribe_recipe_image
+        result = await transcribe_recipe_image(b"bytes", "image/png")
+
+        assert result == ""
+
+    @patch("app.services.llm_service.AsyncOpenAI")
+    async def test_transcribe_passes_base64_data_uri(self, MockOpenAI):
+        """Verify the image is sent as a base64 data URI in the vision payload."""
+        import base64
+
+        mock_client = AsyncMock()
+        MockOpenAI.return_value = mock_client
+        mock_client.chat.completions.create.return_value = _make_mock_response("ok")
+
+        from app.services.llm_service import transcribe_recipe_image
+        await transcribe_recipe_image(b"hello", "image/png")
+
+        call_kwargs = mock_client.chat.completions.create.call_args.kwargs
+        user_msg = call_kwargs["messages"][1]
+        image_part = next(p for p in user_msg["content"] if p["type"] == "image_url")
+        expected_b64 = base64.b64encode(b"hello").decode("ascii")
+        assert image_part["image_url"]["url"] == f"data:image/png;base64,{expected_b64}"

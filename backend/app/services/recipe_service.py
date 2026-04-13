@@ -19,6 +19,8 @@ def save_recipe(session: Session, user_id: int, data: dict) -> RecipeRow:
         serving_size=data["serving_size"],
         label_json=json.dumps([n for n in data.get("nutrients", [])]),
         allergens_json=json.dumps(data.get("allergens", [])),
+        notes=data.get("notes") or None,
+        image_data_url=data.get("image_data_url") or None,
     )
     session.add(recipe)
     session.flush()
@@ -77,6 +79,14 @@ def update_recipe(session: Session, recipe: RecipeRow, data: dict) -> RecipeRow:
 
     if "allergens" in data and data["allergens"] is not None:
         recipe.allergens_json = json.dumps(data["allergens"])
+
+    if "notes" in data and data["notes"] is not None:
+        # Empty string clears the notes
+        recipe.notes = data["notes"] or None
+
+    if "image_data_url" in data and data["image_data_url"] is not None:
+        # Empty string clears the image
+        recipe.image_data_url = data["image_data_url"] or None
 
     if data.get("ingredients") is not None:
         # Replace all ingredients

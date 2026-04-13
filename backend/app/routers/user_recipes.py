@@ -40,6 +40,7 @@ def _recipe_to_summary(recipe) -> RecipeSummary:
         created_at=recipe.created_at.isoformat() if recipe.created_at else "",
         updated_at=recipe.updated_at.isoformat() if recipe.updated_at else "",
         tags=_tags_to_out(recipe),
+        image_data_url=getattr(recipe, "image_data_url", None),
     )
 
 
@@ -90,6 +91,8 @@ def _recipe_to_detail(recipe) -> RecipeDetail:
         created_at=recipe.created_at.isoformat() if recipe.created_at else "",
         updated_at=recipe.updated_at.isoformat() if recipe.updated_at else "",
         tags=_tags_to_out(recipe),
+        notes=getattr(recipe, "notes", None),
+        image_data_url=getattr(recipe, "image_data_url", None),
     )
 
 
@@ -107,6 +110,8 @@ def create_recipe(
         "ingredients": [ing.model_dump() for ing in body.ingredients],
         "nutrients": [nut.model_dump() for nut in body.nutrients],
         "allergens": body.allergens,
+        "notes": body.notes,
+        "image_data_url": body.image_data_url,
     }
     try:
         recipe = save_recipe(session, user.id, data)
@@ -151,7 +156,10 @@ def update_user_recipe(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Recipe not found")
 
     update_data = {}
-    for field in ("recipe_name", "raw_text", "servings", "serving_size", "allergens"):
+    for field in (
+        "recipe_name", "raw_text", "servings", "serving_size",
+        "allergens", "notes", "image_data_url",
+    ):
         val = getattr(body, field, None)
         if val is not None:
             update_data[field] = val
