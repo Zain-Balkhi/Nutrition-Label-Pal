@@ -13,7 +13,7 @@ class USDAService:
         self.base_url = settings.USDA_BASE_URL
         self.db_session = db_session
 
-    async def search_food(self, query: str, page_size: int = 5) -> list[dict]:
+    async def search_food(self, query: str, page_size: int = 25) -> list[dict]:
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{self.base_url}/foods/search",
